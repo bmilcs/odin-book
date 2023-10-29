@@ -1,8 +1,7 @@
 import { connectDatabase, corsOptions } from '@/config';
 import { SERVER_PORT } from '@/config/env';
-import { errorLogger, errorResponder, handleValidationErrors, invalidPathHandler } from '@/middleware';
-import { AppError, tryCatch } from '@/utils';
-import { validateField } from '@/validation';
+import { errorLogger, errorResponder, invalidPathHandler } from '@/middleware';
+import { authRouter, friendRouter, postRouter, userProfileRouter } from '@/routes';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
@@ -40,27 +39,10 @@ app.use(helmet());
 // routes
 //
 
-const getUser = async () => undefined;
-
-app.get(
-  '/test',
-  tryCatch(async (req, res) => {
-    const user = await getUser();
-    if (!user) {
-      throw new AppError('User not found', 999);
-    }
-    res.status(200).json({ user });
-  }),
-);
-
-app.post(
-  '/login',
-  validateField.email(),
-  handleValidationErrors,
-  tryCatch(async (req, res, next) => {
-    res.status(200).json('cheers');
-  }),
-);
+app.use('/auth', authRouter);
+app.use('/users', userProfileRouter);
+app.use('/friends', friendRouter);
+app.use('/posts', postRouter);
 
 //
 // errors
