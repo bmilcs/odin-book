@@ -1,12 +1,14 @@
-import corsOptions from "@/config/cors";
-import connectDatabase from "@/config/database";
-import { SERVER_PORT } from "@/config/env";
-import bodyParser from "body-parser";
-import compression from "compression";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import express from "express";
-import helmet from "helmet";
+import { connectDatabase, corsOptions } from '@/config';
+import { SERVER_PORT } from '@/config/env';
+import { errorLogger, errorResponder, handleValidationErrors, invalidPathHandler } from '@/middleware';
+import { AppError, tryCatch } from '@/utils';
+import { validateField } from '@/validation';
+import bodyParser from 'body-parser';
+import compression from 'compression';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express from 'express';
+import helmet from 'helmet';
 
 //
 // create an express app
@@ -26,6 +28,7 @@ app.use(cors(corsOptions));
 
 // parse incoming data to req.body
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // parse cookies: authentication jwt tokens are stored in cookies
 app.use(cookieParser());
@@ -37,17 +40,35 @@ app.use(helmet());
 // routes
 //
 
-app.get("/", (req, res) => {
-  res.send("hello world");
-});
+const getUser = async () => undefined;
 
-// app.use("/contact", contactRouter);
+app.get(
+  '/test',
+  tryCatch(async (req, res) => {
+    const user = await getUser();
+    if (!user) {
+      throw new AppError('User not found', 999);
+    }
+    res.status(200).json({ user });
+  }),
+);
+
+app.post(
+  '/login',
+  validateField.email(),
+  handleValidationErrors,
+  tryCatch(async (req, res, next) => {
+    res.status(200).json('cheers');
+  }),
+);
 
 //
-// error handling
+// errors
 //
 
-// app.use(errorHandler);
+app.use(errorLogger);
+app.use(errorResponder);
+app.use(invalidPathHandler);
 
 //
 // start server
