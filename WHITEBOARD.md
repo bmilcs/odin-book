@@ -38,7 +38,7 @@ Project Requirements:
 - name (User's full name)
 - email (User's email address)
 - password (Hashed password for authentication)
-- photo (URL to the user's profile photo)
+- photo (URL to the user's photo)
 - profile (An object containing basic user details)
   - bio
   - location
