@@ -1,7 +1,7 @@
 import { connectDatabase, corsOptions } from '@/config';
 import { SERVER_PORT } from '@/config/env';
 import { errorLogger, errorResponder, invalidPathHandler } from '@/middleware';
-import { authRouter, friendRouter, postRouter, userProfileRouter } from '@/routes';
+import { authRouter, feedRouter, friendRouter, postRouter, userProfileRouter } from '@/routes';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
@@ -43,6 +43,7 @@ app.use('/auth', authRouter);
 app.use('/users', userProfileRouter);
 app.use('/friends', friendRouter);
 app.use('/posts', postRouter);
+app.use('/feed', feedRouter);
 
 //
 // errors
