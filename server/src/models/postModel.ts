@@ -1,7 +1,7 @@
 import { IComment } from '@/models/commentModel';
 import { ILike } from '@/models/likeModel';
 import { IUser } from '@/models/userModel';
-import mongoose, { Document, Schema, model } from 'mongoose';
+import mongoose, { Document, Schema, model, models } from 'mongoose';
 
 export interface IPost extends Document {
   content: string;
@@ -17,4 +17,4 @@ const postSchema: Schema = new Schema({
   likes: [{ type: mongoose.Types.ObjectId, ref: 'Like' }],
 });
 
-export default model<IPost>('Post', postSchema);
+export default models['Post'] || model<IPost>('Post', postSchema);

@@ -1,4 +1,4 @@
-import { Document, Schema, model } from 'mongoose';
+import { Document, Schema, model, models } from 'mongoose';
 import { IComment } from './commentModel';
 import { IPost } from './postModel';
 import { IUser } from './userModel';
@@ -18,4 +18,4 @@ const likeSchema: Schema = new Schema({
 // A user can only like a post or comment once
 likeSchema.index({ post: 1, comment: 1 }, { unique: true, sparse: true });
 
-export default model<ILike>('Like', likeSchema);
+export default models['Like'] || model<ILike>('Like', likeSchema);

@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema, model } from 'mongoose';
+import mongoose, { Document, Schema, model, models } from 'mongoose';
 
 export interface IUserProfile {
   bio: string;
@@ -6,7 +6,7 @@ export interface IUserProfile {
 }
 
 export interface IUser extends Document {
-  name: string;
+  username: string;
   email: string;
   password: string;
   photo: string;
@@ -22,7 +22,7 @@ const userProfileSchema = new Schema<IUserProfile>({
 });
 
 const userSchema = new Schema<IUser>({
-  name: { type: String, required: true },
+  username: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   photo: { type: String },
@@ -32,4 +32,4 @@ const userSchema = new Schema<IUser>({
   friendRequestsReceived: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 });
 
-export default model<IUser>('User', userSchema);
+export default models['User'] || model<IUser>('User', userSchema);

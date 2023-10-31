@@ -1,6 +1,6 @@
 import { IPost } from '@/models/postModel';
 import { IUser } from '@/models/userModel';
-import { Document, Schema, model } from 'mongoose';
+import { Document, Schema, model, models } from 'mongoose';
 
 export interface IComment extends Document {
   text: string;
@@ -14,4 +14,4 @@ const CommentSchema: Schema = new Schema({
   post: { type: Schema.Types.ObjectId, ref: 'Post', required: true },
 });
 
-export default model<IComment>('Comment', CommentSchema);
+export default models['Comment'] || model<IComment>('Comment', CommentSchema);
