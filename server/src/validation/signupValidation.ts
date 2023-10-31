@@ -1,8 +1,8 @@
 import { validateField } from '@/validation';
 
 const validateSignup = [
-  validateField.username(),
-  validateField.email(),
+  validateField.usernameWithDuplicateCheck(),
+  validateField.emailWithDuplicateCheck(),
   validateField.password(),
   validateField.confirmPassword(),
 ];
