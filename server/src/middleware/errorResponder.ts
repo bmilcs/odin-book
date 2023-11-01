@@ -1,5 +1,4 @@
-import AppError from '@/utils/AppError';
-import ValidationError from '@/utils/ValidationError';
+import { AppError, ValidationError } from '@/utils';
 import { NextFunction, Request, Response } from 'express';
 
 const errorResponder = (
@@ -10,23 +9,16 @@ const errorResponder = (
 ) => {
   // handle validation errors
   if (err instanceof ValidationError) {
-    return res
-      .status(err.statusCode)
-      .json({ result: err.name, message: err.message, errors: err.errorArray });
+    return res.error(err.name, err.errorArray, err.statusCode);
   }
 
   // handle app errors
   if (err instanceof AppError) {
-    return res.status(err.statusCode).json({
-      result: err.name,
-      message: err.message,
-    });
+    return res.error(err.name, err.message, err.statusCode);
   }
 
   // handle other errors
-  res
-    .status(500)
-    .json({ result: 'ServerError', message: 'internal server error' });
+  return res.error('ServerError', err.message, 500);
 };
 
 export default errorResponder;
