@@ -6,7 +6,7 @@ declare global {
     interface Response {
       success: (message: string, data?: any, statusCode?: number) => void;
       error: (message: string, error?: any, statusCode?: number) => void;
-      setJwtCookie: (token: any) => void;
+      addJwtCookies: (userId: mongoose.Types.ObjectId) => void;
     }
   }
 }

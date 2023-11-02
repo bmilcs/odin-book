@@ -19,6 +19,5 @@
     }
   },
   "exclude": ["node_modules", "dist", "<node_internals>/**"],
-  "include": ["src/**/*"],
-  "files": ["./index.d.ts"]
+  "include": ["src/**/*", "./index.d.ts"]
 }

@@ -1,4 +1,6 @@
+import { setJwtCookies } from '@/utils';
 import { NextFunction, Request, Response } from 'express';
+import mongoose from 'mongoose';
 
 interface ApiResponse {
   success: boolean;
@@ -25,6 +27,9 @@ const responseMethods = (req: Request, res: Response, next: NextFunction) => {
     };
     res.status(statusCode).json(response);
   };
+
+  res.addJwtCookies = (userId: mongoose.Types.ObjectId) =>
+    setJwtCookies(res, userId);
 
   next();
 };
