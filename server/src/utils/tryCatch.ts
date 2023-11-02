@@ -1,6 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 
-type Controller = (req: Request, res: Response, next: NextFunction) => Promise<void>;
+type Controller = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => Promise<void>;
 
 // This is a utility function that wraps a controller function
 // and handles any errors that it throws.
