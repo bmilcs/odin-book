@@ -1,13 +1,19 @@
 import { corsOptions } from '@/config';
-import { errorLogger, errorResponder, invalidPathHandler } from '@/middleware';
+import {
+  errorLogger,
+  errorResponder,
+  invalidPathHandler,
+  jwtCookieHandler,
+  responseMethods,
+} from '@/middleware';
 import { commentModel, likeModel, postModel, userModel } from '@/models';
 import {
+  authRouter,
   feedRouter,
   friendRouter,
   postRouter,
   userProfileRouter,
 } from '@/routes';
-import authRouter from '@/routes/authRouter';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
@@ -17,6 +23,20 @@ import helmet from 'helmet';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 
+// index.d.ts
+declare global {
+  namespace Express {
+    interface Request {
+      userId?: string;
+    }
+    interface Response {
+      success: (message: string, data?: any, statusCode?: number) => void;
+      error: (message: string, error?: any, statusCode?: number) => void;
+      addJwtCookies: (userId: mongoose.Types.ObjectId) => void;
+    }
+  }
+}
+
 export const app = express();
 
 app.use(compression());
@@ -25,6 +45,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(helmet());
+app.use(responseMethods);
+app.use(jwtCookieHandler);
 app.use('/auth', authRouter);
 app.use('/users', userProfileRouter);
 app.use('/friends', friendRouter);
