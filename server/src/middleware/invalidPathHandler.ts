@@ -5,7 +5,7 @@ const invalidPathHandler = (
   res: Response,
   next: NextFunction,
 ) => {
-  res.status(404).json({ result: 'NotFound', message: 'invalid path' });
+  return res.error('API endpoint not found', 'InvalidPath', 404);
 };
 
 export default invalidPathHandler;

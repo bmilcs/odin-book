@@ -1,4 +1,4 @@
-import ValidationError from '@/utils/ValidationError';
+import { ValidationError } from '@/utils';
 import { NextFunction, Request, Response } from 'express';
 import { validationResult } from 'express-validator';
 
@@ -9,6 +9,7 @@ const handleValidationErrors = (
 ) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    // pass the errors to the errorResponder middleware
     next(new ValidationError(errors.array()));
   } else {
     next();
