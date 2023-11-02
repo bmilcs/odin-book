@@ -17,6 +17,10 @@ export const DEVELOPMENT_DB = process.env.DEVELOPMENT_DB ?? 'development';
 // production url: required for CORS
 export const PRODUCTION_URL = process.env.PRODUCTION_URL ?? '';
 
-// jwt token secrets
+// jwt tokens
 export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET ?? '';
 export const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET ?? '';
+export const ACCESS_TOKEN_EXPIRATION =
+  process.env.ACCESS_TOKEN_EXPIRATION ?? '15m';
+export const REFRESH_TOKEN_EXPIRATION =
+  process.env.REFRESH_TOKEN_EXPIRATION ?? '7d';
