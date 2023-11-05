@@ -1,6 +1,5 @@
 import { corsOptions } from '@/config';
 import {
-  errorLogger,
   errorResponder,
   invalidPathHandler,
   jwtCookieHandler,
@@ -52,9 +51,11 @@ app.use('/users', userProfileRouter);
 app.use('/friends', friendRouter);
 app.use('/posts', postRouter);
 app.use('/feed', feedRouter);
-app.use(errorLogger);
 app.use(errorResponder);
 app.use(invalidPathHandler);
+
+// disable logging
+app.set('env', 'test');
 
 //
 // database connection
