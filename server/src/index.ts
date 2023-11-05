@@ -1,7 +1,19 @@
 import { connectDatabase, corsOptions } from '@/config';
 import { SERVER_PORT } from '@/config/env';
-import { errorLogger, errorResponder, invalidPathHandler } from '@/middleware';
-import { authRouter, feedRouter, friendRouter, postRouter, userProfileRouter } from '@/routes';
+import {
+  errorLogger,
+  errorResponder,
+  invalidPathHandler,
+  jwtCookieHandler,
+  responseMethods,
+} from '@/middleware';
+import {
+  authRouter,
+  feedRouter,
+  friendRouter,
+  postRouter,
+  userProfileRouter,
+} from '@/routes';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
@@ -34,6 +46,13 @@ app.use(cookieParser());
 
 // helmet: set security headers & protect well-known web vulnerabilities
 app.use(helmet());
+
+// checks for jwt tokens in cookies and decodes them, adding .userId to req
+app.use(jwtCookieHandler);
+
+// adds custom methods to the response object: res.success, res.error, res.addJwtCookies
+// .success & .error are used to send responses to the client with a standard format
+app.use(responseMethods);
 
 //
 // routes
