@@ -76,6 +76,5 @@
 }
 
 #root {
-  @apply grid min-h-screen;
-  grid-template-rows: max-content 1fr max-content;
+  @apply flex min-h-screen flex-col;
 }
