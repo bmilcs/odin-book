@@ -1,13 +1,17 @@
 import { userModel } from '@/models';
 import { body } from 'express-validator';
 
+//
+// username
+//
+
 export const username = () =>
   body('username')
     .trim()
     .isLength({ min: 3, max: 50 })
     .withMessage('Username must be between 3 and 50 characters');
 
-export const usernameWithDuplicateCheck = () =>
+export const usernameAndNotExists = () =>
   username()
     .bail()
     .custom(async (value) => {
@@ -18,10 +22,18 @@ export const usernameWithDuplicateCheck = () =>
       return true;
     });
 
-export const email = () =>
-  body('email').trim().isEmail().withMessage('Email must be valid');
+//
+// email
+//
 
-export const emailWithDuplicateCheck = () =>
+export const email = () =>
+  body('email')
+    .trim()
+    .isEmail()
+    .withMessage('Email must be valid')
+    .normalizeEmail();
+
+export const emailAndNotExists = () =>
   email()
     .bail()
     .custom(async (value) => {
@@ -32,7 +44,14 @@ export const emailWithDuplicateCheck = () =>
       return true;
     });
 
+//
+// password
+//
+
 export const password = () =>
+  body('password').trim().notEmpty().withMessage('Password must be provided');
+
+export const newPassword = () =>
   body('password')
     .trim()
     .isLength({ min: 8, max: 50 })
@@ -45,7 +64,7 @@ export const password = () =>
       'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character',
     );
 
-export const confirmPassword = () =>
+export const confirmNewPassword = () =>
   body('confirmPassword')
     .trim()
     .custom((value, { req }) => {
