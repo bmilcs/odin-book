@@ -1,10 +1,18 @@
 import { userModel } from '@/models';
 import { app } from '@/tests/setup';
 import { expect } from 'chai';
-import mongoose from 'mongoose';
+import { describe } from 'mocha';
 import request from 'supertest';
 
+//
+// signup
+//
+
 describe('POST /auth/signup', () => {
+  afterEach(async () => {
+    await userModel.deleteMany({});
+  });
+
   it('should validate signup data (empty inputs)', async () => {
     const { body, statusCode } = await request(app)
       .post('/auth/signup')
@@ -93,16 +101,12 @@ describe('POST /auth/signup', () => {
     // response check: success, userId is valid
     expect(statusCode).equal(200);
     expect(body.success).to.be.true;
-    const { userId } = body.data;
-    expect(mongoose.Types.ObjectId.isValid(userId)).to.be.true;
+    const { username } = body.data;
+    expect(username).to.equal(userData.username);
 
     // database check: user exists and all unique values are unique
     const users = await userModel.find({
-      $or: [
-        { username: userData.username },
-        { email: userData.email },
-        { _id: userId },
-      ],
+      $or: [{ username: userData.username }, { email: userData.email }],
     });
     expect(users).to.have.lengthOf(1);
     expect(users[0]).to.deep.include(userData);
@@ -114,5 +118,168 @@ describe('POST /auth/signup', () => {
     expect(cookies).to.have.lengthOf(2);
     expect(cookies[0]).to.match(/^access-token=.+/);
     expect(cookies[1]).to.match(/^refresh-token=.+/);
+  });
+});
+
+//
+// login
+//
+
+describe('POST /auth/login', () => {
+  const userData = {
+    username: 'adam',
+    email: 'adam@jones.com',
+  };
+  const userPassword = 'Password1!';
+  const userConfirmPassword = 'Password1!';
+
+  beforeEach(async () => {
+    await request(app)
+      .post('/auth/signup')
+      .send({
+        ...userData,
+        password: userPassword,
+        confirmPassword: userConfirmPassword,
+      });
+  });
+
+  afterEach(async () => {
+    await userModel.deleteMany({});
+  });
+
+  it('should validate login data (empty inputs)', async () => {
+    const { body, statusCode } = await request(app)
+      .post('/auth/login')
+      .send({
+        email: '',
+        password: '',
+      })
+      .expect('Content-Type', /json/);
+
+    expect(statusCode).equal(400);
+    expect(body.success).to.be.false;
+    expect(body.message).to.equal('ValidationError');
+    expect(body.error).to.be.an('array');
+    const errorMsgs = body.error.map((error: any) => error.msg);
+    const expectedErrorMsgs = [
+      'Email must be valid',
+      'Password must be provided',
+    ];
+    expect(errorMsgs).to.deep.equal(expectedErrorMsgs);
+  });
+
+  it('should validate login data (invalid email)', async () => {
+    const { body, statusCode } = await request(app)
+      .post('/auth/login')
+      .send({
+        email: 'adam@jones',
+        password: userPassword,
+      })
+      .expect('Content-Type', /json/);
+
+    expect(statusCode).equal(400);
+    expect(body.success).to.be.false;
+    expect(body.message).to.equal('ValidationError');
+    expect(body.error).to.be.an('array');
+    const errorMsgs = body.error.map((error: any) => error.msg);
+    const expectedErrorMsgs = ['Email must be valid'];
+    expect(errorMsgs).to.deep.equal(expectedErrorMsgs);
+  });
+
+  it('should validate login data (incorrect email)', async () => {
+    const { body, statusCode } = await request(app)
+      .post('/auth/login')
+      .send({
+        email: 'notreal@email.com',
+        password: userPassword,
+      })
+      .expect('Content-Type', /json/);
+
+    expect(statusCode).equal(401);
+    expect(body.success).to.be.false;
+    expect(body.message).to.equal('LoginError');
+    expect(body.error).to.equal('Invalid email or password');
+  });
+
+  it('should validate login data (incorrect password)', async () => {
+    const { body, statusCode } = await request(app)
+      .post('/auth/login')
+      .send({
+        email: userData.email,
+        password: 'incorrectPassword1!',
+      })
+      .expect('Content-Type', /json/);
+
+    expect(statusCode).equal(401);
+    expect(body.success).to.be.false;
+    expect(body.message).to.equal('LoginError');
+    expect(body.error).to.equal('Invalid email or password');
+  });
+
+  it('should login user & set jwt cookies', async () => {
+    const { body, statusCode, headers } = await request(app)
+      .post('/auth/login')
+      .send({
+        email: userData.email,
+        password: userPassword,
+      })
+      .expect('Content-Type', /json/);
+
+    // response check: success, userId is valid
+    expect(statusCode).equal(200);
+    expect(body.success).to.be.true;
+    expect(body.message).to.equal('LoginSuccess');
+    const { username } = body.data;
+    expect(username).to.equal(userData.username);
+
+    // cookie check: jwt cookie is set
+    const cookies = headers['set-cookie'];
+    expect(cookies).to.have.lengthOf(2);
+    expect(cookies[0]).to.match(/^access-token=.+/);
+    expect(cookies[1]).to.match(/^refresh-token=.+/);
+  });
+});
+
+//
+// logout
+//
+
+describe('POST /auth/logout', () => {
+  const userData = {
+    username: 'adam',
+    email: 'adam@jones.com',
+  };
+  const userPassword = 'Password1!';
+  const userConfirmPassword = 'Password1!';
+
+  beforeEach(async () => {
+    await request(app)
+      .post('/auth/signup')
+      .send({
+        ...userData,
+        password: userPassword,
+        confirmPassword: userConfirmPassword,
+      });
+  });
+
+  afterEach(async () => {
+    await userModel.deleteMany({});
+  });
+
+  it('should logout user & clear jwt cookies', async () => {
+    const { body, statusCode, headers } = await request(app)
+      .post('/auth/logout')
+      .expect('Content-Type', /json/);
+
+    // response check: success, userId is valid
+    expect(statusCode).equal(200);
+    expect(body.success).to.be.true;
+    expect(body.data).to.be.null;
+
+    // cookie check: jwt cookie is set
+    const cookies = headers['set-cookie'];
+    expect(cookies).to.have.lengthOf(2);
+    expect(cookies[0]).to.match(/^access-token=;/);
+    expect(cookies[1]).to.match(/^refresh-token=;/);
   });
 });
