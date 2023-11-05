@@ -17,7 +17,6 @@ export type TAccessTokenPayload = {
 export type TRefreshTokenPayload = {
   sub: mongoose.Types.ObjectId;
   iat: number;
-  exp: number;
 };
 
 // set a jwt httpOnly cookie. this function is applied to the response object as a method
