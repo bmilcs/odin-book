@@ -1,10 +1,11 @@
-import { Input } from '@/components/ui/input';
+import SignupForm from '@/components/common/signup-form';
 
 const Signup = () => {
   return (
     <>
-      <h1>Signup</h1>
-      <Input type="text" placeholder="Username" />
+      <div>
+        <SignupForm className="m-auto max-w-3xl" />
+      </div>
     </>
   );
 };
