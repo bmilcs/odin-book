@@ -283,3 +283,50 @@ describe('POST /auth/logout', () => {
     expect(cookies[1]).to.match(/^refresh-token=;/);
   });
 });
+
+//
+// auth status
+//
+
+describe('GET /auth/status', () => {
+  after(async () => {
+    userModel.deleteMany({});
+  });
+
+  it("should return the user's auth status: false", async () => {
+    const { body, statusCode } = await request(app)
+      .get('/auth/status')
+      .expect('Content-Type', /json/);
+
+    expect(statusCode).equal(200);
+    expect(body.message).to.equal('Not authenticated');
+    expect(body.success).to.be.true;
+    expect(body.data).to.be.null;
+  });
+
+  it("should return the user's auth status: true", async () => {
+    const userData = {
+      username: 'adam',
+      email: 'adam@jones.com',
+      password: 'Password1!',
+      confirmPassword: 'Password1!',
+    };
+
+    // signup
+    const signupRes = await request(app).post('/auth/signup').send(userData);
+    const cookies = signupRes.headers['set-cookie'];
+
+    // check auth status
+    const statusRes = await request(app)
+      .get('/auth/status')
+      .set('Cookie', cookies);
+
+    expect(statusRes.statusCode).equal(200);
+    expect(statusRes.body.message).to.equal('Authenticated');
+    expect(statusRes.body.success).to.be.true;
+    expect(statusRes.body.data).to.deep.include({
+      username: userData.username,
+      email: userData.email,
+    });
+  });
+});

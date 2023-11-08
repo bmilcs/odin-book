@@ -6,6 +6,7 @@ const status = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     // jwtCookieHandler middleware attaches userId to req object if authenticated
     const isAuthenticated = req.userId;
+
     if (isAuthenticated) {
       const user = await userModel.findById(req.userId, {
         _id: 1,
@@ -14,7 +15,8 @@ const status = tryCatch(
       });
       return res.success('Authenticated', user, 200);
     }
-    res.error('Not authenticated', null, 200);
+
+    res.success('Not authenticated', null, 200);
   },
 );
 
