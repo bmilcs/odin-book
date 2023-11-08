@@ -5,6 +5,8 @@ import { Router } from 'express';
 
 const authRouter = Router();
 
+authRouter.get('/status', authController.status);
+
 authRouter.post(
   '/signup',
   validateSignup,

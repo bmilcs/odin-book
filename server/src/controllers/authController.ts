@@ -2,6 +2,22 @@ import { userModel } from '@/models';
 import { AppError, tryCatch } from '@/utils';
 import { NextFunction, Request, Response } from 'express';
 
+const status = tryCatch(
+  async (req: Request, res: Response, next: NextFunction) => {
+    // jwtCookieHandler middleware attaches userId to req object if authenticated
+    const isAuthenticated = req.userId;
+    if (isAuthenticated) {
+      const user = await userModel.findById(req.userId, {
+        _id: 1,
+        username: 1,
+        email: 1,
+      });
+      return res.success('Authenticated', user, 200);
+    }
+    res.error('Not authenticated', null, 200);
+  },
+);
+
 const signup = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password, username } = req.body;
@@ -58,6 +74,7 @@ const logout = tryCatch(
 );
 
 export default {
+  status,
   signup,
   login,
   logout,
