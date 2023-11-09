@@ -14,7 +14,9 @@ const jwtCookieHandler = async (
   if (accessToken) {
     try {
       const decoded = jwt.verify(accessToken, ACCESS_TOKEN_SECRET) as any;
-      if (decoded.sub) req.userId = decoded.sub;
+      if (decoded.sub) {
+        req.userId = decoded.sub;
+      }
     } catch (err: any) {
       // if access token is expired, check refresh token
       if (err.name === 'TokenExpiredError' && refreshToken) {

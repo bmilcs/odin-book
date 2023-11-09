@@ -47,12 +47,12 @@ app.use(cookieParser());
 // helmet: set security headers & protect well-known web vulnerabilities
 app.use(helmet());
 
-// checks for jwt tokens in cookies and decodes them, adding .userId to req
-app.use(jwtCookieHandler);
-
 // adds custom methods to the response object: res.success, res.error, res.addJwtCookies
 // .success & .error are used to send responses to the client with a standard format
 app.use(responseMethods);
+
+// checks for jwt tokens in cookies and decodes them, adding .userId to req
+app.use(jwtCookieHandler);
 
 //
 // routes
