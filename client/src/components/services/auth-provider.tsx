@@ -1,3 +1,4 @@
+import LoadingPage from '@/components/pages/loading';
 import api from '@/utils/api';
 import { FC, ReactNode, createContext, useEffect, useState } from 'react';
 
@@ -35,6 +36,7 @@ interface AuthProviderProps {
 const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showSpinner, setShowSpinner] = useState(true);
 
   function isAuthenticated() {
     if (isLoading) return false;
@@ -71,13 +73,21 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
-  // if (isLoading) {
-  //   return (
-  //     <main>
-  //       <h1>Loading...</h1>
-  //     </main>
-  //   );
-  // }
+  // Ensure spinner shows for at least 1 second
+  useEffect(() => {
+    if (!isLoading) {
+      const timer = setTimeout(() => {
+        setShowSpinner(false);
+      }, 1000);
+      return () => {
+        clearTimeout(timer);
+      };
+    }
+  }, [isLoading]);
+
+  if (showSpinner) {
+    return <LoadingPage />;
+  }
 
   return (
     <AuthContext.Provider value={{ user, setUser, isAuthenticated, logout }}>
