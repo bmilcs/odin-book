@@ -15,21 +15,13 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { ExpressValidatorError } from '@/types/api';
-import { API_BASE_URL, CLIENT_MODE } from '@/utils/env';
+import useSignup from '@/hooks/useSignup';
+import { CLIENT_MODE } from '@/utils/env';
+import { getFieldErrorMsg } from '@/utils/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useMutation } from 'react-query';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { z } from 'zod';
-
-type ApiResponse = {
-  message: string;
-  success: boolean;
-  data?: string;
-  error?: ExpressValidatorError[];
-};
 
 const formSchema = z.object({
   username: z.string().min(3, {
@@ -47,8 +39,7 @@ const formSchema = z.object({
 });
 
 const SignupForm = ({ className }: { className?: string }) => {
-  const [apiErrors, setApiErrors] = useState<ExpressValidatorError[]>([]);
-  const navigate = useNavigate();
+  const { error, signup, status } = useSignup();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -68,37 +59,9 @@ const SignupForm = ({ className }: { className?: string }) => {
           },
   });
 
-  const mutation = useMutation((values: z.infer<typeof formSchema>) =>
-    fetch(`${API_BASE_URL}/auth/signup`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(values),
-    }).then((res) => res.json()),
-  );
-
   function onSubmit(values: z.infer<typeof formSchema>) {
-    mutation.mutate(values, {
-      onSuccess: (data: ApiResponse) => {
-        if (data.success) {
-          navigate('/feed');
-          return;
-        }
-        setApiErrors(data.error || []);
-      },
-      onError: (error) => {
-        console.log(error);
-      },
-    });
+    signup(values);
   }
-
-  const getFieldErrorMsg = (errors: ExpressValidatorError[], field: string) => {
-    return errors.reduce((acc: string, cur: ExpressValidatorError) => {
-      return cur.path === field ? cur.msg : acc;
-    }, '');
-  };
 
   return (
     <Card className={className}>
@@ -122,7 +85,7 @@ const SignupForm = ({ className }: { className?: string }) => {
                       <Input placeholder="CoolGuy" {...field} />
                     </FormControl>
                     <FormMessage>
-                      {getFieldErrorMsg(apiErrors, 'username')}
+                      {getFieldErrorMsg(error, 'username')}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -137,7 +100,7 @@ const SignupForm = ({ className }: { className?: string }) => {
                       <Input placeholder="coolguy@gmail.com" {...field} />
                     </FormControl>
                     <FormMessage>
-                      {getFieldErrorMsg(apiErrors, 'email')}
+                      {getFieldErrorMsg(error, 'email')}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -152,7 +115,7 @@ const SignupForm = ({ className }: { className?: string }) => {
                       <Input type="password" {...field} />
                     </FormControl>
                     <FormMessage>
-                      {getFieldErrorMsg(apiErrors, 'password')}
+                      {getFieldErrorMsg(error, 'password')}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -167,13 +130,17 @@ const SignupForm = ({ className }: { className?: string }) => {
                       <Input type="password" {...field} />
                     </FormControl>
                     <FormMessage>
-                      {getFieldErrorMsg(apiErrors, 'confirmPassword')}
+                      {getFieldErrorMsg(error, 'confirmPassword')}
                     </FormMessage>
                   </FormItem>
                 )}
               />
             </FormItem>
-            <Button className="w-full" type="submit">
+            <Button
+              className="w-full"
+              type="submit"
+              disabled={status === 'loading'}
+            >
               Submit
             </Button>
           </form>
