@@ -1,15 +1,18 @@
+import { AuthContext, User } from '@/components/services/auth-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { ExpressValidatorError } from '@/utils/errors';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type ApiResponse = {
   success: boolean;
   error: ExpressValidatorError[];
+  data: User;
 };
 
 const useSignup = () => {
+  const { setUser } = useContext(AuthContext);
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState<ExpressValidatorError[]>([]);
   const navigate = useNavigate();
@@ -29,12 +32,15 @@ const useSignup = () => {
     setError([]);
 
     try {
-      const { success, error } = await api.post<ApiResponse>('/auth/signup', {
-        email,
-        username,
-        password,
-        confirmPassword,
-      });
+      const { success, data, error } = await api.post<ApiResponse>(
+        '/auth/signup',
+        {
+          email,
+          username,
+          password,
+          confirmPassword,
+        },
+      );
 
       if (!success) {
         setStatus(STATUS.ERROR);
@@ -43,6 +49,7 @@ const useSignup = () => {
       }
 
       // successful signup: redirect to feed
+      setUser(data);
       navigate('/feed');
     } catch (error) {
       setStatus(STATUS.ERROR);
