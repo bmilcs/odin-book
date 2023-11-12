@@ -37,7 +37,7 @@ const signup = tryCatch(
         'AppError',
       );
     }
-    const data = { username: user.username };
+    const data = { username: user.username, email: user.email, _id: user.id };
     res.addJwtCookies(user.id);
     res.success('User created successfully', data, 200);
   },
@@ -48,18 +48,22 @@ const login = tryCatch(
     const { email, password } = req.body;
     const user = await userModel.findOne({ email });
     if (!user) {
-      throw new AppError('Invalid email or password', 401, 'LoginError');
+      next(new AppError('Invalid email or password', 401, 'LoginError'));
     }
     await user.comparePassword(
       password,
       async (err: Error, isValid: boolean) => {
         if (err) {
-          throw new AppError('Unable to login at this time', 500, 'AppError');
+          next(new AppError('Unable to login at this time', 500, 'AppError'));
         }
         if (!isValid) {
           next(new AppError('Invalid email or password', 401, 'LoginError'));
         }
-        const data = { username: user.username };
+        const data = {
+          username: user.username,
+          email: user.email,
+          _id: user.id,
+        };
         res.addJwtCookies(user.id);
         res.success('LoginSuccess', data, 200);
       },
