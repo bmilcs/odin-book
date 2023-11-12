@@ -9,9 +9,9 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 function App() {
   return (
-    <AuthProvider>
-      <ThemeProvider>
-        <BrowserRouter>
+    <BrowserRouter>
+      <AuthProvider>
+        <ThemeProvider>
           <Layout>
             <ScrollToTop />
             <Routes>
@@ -20,9 +20,9 @@ function App() {
               <Route path="/signup" Component={Signup} />
             </Routes>
           </Layout>
-        </BrowserRouter>
-      </ThemeProvider>
-    </AuthProvider>
+        </ThemeProvider>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 
