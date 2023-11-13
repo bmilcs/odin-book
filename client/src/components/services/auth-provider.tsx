@@ -1,6 +1,7 @@
 import LoadingPage from '@/components/pages/loading';
 import api from '@/utils/api';
 import { FC, ReactNode, createContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface ApiResponse {
   data: User;
@@ -37,6 +38,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showSpinner, setShowSpinner] = useState(true);
+  const navigate = useNavigate();
 
   function isAuthenticated() {
     if (isLoading) return false;
@@ -48,6 +50,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       const result: ApiResponse = await api.post('/auth/logout', {});
       if (result.success) {
         setUser(null);
+        navigate('/login');
       }
     } catch (error) {
       console.log(error);
