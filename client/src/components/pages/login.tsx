@@ -1,11 +1,10 @@
-import { Input } from '@/components/ui/input';
+import LoginForm from '@/components/common/login-form';
 
 const Login = () => {
   return (
-    <>
-      <h1>Login</h1>
-      <Input type="text" placeholder="Username" />
-    </>
+    <div className="grid h-full place-items-center">
+      <LoginForm className="m-auto min-w-[min(400px,80vw)] max-w-3xl" />
+    </div>
   );
 };
 
