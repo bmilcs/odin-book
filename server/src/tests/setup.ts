@@ -100,10 +100,10 @@ const teardownMongoTestServer = async () => {
   }
 };
 
-beforeEach(async () => {
+before(async () => {
   await setupMongoTestServer();
 });
 
-afterEach(async () => {
+after(async () => {
   await teardownMongoTestServer();
 });
