@@ -1,24 +1,37 @@
 import { postController } from '@/controllers';
+import ensureAuthenticated from '@/middleware/ensureAuthenticated';
 import { Router } from 'express';
 
 const postRouter = Router();
 
-postRouter.post('/', postController.createPost);
+postRouter.post('/', ensureAuthenticated, postController.createPost);
 
-postRouter.get('/:id', postController.getPost);
+postRouter.get('/:id', ensureAuthenticated, postController.getPost);
 
-postRouter.patch('/:id', postController.updatePost);
+postRouter.patch('/:id', ensureAuthenticated, postController.updatePost);
 
-postRouter.delete('/:id', postController.deletePost);
+postRouter.delete('/:id', ensureAuthenticated, postController.deletePost);
 
-postRouter.post('/:id/like', postController.likePost);
+postRouter.post('/:id/like', ensureAuthenticated, postController.likePost);
 
-postRouter.delete('/:id/like', postController.unlikePost);
+postRouter.delete('/:id/like', ensureAuthenticated, postController.unlikePost);
 
-postRouter.post('/:id/comments', postController.addComment);
+postRouter.post(
+  '/:id/comments',
+  ensureAuthenticated,
+  postController.addComment,
+);
 
-postRouter.patch('/:id/comments/:commentId', postController.editComment);
+postRouter.patch(
+  '/:id/comments/:commentId',
+  ensureAuthenticated,
+  postController.editComment,
+);
 
-postRouter.delete('/:id/comments/:commentId', postController.deleteComment);
+postRouter.delete(
+  '/:id/comments/:commentId',
+  ensureAuthenticated,
+  postController.deleteComment,
+);
 
 export default postRouter;
