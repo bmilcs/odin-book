@@ -1,5 +1,6 @@
 import { authController } from '@/controllers';
 import { handleValidationErrors } from '@/middleware';
+import ensureAuthenticated from '@/middleware/ensureAuthenticated';
 import { validateLogin, validateSignup } from '@/validation';
 import { Router } from 'express';
 
@@ -21,6 +22,6 @@ authRouter.post(
   authController.login,
 );
 
-authRouter.post('/logout', authController.logout);
+authRouter.post('/logout', ensureAuthenticated, authController.logout);
 
 export default authRouter;
