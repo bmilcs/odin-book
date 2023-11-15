@@ -1,10 +1,19 @@
 import { userProfileController } from '@/controllers';
+import ensureAuthenticated from '@/middleware/ensureAuthenticated';
 import { Router } from 'express';
 
 const userProfileRouter = Router();
 
-userProfileRouter.get('/:id', userProfileController.getProfile);
+userProfileRouter.get(
+  '/:id',
+  ensureAuthenticated,
+  userProfileController.getProfile,
+);
 
-userProfileRouter.patch(':/id', userProfileController.updateProfile);
+userProfileRouter.patch(
+  ':/id',
+  ensureAuthenticated,
+  userProfileController.updateProfile,
+);
 
 export default userProfileRouter;
