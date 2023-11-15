@@ -6,7 +6,6 @@ const status = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     // jwtCookieHandler middleware attaches userId to req object if authenticated
     const isAuthenticated = req.userId;
-
     if (isAuthenticated) {
       const user = await userModel.findById(req.userId, {
         _id: 1,
@@ -31,10 +30,8 @@ const signup = tryCatch(
     if (!user) {
       // this should never occur. validation & duplicate checks are performed
       // in previous middleware
-      throw new AppError(
-        'Unable to create a user at this time',
-        500,
-        'AppError',
+      next(
+        new AppError('Unable to create a user at this time', 500, 'AppError'),
       );
     }
     const data = { username: user.username, email: user.email, _id: user.id };
