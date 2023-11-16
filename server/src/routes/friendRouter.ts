@@ -5,23 +5,27 @@ import { Router } from 'express';
 const friendRouter = Router();
 
 friendRouter.post(
-  '/send-request',
+  '/send-request/:userId',
   ensureAuthenticated,
   friendController.sendRequest,
 );
 
 friendRouter.patch(
-  '/accept-request/:id',
+  '/accept-request/:userId',
   ensureAuthenticated,
   friendController.acceptRequest,
 );
 
 friendRouter.patch(
-  '/reject-request/:id',
+  '/reject-request/:userId',
   ensureAuthenticated,
   friendController.rejectRequest,
 );
 
-friendRouter.delete('/:id', ensureAuthenticated, friendController.deleteFriend);
+friendRouter.delete(
+  '/:userId',
+  ensureAuthenticated,
+  friendController.deleteFriend,
+);
 
 export default friendRouter;

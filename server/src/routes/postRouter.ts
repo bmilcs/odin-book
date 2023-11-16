@@ -6,30 +6,34 @@ const postRouter = Router();
 
 postRouter.post('/', ensureAuthenticated, postController.createPost);
 
-postRouter.get('/:id', ensureAuthenticated, postController.getPost);
+postRouter.get('/:postId', ensureAuthenticated, postController.getPost);
 
-postRouter.patch('/:id', ensureAuthenticated, postController.updatePost);
+postRouter.patch('/:postId', ensureAuthenticated, postController.updatePost);
 
-postRouter.delete('/:id', ensureAuthenticated, postController.deletePost);
+postRouter.delete('/:postId', ensureAuthenticated, postController.deletePost);
 
-postRouter.post('/:id/like', ensureAuthenticated, postController.likePost);
+postRouter.post('/:postId/like', ensureAuthenticated, postController.likePost);
 
-postRouter.delete('/:id/like', ensureAuthenticated, postController.unlikePost);
+postRouter.delete(
+  '/:postId/like',
+  ensureAuthenticated,
+  postController.unlikePost,
+);
 
 postRouter.post(
-  '/:id/comments',
+  '/:postId/comments',
   ensureAuthenticated,
   postController.addComment,
 );
 
 postRouter.patch(
-  '/:id/comments/:commentId',
+  '/:postId/comments/:commentId',
   ensureAuthenticated,
   postController.editComment,
 );
 
 postRouter.delete(
-  '/:id/comments/:commentId',
+  '/:postId/comments/:commentId',
   ensureAuthenticated,
   postController.deleteComment,
 );

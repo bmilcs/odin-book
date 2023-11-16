@@ -5,13 +5,13 @@ import { Router } from 'express';
 const userProfileRouter = Router();
 
 userProfileRouter.get(
-  '/:id',
+  '/:userId',
   ensureAuthenticated,
   userProfileController.getProfile,
 );
 
 userProfileRouter.patch(
-  ':/id',
+  ':/userId',
   ensureAuthenticated,
   userProfileController.updateProfile,
 );
