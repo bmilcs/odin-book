@@ -30,7 +30,7 @@ const signup = tryCatch(
     if (!user) {
       // this should never occur. validation & duplicate checks are performed
       // in previous middleware
-      next(
+      return next(
         new AppError('Unable to create a user at this time', 500, 'AppError'),
       );
     }
@@ -45,7 +45,7 @@ const login = tryCatch(
     const { email, password } = req.body;
     const user = await userModel.findOne({ email });
     if (!user) {
-      next(new AppError('Invalid email or password', 401, 'LoginError'));
+      return next(new AppError('Invalid email or password', 401, 'LoginError'));
     }
     await user.comparePassword(
       password,
