@@ -21,6 +21,7 @@ import express from 'express';
 import helmet from 'helmet';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
+import request from 'supertest';
 
 // index.d.ts
 declare global {
@@ -36,6 +37,7 @@ declare global {
   }
 }
 
+// setup server
 export const app = express();
 
 app.use(compression());
@@ -106,4 +108,57 @@ before(async () => {
 
 after(async () => {
   await teardownMongoTestServer();
+});
+
+//
+// create 3 test users
+//
+
+export const USER_ONE = {
+  email: 'userone@friendlink.com',
+  password: 'passworD1!',
+  confirmPassword: 'passworD1!',
+  username: 'userone',
+  jwtCookie: '',
+  _id: '',
+};
+
+export const USER_TWO = {
+  email: 'usertwo@friendlink.com',
+  password: 'passworD2!',
+  confirmPassword: 'passworD2!',
+  username: 'usertwo',
+  jwtCookie: '',
+  _id: '',
+};
+
+export const USER_THREE = {
+  email: 'userthree@friendlink.com',
+  password: 'passworD3!',
+  confirmPassword: 'passworD3!',
+  username: 'userthree',
+  jwtCookie: '',
+  _id: '',
+};
+
+let userOneJWTCookie: string;
+
+before(async function signupUsersAndSaveUserOneJWTCookies() {
+  const users = [USER_ONE, USER_TWO, USER_THREE];
+
+  for (const user of users) {
+    const { body, header } = await request(app)
+      .post('/auth/signup')
+      .send({
+        email: user.email,
+        password: user.password,
+        confirmPassword: user.confirmPassword,
+        username: user.username,
+      })
+      .expect('Content-Type', /json/)
+      .expect(200);
+
+    user._id = body.data._id;
+    user.jwtCookie = header['set-cookie'][0];
+  }
 });
