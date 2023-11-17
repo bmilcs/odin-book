@@ -74,13 +74,72 @@ const acceptRequest = tryCatch(
 
 const rejectRequest = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    res.success('reject friend request', null, 200);
+    const rejectingUserId = req.userId;
+    const { userId: sendingUserId } = req.params;
+    if (!isValidObjectId(sendingUserId)) {
+      return next(new AppError('Friend user ID is invalid', 400));
+    }
+    const rejectingUser = await userModel.findById(rejectingUserId);
+    if (!rejectingUser) {
+      return next(new AppError('Your user information was not found', 400));
+    }
+    const sendingUser = await userModel.findById(sendingUserId);
+    if (!sendingUser) {
+      return next(new AppError('User not found', 400));
+    }
+    if (
+      !rejectingUser.friendRequestsReceived.includes(sendingUser._id) ||
+      !sendingUser.friendRequestsSent.includes(rejectingUser._id)
+    ) {
+      return next(new AppError('Friend request not found', 400));
+    }
+    // remove friend request from both users
+    rejectingUser.friendRequestsReceived =
+      rejectingUser.friendRequestsReceived.filter(
+        (friendRequestId: string) =>
+          friendRequestId.toString() !== sendingUser._id.toString(),
+      );
+    sendingUser.friendRequestsSent = sendingUser.friendRequestsSent.filter(
+      (friendRequestId: string) =>
+        friendRequestId.toString() !== rejectingUser._id.toString(),
+    );
+    await rejectingUser.save();
+    await sendingUser.save();
+    res.success('Friend request rejected', null, 200);
   },
 );
 
 const deleteFriend = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    res.success('delete friend', null, 200);
+    const deletingUserId = req.userId;
+    const { userId: friendUserId } = req.params;
+    if (!isValidObjectId(friendUserId)) {
+      return next(new AppError('Friend user ID is invalid', 400));
+    }
+    const deletingUser = await userModel.findById(deletingUserId);
+    if (!deletingUser) {
+      return next(new AppError('Your user information was not found', 400));
+    }
+    const friendUser = await userModel.findById(friendUserId);
+    if (!friendUser) {
+      return next(new AppError('User not found', 400));
+    }
+    if (
+      !deletingUser.friends.includes(friendUser._id) ||
+      !friendUser.friends.includes(deletingUser._id)
+    ) {
+      return next(new AppError('Friend not found', 400));
+    }
+    // remove friend from both users
+    deletingUser.friends = deletingUser.friends.filter(
+      (friendId: string) => friendId.toString() !== friendUser._id.toString(),
+    );
+    friendUser.friends = friendUser.friends.filter(
+      (friendId: string) => friendId.toString() !== deletingUser._id.toString(),
+    );
+    await deletingUser.save();
+    await friendUser.save();
+    res.success('Friend deleted', null, 200);
   },
 );
 
