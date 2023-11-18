@@ -20,7 +20,7 @@ const getFeed = tryCatch(
       })
       .populate('likes')
       .populate('comments')
-      .sort({ date: -1 });
+      .sort({ createdAt: -1 });
 
     res.success('Feed retrieved', posts, 200);
   },
