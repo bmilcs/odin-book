@@ -9,11 +9,14 @@ export interface ILike extends Document {
   comment?: IComment['_id'];
 }
 
-const likeSchema: Schema = new Schema({
-  user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  post: { type: Schema.Types.ObjectId, ref: 'Post' },
-  comment: { type: Schema.Types.ObjectId, ref: 'Comment' },
-});
+const likeSchema: Schema = new Schema(
+  {
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    post: { type: Schema.Types.ObjectId, ref: 'Post' },
+    comment: { type: Schema.Types.ObjectId, ref: 'Comment' },
+  },
+  { timestamps: true }, // auto create 'createdAt' and 'updatedAt' fields
+);
 
 // A user can only like a post or comment once
 likeSchema.index({ post: 1, comment: 1 }, { unique: true, sparse: true });

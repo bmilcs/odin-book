@@ -15,6 +15,7 @@ export interface IUser extends Document {
   friends: mongoose.Types.ObjectId[];
   friendRequestsSent: mongoose.Types.ObjectId[];
   friendRequestsReceived: mongoose.Types.ObjectId[];
+  createdAt: Date;
   comparePassword: (
     candidatePassword: string,
     next: (err: any, isMatch: boolean) => void,
@@ -26,16 +27,19 @@ const userProfileSchema = new Schema<IUserProfile>({
   location: { type: String, maxlength: 150 },
 });
 
-const userSchema = new Schema<IUser>({
-  username: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  photo: { type: String },
-  profile: { type: userProfileSchema },
-  friends: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  friendRequestsSent: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-  friendRequestsReceived: [{ type: Schema.Types.ObjectId, ref: 'User' }],
-});
+const userSchema = new Schema<IUser>(
+  {
+    username: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    photo: { type: String },
+    profile: { type: userProfileSchema },
+    friends: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    friendRequestsSent: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    friendRequestsReceived: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  },
+  { timestamps: true }, // auto create 'createdAt' and 'updatedAt' fields
+);
 
 // hash password before saving to database
 userSchema.pre<IUser>('save', async function (next) {

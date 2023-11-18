@@ -8,15 +8,16 @@ export interface IPost extends Document {
   author: IUser['_id'];
   comments: IComment['_id'][];
   likes: ILike['_id'][];
-  date: Date;
 }
 
-const postSchema: Schema = new Schema({
-  content: { type: String, required: true, maxlength: 1000 },
-  author: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
-  comments: [{ type: mongoose.Types.ObjectId, ref: 'Comment' }],
-  likes: [{ type: mongoose.Types.ObjectId, ref: 'Like' }],
-  date: { type: Date, default: Date.now },
-});
+const postSchema: Schema = new Schema(
+  {
+    content: { type: String, required: true, maxlength: 1000 },
+    author: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
+    comments: [{ type: mongoose.Types.ObjectId, ref: 'Comment' }],
+    likes: [{ type: mongoose.Types.ObjectId, ref: 'Like' }],
+  },
+  { timestamps: true }, // auto create 'createdAt' and 'updatedAt' fields
+);
 
 export default models['Post'] || model<IPost>('Post', postSchema);

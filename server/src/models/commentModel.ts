@@ -8,10 +8,13 @@ export interface IComment extends Document {
   post: IPost['_id'];
 }
 
-const CommentSchema: Schema = new Schema({
-  text: { type: String, required: true, maxlength: 1000 },
-  author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  post: { type: Schema.Types.ObjectId, ref: 'Post', required: true },
-});
+const CommentSchema: Schema = new Schema(
+  {
+    text: { type: String, required: true, maxlength: 1000 },
+    author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    post: { type: Schema.Types.ObjectId, ref: 'Post', required: true },
+  },
+  { timestamps: true }, // auto create 'createdAt' and 'updatedAt' fields
+);
 
 export default models['Comment'] || model<IComment>('Comment', CommentSchema);
