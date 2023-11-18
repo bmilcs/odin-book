@@ -1,4 +1,4 @@
-import { AuthContext, User } from '@/components/services/auth-provider';
+import { AuthContext, TUser } from '@/components/services/auth-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { useContext, useState } from 'react';
@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 
 type ApiResponse = {
   success: boolean;
-  data: User;
+  data: TUser;
   error: string;
 };
 

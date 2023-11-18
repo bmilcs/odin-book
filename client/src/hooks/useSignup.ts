@@ -1,4 +1,4 @@
-import { AuthContext, User } from '@/components/services/auth-provider';
+import { AuthContext, TUser } from '@/components/services/auth-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { ExpressValidatorError } from '@/utils/errors';
@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 type ApiResponse = {
   success: boolean;
   error: ExpressValidatorError[];
-  data: User;
+  data: TUser;
 };
 
 const useSignup = () => {

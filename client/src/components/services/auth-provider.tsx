@@ -1,44 +1,53 @@
-import LoadingPage from '@/components/pages/loading';
+import LoadingPage from '@/components/pages/loading-page';
 import api from '@/utils/api';
 import { FC, ReactNode, createContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-interface ApiResponse {
-  data: User;
+type ApiResponse = {
+  data: TUser;
   success: boolean;
   message: string;
   error: string;
-}
+};
 
-export interface User {
-  id: number;
-  name: string;
+export type TUser = {
+  _id: string;
+  username: string;
   email: string;
-}
+};
 
-interface AuthContextProps {
-  user: User | null;
-  setUser: (user: User | null) => void;
+type AuthContextProps = {
+  user: TUser | null;
+  setUser: (user: TUser | null) => void;
   isAuthenticated: () => boolean;
   logout: () => void;
-}
+  redirectUnauthenticatedUser: (path: string) => void;
+};
 
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
   setUser: () => {},
   logout: () => {},
   isAuthenticated: () => false,
+  redirectUnauthenticatedUser: () => {},
 });
 
-interface AuthProviderProps {
+type AuthProviderProps = {
   children: ReactNode;
-}
+};
 
 const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<TUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showSpinner, setShowSpinner] = useState(true);
   const navigate = useNavigate();
+
+  function redirectUnauthenticatedUser(path: string) {
+    if (isLoading) return;
+    if (!isAuthenticated()) {
+      navigate(path);
+    }
+  }
 
   function isAuthenticated() {
     if (isLoading) return false;
@@ -93,7 +102,15 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ user, setUser, isAuthenticated, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        setUser,
+        isAuthenticated,
+        logout,
+        redirectUnauthenticatedUser,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
