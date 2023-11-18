@@ -8,6 +8,7 @@ export interface IPost extends Document {
   author: IUser['_id'];
   comments: IComment['_id'][];
   likes: ILike['_id'][];
+  date: Date;
 }
 
 const postSchema: Schema = new Schema({
@@ -15,6 +16,7 @@ const postSchema: Schema = new Schema({
   author: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
   comments: [{ type: mongoose.Types.ObjectId, ref: 'Comment' }],
   likes: [{ type: mongoose.Types.ObjectId, ref: 'Like' }],
+  date: { type: Date, default: Date.now },
 });
 
 export default models['Post'] || model<IPost>('Post', postSchema);
