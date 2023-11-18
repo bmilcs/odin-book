@@ -1,5 +1,72 @@
 # FriendLink: A Facebook Clone
 
+The final project of the Odin Project tasks you with creating a social media clone. I used the following technology to develop this app:
+
+**Frontend**:
+
+- Vite: React + TypeScript + SWC
+- Shadcn UI: React Component Library
+  - Zod
+  - React Hook Form
+- Tailwind CSS
+- React Router DOM
+- ESLint / Prettier
+
+**Backend**:
+
+- MongoDB / Mongoose
+- NodeJS
+- Express
+- JSON Web Tokens
+- Express Validator
+- CORS
+- Helmet / Compression
+- Cookie-Parser / Body-Parser
+- Chai / Mocha / Supertest
+
+## High Level Overview
+
+Tackling a project of this magnitude required a good deal of planning. Here are some of the steps I took while whiteboarding:
+
+1. Crafted data models for the database:
+
+   > User model, post model, like model, comment model, etc.
+
+2. Laid out the server file structure with placeholder routes, controllers, etc.
+3. Expanded upon the default Express response objects (`res`) to **achieve consistent API responses to the client**:
+
+   > All API responses follow the following pattern:
+
+   ```json
+   {
+     'success': boolean,
+     'message': string,
+     'data': any,
+     'error': any,
+   }
+   ```
+
+   Instead of defaulting to the built-in `res.json()` method, I added the following methods to the `res` object:
+
+   - `res.success`: accepts 3 arguments (message, data, statusCode) and returns response to client in JSON format
+
+   - `res.error`: accepts 3 arguments (message, error, statusCode) and returns response to client in JSON format
+
+4. Designed an error handling system to take advantage of the `next()` function in Express
+
+   - Created custom error classes:
+
+     - `AppError` Class: generic errors that occur through the app get thrown as an AppError. These contain a message, statusCode & name value.
+     - `ValidatorError` Class: extend the `AppError` class, defaulting to a statusCode of 400 & name of ValidationError
+
+   - Created middleware for catching and handling errors based on the type of error instance:
+
+     1. `errorLogger`: logs all error messages, except for validation errors
+     2. `errorResponder`: formats all errors in a consistent format based on the `typeof` error object and sends responses to the client using the `res.error` method.
+     3. `invalidPathHandler`: generic 404 error catching
+
+5. To ensure a quality end product, I opted to use **Test Driven Development** (TDD) on the backend. I went through each route, wrote tests that fail and developed controller functions to make them pass.
+
 ## Lessons Learned
 
 ### Custom Hooks and State Instances
