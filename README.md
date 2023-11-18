@@ -37,7 +37,7 @@ Tackling a project of this magnitude required a good deal of planning. Here are 
 
    > All API responses follow the following pattern:
 
-   ```json
+   ```js
    {
      'success': boolean,
      'message': string,
@@ -46,7 +46,7 @@ Tackling a project of this magnitude required a good deal of planning. Here are 
    }
    ```
 
-   Instead of defaulting to the built-in `res.json()` method, I added the following methods to the `res` object:
+   Instead of defaulting to the built-in `res.json()` method, I added the following custom methods to the `res` object:
 
    - `res.success`: accepts 3 arguments (message, data, statusCode) and returns response to client in JSON format
 
@@ -66,6 +66,13 @@ Tackling a project of this magnitude required a good deal of planning. Here are 
      3. `invalidPathHandler`: generic 404 error catching
 
 5. To ensure a quality end product, I opted to use **Test Driven Development** (TDD) on the backend. I went through each route, wrote tests that fail and developed controller functions to make them pass.
+
+## **TODO**
+
+- Explain JSON Web Token Auth
+  - Custom `res.addJWTCookies` method
+  - Middleware for attaching `userId` to `req` objects
+  - `ensureAuthenticated` middleware
 
 ## Lessons Learned
 
