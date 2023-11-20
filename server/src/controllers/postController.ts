@@ -1,6 +1,7 @@
-import { postModel } from '@/models';
+import { commentModel, likeModel, postModel } from '@/models'; // Importing the commentModel, likeModel, and postModel from the '@/models' module
 import { AppError, tryCatch } from '@/utils';
 import { NextFunction, Request, Response } from 'express';
+import { isValidObjectId } from 'mongoose';
 
 const createPost = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -20,49 +21,252 @@ const createPost = tryCatch(
 
 const getPost = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    res.success('get post');
+    const { postId } = req.params;
+    if (!isValidObjectId(postId)) {
+      return next(new AppError('Invalid post id', 400));
+    }
+    const post = await postModel.findById(postId);
+    if (!post) {
+      return next(new AppError('Post not found', 404));
+    }
+    res.success('Post found', post);
   },
 );
 
 const updatePost = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    res.success('update post');
+    const { postId } = req.params;
+    const { content } = req.body;
+    if (!isValidObjectId(postId)) {
+      return next(new AppError('Invalid post id', 400));
+    }
+    if (!content) {
+      return next(new AppError('Please provide content for your post', 400));
+    }
+    const post = await postModel.findById(postId);
+    if (!post) {
+      return next(new AppError('Post not found', 404));
+    }
+    if (post.author.toString() !== req.userId) {
+      return next(new AppError('Unauthorized', 401));
+    }
+    post.content = content;
+    await post.save();
+    res.success('Post updated', post);
   },
 );
 
 const deletePost = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    res.success('delete post');
+    const { postId } = req.params;
+    if (!isValidObjectId(postId)) {
+      return next(new AppError('Invalid post id', 400));
+    }
+    const post = await postModel.findById(postId);
+    if (!post) {
+      return next(new AppError('Post not found', 404));
+    }
+    // delete all comments associated with the post
+    const comments = await commentModel.find({ post: postId });
+    await Promise.all(comments.map((comment) => comment.deleteOne()));
+    // delete all likes associated with the post
+    const likes = await likeModel.find({ post: postId });
+    await Promise.all(likes.map((like) => like.deleteOne()));
+    // delete the post
+    await post.deleteOne();
+    res.success('Post deleted');
   },
 );
 
 const likePost = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    res.success('like post');
+    const { postId } = req.params;
+    if (!isValidObjectId(postId)) {
+      return next(new AppError('Invalid post id', 400));
+    }
+    const post = await postModel.findById(postId);
+    if (!post) {
+      return next(new AppError('Post not found', 404));
+    }
+    const like = await likeModel.findOne({ user: req.userId, post: postId });
+    if (like) {
+      return next(new AppError('Post already liked', 400));
+    }
+    const newLike = await likeModel.create({ user: req.userId, post: postId });
+    res.success('Post liked', newLike, 201);
   },
 );
 
 const unlikePost = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    res.success('unlike post');
+    const { postId } = req.params;
+    if (!isValidObjectId(postId)) {
+      return next(new AppError('Invalid post id', 400));
+    }
+    const post = await postModel.findById(postId);
+    if (!post) {
+      return next(new AppError('Post not found', 404));
+    }
+    const like = await likeModel.findOne({ user: req.userId, post: postId });
+    if (!like) {
+      return next(new AppError('Post not liked', 400));
+    }
+    await like.deleteOne();
+    res.success('Post unliked');
   },
 );
 
 const addComment = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    res.success('add post comment');
+    const { postId } = req.params;
+    const { content } = req.body;
+    if (!isValidObjectId(postId)) {
+      return next(new AppError('Invalid post id', 400));
+    }
+    if (!content) {
+      return next(new AppError('Please provide content for your comment', 400));
+    }
+    const post = await postModel.findById(postId);
+    if (!post) {
+      return next(new AppError('Post not found', 404));
+    }
+    const comment = await commentModel.create({
+      author: req.userId,
+      post: postId,
+      content,
+    });
+    res.success('Comment created', comment, 201);
   },
 );
 
 const editComment = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    res.success('edit post comment');
+    const { postId, commentId } = req.params;
+    const { content } = req.body;
+    if (!isValidObjectId(commentId)) {
+      return next(new AppError('Invalid comment id', 400));
+    }
+    if (!isValidObjectId(postId)) {
+      return next(new AppError('Invalid post id', 400));
+    }
+    if (!content) {
+      return next(new AppError('Please provide content for your comment', 400));
+    }
+    // check if post exists
+    const post = await postModel.findById(postId);
+    if (!post) {
+      return next(new AppError('Post not found', 404));
+    }
+    // check if comment exists
+    const comment = await commentModel.findById(commentId);
+    if (!comment) {
+      return next(new AppError('Comment not found', 404));
+    }
+    // check if user is authorized to edit comment
+    if (comment.author.toString() !== req.userId) {
+      return next(new AppError('Unauthorized', 401));
+    }
+    comment.content = content;
+    comment.save();
+    res.success('Comment updated', comment, 201);
+  },
+);
+
+const likeComment = tryCatch(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { postId, commentId } = req.params;
+    if (!isValidObjectId(commentId)) {
+      return next(new AppError('Invalid comment id', 400));
+    }
+    if (!isValidObjectId(postId)) {
+      return next(new AppError('Invalid post id', 400));
+    }
+    // check if post exists
+    const post = await postModel.findById(postId);
+    if (!post) {
+      return next(new AppError('Post not found', 404));
+    }
+    // check if comment exists
+    const comment = await commentModel.findById(commentId);
+    if (!comment) {
+      return next(new AppError('Comment not found', 404));
+    }
+    // check if user has already liked comment
+    const like = await likeModel.findOne({
+      user: req.userId,
+      comment: commentId,
+    });
+    if (like) {
+      return next(new AppError('Comment already liked', 400));
+    }
+    // create like
+    const newLike = await likeModel.create({
+      user: req.userId,
+      comment: commentId,
+    });
+    res.success('Comment liked', newLike, 201);
+  },
+);
+
+const unlikeComment = tryCatch(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { postId, commentId } = req.params;
+    if (!isValidObjectId(commentId)) {
+      return next(new AppError('Invalid comment id', 400));
+    }
+    if (!isValidObjectId(postId)) {
+      return next(new AppError('Invalid post id', 400));
+    }
+    // check if post exists
+    const post = await postModel.findById(postId);
+    if (!post) {
+      return next(new AppError('Post not found', 404));
+    }
+    // check if comment exists
+    const comment = await commentModel.findById(commentId);
+    if (!comment) {
+      return next(new AppError('Comment not found', 404));
+    }
+    // find the like
+    const like = await likeModel.findOne({
+      user: req.userId,
+      comment: commentId,
+    });
+    if (!like) {
+      return next(new AppError('Comment not liked', 400));
+    }
+    // delete the like
+    await like.deleteOne();
+    res.success('Comment unliked');
   },
 );
 
 const deleteComment = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    res.success('delete post comment');
+    const { postId, commentId } = req.params;
+    if (!isValidObjectId(commentId)) {
+      return next(new AppError('Invalid comment id', 400));
+    }
+    if (!isValidObjectId(postId)) {
+      return next(new AppError('Invalid post id', 400));
+    }
+    // check if post exists
+    const post = await postModel.findById(postId);
+    if (!post) {
+      return next(new AppError('Post not found', 404));
+    }
+    // check if comment exists
+    const comment = await commentModel.findById(commentId);
+    if (!comment) {
+      return next(new AppError('Comment not found', 404));
+    }
+    // check if user is authorized to delete comment
+    if (comment.author.toString() !== req.userId) {
+      return next(new AppError('Unauthorized', 401));
+    }
+    // delete comment
+    await comment.deleteOne();
+    res.success('Comment deleted');
   },
 );
 
@@ -76,4 +280,6 @@ export default {
   addComment,
   editComment,
   deleteComment,
+  likeComment,
+  unlikeComment,
 };
