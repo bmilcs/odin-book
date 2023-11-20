@@ -141,8 +141,6 @@ export const USER_THREE = {
   _id: '',
 };
 
-let userOneJWTCookie: string;
-
 before(async function signupUsersAndSaveUserOneJWTCookies() {
   const users = [USER_ONE, USER_TWO, USER_THREE];
 
@@ -162,3 +160,5 @@ before(async function signupUsersAndSaveUserOneJWTCookies() {
     user.jwtCookie = header['set-cookie'][0];
   }
 });
+
+export const NONEXISTENT_MONGODB_ID = '111111111111111111111111';
