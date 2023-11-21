@@ -20,6 +20,12 @@ postRouter.delete(
   postController.unlikePost,
 );
 
+postRouter.delete(
+  '/:postId/like',
+  ensureAuthenticated,
+  postController.unlikePost,
+);
+
 postRouter.post(
   '/:postId/comments',
   ensureAuthenticated,
@@ -30,6 +36,18 @@ postRouter.patch(
   '/:postId/comments/:commentId',
   ensureAuthenticated,
   postController.editComment,
+);
+
+postRouter.post(
+  '/:postId/comments/:commentId/like',
+  ensureAuthenticated,
+  postController.likeComment,
+);
+
+postRouter.delete(
+  '/:postId/comments/:commentId/like',
+  ensureAuthenticated,
+  postController.unlikeComment,
 );
 
 postRouter.delete(
