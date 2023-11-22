@@ -14,18 +14,22 @@ import {
   postRouter,
   userProfileRouter,
 } from '@/routes';
+import setupSocketServer from '@/services/socket';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
+import http from 'http';
 
 //
-// create an express app
+// setup server
 //
 
 const app = express();
+const server = http.createServer(app);
+setupSocketServer(server);
 
 //
 // middleware
@@ -79,8 +83,8 @@ app.use(invalidPathHandler);
 const startServer = async () => {
   try {
     await connectDatabase();
-    app.listen(SERVER_PORT, () => {
-      console.log(`> server started on port: ${SERVER_PORT}`);
+    server.listen(SERVER_PORT, () => {
+      console.log(`> http server started on port: ${SERVER_PORT}`);
     });
   } catch (err) {
     console.log(err);
