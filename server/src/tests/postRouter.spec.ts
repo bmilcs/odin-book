@@ -30,7 +30,6 @@ describe('POST ROUTER', () => {
         .post('/posts')
         .set('Cookie', USER_ONE.jwtCookie)
         .send({ content: 'This is a test post' });
-
       expect(statusCode).to.equal(201);
       expect(body.success).to.be.true;
       expect(body.message).to.equal('Post created');
@@ -279,13 +278,21 @@ describe('POST ROUTER', () => {
       expect(body.error).to.equal('Post not found');
     });
 
-    it('should return 201 if post is liked successfully', async () => {
+    it('should return 201 if post is liked successfully w/ db check', async () => {
       const { statusCode, body } = await request(app)
         .post(`/posts/${validPostId}/like`)
         .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(201);
       expect(body.success).to.be.true;
       expect(body.message).to.equal('Post liked');
+      // check db
+      const { statusCode: code, body: res } = await request(app)
+        .get(`/posts/${validPostId}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(code).to.equal(201);
+      expect(res.success).to.be.true;
+      expect(res.data.likes).to.be.an('array');
+      expect(res.data.likes[0]).to.be.an.string;
     });
   });
 
