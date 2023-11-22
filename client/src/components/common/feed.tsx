@@ -19,7 +19,7 @@ const Feed = () => {
   }
 
   return (
-    <div className="my-4">
+    <div className="my-4 ml-auto max-w-3xl">
       {feed.map((post) => (
         <Post key={post._id} data={post} className="my-4" />
       ))}

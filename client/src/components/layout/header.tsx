@@ -40,7 +40,7 @@ const Header = () => {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={logout}>
+                      <DropdownMenuItem onClick={() => alert('Settings')}>
                         Settings
                       </DropdownMenuItem>
                       <DropdownMenuItem onClick={logout}>
