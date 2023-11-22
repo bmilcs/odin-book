@@ -29,7 +29,12 @@ const getPost = tryCatch(
     }
     const post = await postModel
       .findById(postId)
-      .populate('author')
+      .populate('author', {
+        password: 0,
+        friends: 0,
+        friendRequestsReceived: 0,
+        friendRequestsSent: 0,
+      })
       .populate('comments')
       .populate('likes');
     if (!post) {
