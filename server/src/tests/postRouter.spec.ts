@@ -10,7 +10,7 @@ describe('POST ROUTER', () => {
 
   describe('POST /posts', () => {
     it('should return 401 if user is not logged in', async () => {
-      const { statusCode, body } = await request(app).post('/posts').send({});
+      const { statusCode, body } = await request(app).post('/posts');
       expect(statusCode).to.equal(401);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Unauthorized');
@@ -19,8 +19,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if request body is empty', async () => {
       const { statusCode, body } = await request(app)
         .post('/posts')
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Please provide content for your post');
@@ -44,16 +43,25 @@ describe('POST ROUTER', () => {
 
   describe('GET /posts/:id', () => {
     let validPostId: string;
+    let validCommentId: string;
     before(async function createPost() {
       const { statusCode, body } = await request(app)
         .post('/posts')
         .set('Cookie', USER_ONE.jwtCookie)
         .send({ content: 'This is a test post' });
       validPostId = body.data._id;
+      const { body: commentBody } = await request(app)
+        .post(`/posts/${validPostId}/comments`)
+        .set('Cookie', USER_TWO.jwtCookie)
+        .send({ content: 'Comment 1' });
+      validCommentId = commentBody.data._id;
+      const { body: likeBody } = await request(app)
+        .post(`/posts/${validPostId}/like`)
+        .set('Cookie', USER_ONE.jwtCookie);
     });
 
     it('should return 401 if user is not logged in', async () => {
-      const { statusCode, body } = await request(app).get('/posts/1').send({});
+      const { statusCode, body } = await request(app).get('/posts/1');
       expect(statusCode).to.equal(401);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Unauthorized');
@@ -62,8 +70,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if postId is invalid', async () => {
       const { statusCode, body } = await request(app)
         .get('/posts/invalid')
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Invalid post id');
@@ -72,19 +79,17 @@ describe('POST ROUTER', () => {
     it('should return 404 if post is not found', async () => {
       const { statusCode, body } = await request(app)
         .get(`/posts/${NONEXISTENT_MONGODB_ID}`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(404);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Post not found');
     });
 
-    it('should return 200 if post is found', async () => {
+    it('should return 201 if post is received', async () => {
       const { statusCode, body } = await request(app)
         .get(`/posts/${validPostId}`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
-      expect(statusCode).to.equal(200);
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(statusCode).to.equal(201);
       expect(body.success).to.be.true;
       expect(body.message).to.equal('Post found');
     });
@@ -105,9 +110,7 @@ describe('POST ROUTER', () => {
     });
 
     it('should return 401 if user is not logged in', async () => {
-      const { statusCode, body } = await request(app)
-        .patch('/posts/1')
-        .send({});
+      const { statusCode, body } = await request(app).patch('/posts/1');
       expect(statusCode).to.equal(401);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Unauthorized');
@@ -116,8 +119,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if postId is invalid', async () => {
       const { statusCode, body } = await request(app)
         .patch('/posts/invalid')
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Invalid post id');
@@ -136,27 +138,26 @@ describe('POST ROUTER', () => {
     it('should return 400 if request body is empty', async () => {
       const { statusCode, body } = await request(app)
         .patch(`/posts/${validPostId}`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Please provide content for your post');
     });
 
-    it('should return 200 if post is updated successfully w/ db check', async () => {
+    it('should return 201 if post is updated successfully w/ db check', async () => {
       const { statusCode, body } = await request(app)
         .patch(`/posts/${validPostId}`)
         .set('Cookie', USER_ONE.jwtCookie)
         .send({ content: 'Updated test post' });
 
-      expect(statusCode).to.equal(200);
+      expect(statusCode).to.equal(201);
       expect(body.success).to.be.true;
       expect(body.message).to.equal('Post updated');
       // check db
       const { statusCode: code, body: res } = await request(app)
         .get(`/posts/${validPostId}`)
         .set('Cookie', USER_ONE.jwtCookie);
-      expect(code).to.equal(200);
+      expect(code).to.equal(201);
       expect(res.success).to.be.true;
       expect(res.message).to.equal('Post found');
       expect(res.data.content).to.equal('Updated test post');
@@ -191,9 +192,7 @@ describe('POST ROUTER', () => {
     });
 
     it('should return 401 if user is not logged in', async () => {
-      const { statusCode, body } = await request(app)
-        .delete('/posts/1')
-        .send({});
+      const { statusCode, body } = await request(app).delete('/posts/1');
       expect(statusCode).to.equal(401);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Unauthorized');
@@ -202,8 +201,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if postId is invalid', async () => {
       const { statusCode, body } = await request(app)
         .delete('/posts/invalid')
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Invalid post id');
@@ -212,8 +210,7 @@ describe('POST ROUTER', () => {
     it('should return 404 if post is not found', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/${NONEXISTENT_MONGODB_ID}`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(404);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Post not found');
@@ -222,9 +219,7 @@ describe('POST ROUTER', () => {
     it('should return 200 if post is deleted successfully w/ db check', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/${validPostId}`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
-
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(200);
       expect(body.success).to.be.true;
       expect(body.message).to.equal('Post deleted');
@@ -260,9 +255,7 @@ describe('POST ROUTER', () => {
     });
 
     it('should return 401 if user is not logged in', async () => {
-      const { statusCode, body } = await request(app)
-        .post('/posts/1/like')
-        .send({});
+      const { statusCode, body } = await request(app).post('/posts/1/like');
       expect(statusCode).to.equal(401);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Unauthorized');
@@ -271,8 +264,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if postId is invalid', async () => {
       const { statusCode, body } = await request(app)
         .post('/posts/invalid/like')
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Invalid post id');
@@ -281,8 +273,7 @@ describe('POST ROUTER', () => {
     it('should return 404 if post is not found', async () => {
       const { statusCode, body } = await request(app)
         .post(`/posts/${NONEXISTENT_MONGODB_ID}/like`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(404);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Post not found');
@@ -317,9 +308,7 @@ describe('POST ROUTER', () => {
     });
 
     it('should return 401 if user is not logged in', async () => {
-      const { statusCode, body } = await request(app)
-        .delete('/posts/1/like')
-        .send({});
+      const { statusCode, body } = await request(app).delete('/posts/1/like');
       expect(statusCode).to.equal(401);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Unauthorized');
@@ -328,8 +317,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if postId is invalid', async () => {
       const { statusCode, body } = await request(app)
         .delete('/posts/invalid/like')
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Invalid post id');
@@ -338,8 +326,7 @@ describe('POST ROUTER', () => {
     it('should return 404 if post is not found', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/${NONEXISTENT_MONGODB_ID}/like`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(404);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Post not found');
@@ -370,9 +357,7 @@ describe('POST ROUTER', () => {
     });
 
     it('should return 401 if user is not logged in', async () => {
-      const { statusCode, body } = await request(app)
-        .post('/posts/1/comments')
-        .send({});
+      const { statusCode, body } = await request(app).post('/posts/1/comments');
       expect(statusCode).to.equal(401);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Unauthorized');
@@ -381,8 +366,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if postId is invalid', async () => {
       const { statusCode, body } = await request(app)
         .post('/posts/invalid/comments')
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Invalid post id');
@@ -401,8 +385,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if request body is empty', async () => {
       const { statusCode, body } = await request(app)
         .post(`/posts/${validPostId}/comments`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Please provide content for your comment');
@@ -442,9 +425,9 @@ describe('POST ROUTER', () => {
     });
 
     it('should return 401 if user is not logged in', async () => {
-      const { statusCode, body } = await request(app)
-        .patch('/posts/1/comments/1')
-        .send({});
+      const { statusCode, body } = await request(app).patch(
+        '/posts/1/comments/1',
+      );
       expect(statusCode).to.equal(401);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Unauthorized');
@@ -493,8 +476,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if request body is empty', async () => {
       const { statusCode, body } = await request(app)
         .patch(`/posts/${validPostId}/comments/${validCommentId}`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Please provide content for your comment');
@@ -513,10 +495,10 @@ describe('POST ROUTER', () => {
       const { statusCode: code, body: res } = await request(app)
         .get(`/posts/${validPostId}`)
         .set('Cookie', USER_ONE.jwtCookie);
-      expect(code).to.equal(200);
+      expect(code).to.equal(201);
       expect(res.success).to.be.true;
       expect(res.data.comments).to.be.an('array');
-      expect(res.data.comments).to.deep.equal([]);
+      expect(res.data.comments[0].content).to.equal('Updated test comment');
     });
   });
 
@@ -542,9 +524,9 @@ describe('POST ROUTER', () => {
     });
 
     it('should return 401 if user is not logged in', async () => {
-      const { statusCode, body } = await request(app)
-        .delete('/posts/1/comments/1')
-        .send({});
+      const { statusCode, body } = await request(app).delete(
+        '/posts/1/comments/1',
+      );
       expect(statusCode).to.equal(401);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Unauthorized');
@@ -553,8 +535,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if postId is invalid', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/invalid/comments/${NONEXISTENT_MONGODB_ID}`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Invalid post id');
@@ -563,8 +544,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if commentId is invalid', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/${validPostId}/comments/invalid`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Invalid comment id');
@@ -573,8 +553,7 @@ describe('POST ROUTER', () => {
     it('should return 404 if post is not found', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/${NONEXISTENT_MONGODB_ID}/comments/${validCommentId}`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(404);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Post not found');
@@ -583,8 +562,7 @@ describe('POST ROUTER', () => {
     it('should return 404 if comment is not found', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/${validPostId}/comments/${NONEXISTENT_MONGODB_ID}`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(404);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Comment not found');
@@ -593,8 +571,7 @@ describe('POST ROUTER', () => {
     it('should return 200 if comment is deleted successfully w/ db check', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/${validPostId}/comments/${validCommentId}`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(200);
       expect(body.success).to.be.true;
       expect(body.message).to.equal('Comment deleted');
@@ -602,7 +579,7 @@ describe('POST ROUTER', () => {
       const { statusCode: code, body: res } = await request(app)
         .get(`/posts/${validPostId}`)
         .set('Cookie', USER_ONE.jwtCookie);
-      expect(code).to.equal(200);
+      expect(code).to.equal(201);
       expect(res.success).to.be.true;
       expect(res.data.comments).to.be.an('array');
       expect(res.data.comments).to.deep.equal([]);
@@ -616,24 +593,26 @@ describe('POST ROUTER', () => {
   describe('POST /posts/:id/comments/:commentId/like', () => {
     let validPostId: string;
     let validCommentId: string;
+    const COMMENT_CONTENT = 'Comment 1';
+    const POST_CONTENT = 'Test Post 1';
     before(async function createPostWithComments() {
       const { body } = await request(app)
         .post('/posts')
         .set('Cookie', USER_ONE.jwtCookie)
-        .send({ content: 'Original test post' });
+        .send({ content: POST_CONTENT });
       validPostId = body.data._id;
       // add comments
       const { body: commentBody } = await request(app)
         .post(`/posts/${validPostId}/comments`)
         .set('Cookie', USER_ONE.jwtCookie)
-        .send({ content: 'Comment 1' });
+        .send({ content: COMMENT_CONTENT });
       validCommentId = commentBody.data._id;
     });
 
     it('should return 401 if user is not logged in', async () => {
-      const { statusCode, body } = await request(app)
-        .post('/posts/1/comments/1/like')
-        .send({});
+      const { statusCode, body } = await request(app).post(
+        '/posts/1/comments/1/like',
+      );
       expect(statusCode).to.equal(401);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Unauthorized');
@@ -642,8 +621,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if postId is invalid', async () => {
       const { statusCode, body } = await request(app)
         .post(`/posts/invalid/comments/${NONEXISTENT_MONGODB_ID}/like`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Invalid post id');
@@ -652,8 +630,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if commentId is invalid', async () => {
       const { statusCode, body } = await request(app)
         .post(`/posts/${validPostId}/comments/invalid/like`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Invalid comment id');
@@ -664,8 +641,7 @@ describe('POST ROUTER', () => {
         .post(
           `/posts/${NONEXISTENT_MONGODB_ID}/comments/${validCommentId}/like`,
         )
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(404);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Post not found');
@@ -674,20 +650,30 @@ describe('POST ROUTER', () => {
     it('should return 404 if comment is not found', async () => {
       const { statusCode, body } = await request(app)
         .post(`/posts/${validPostId}/comments/${NONEXISTENT_MONGODB_ID}/like`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(404);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Comment not found');
     });
 
-    it('should return 201 if comment is liked successfully', async () => {
+    it('should return 201 if comment is liked successfully w/ db check', async () => {
       const { statusCode, body } = await request(app)
         .post(`/posts/${validPostId}/comments/${validCommentId}/like`)
         .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(201);
       expect(body.success).to.be.true;
       expect(body.message).to.equal('Comment liked');
+      // check db
+      const { statusCode: code, body: res } = await request(app)
+        .get(`/posts/${validPostId}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(code).to.equal(201);
+      expect(res.success).to.be.true;
+      expect(res.data.content).to.equal(POST_CONTENT);
+      expect(res.data.comments).to.be.an('array');
+      expect(res.data.comments[0].content).to.equal(COMMENT_CONTENT);
+      expect(res.data.comments[0].likes).to.be.an('array');
+      expect(res.data.comments[0].likes[0]).to.be.an.string;
     });
   });
 
@@ -717,9 +703,9 @@ describe('POST ROUTER', () => {
     });
 
     it('should return 401 if user is not logged in', async () => {
-      const { statusCode, body } = await request(app)
-        .delete('/posts/1/comments/1/like')
-        .send({});
+      const { statusCode, body } = await request(app).delete(
+        '/posts/1/comments/1/like',
+      );
       expect(statusCode).to.equal(401);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Unauthorized');
@@ -728,8 +714,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if postId is invalid', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/invalid/comments/${NONEXISTENT_MONGODB_ID}/like`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Invalid post id');
@@ -738,8 +723,7 @@ describe('POST ROUTER', () => {
     it('should return 400 if commentId is invalid', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/${validPostId}/comments/invalid/like`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Invalid comment id');
@@ -750,8 +734,7 @@ describe('POST ROUTER', () => {
         .delete(
           `/posts/${NONEXISTENT_MONGODB_ID}/comments/${validCommentId}/like`,
         )
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(404);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Post not found');
@@ -760,8 +743,7 @@ describe('POST ROUTER', () => {
     it('should return 404 if comment is not found', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/${validPostId}/comments/${NONEXISTENT_MONGODB_ID}/like`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(404);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Comment not found');
@@ -770,8 +752,7 @@ describe('POST ROUTER', () => {
     it('should return 200 if comment is unliked successfully w/ db check', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/${validPostId}/comments/${validCommentId}/like`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(200);
       expect(body.success).to.be.true;
       expect(body.message).to.equal('Comment unliked');
@@ -779,10 +760,11 @@ describe('POST ROUTER', () => {
       const { statusCode: code, body: res } = await request(app)
         .get(`/posts/${validPostId}`)
         .set('Cookie', USER_ONE.jwtCookie);
-      expect(code).to.equal(200);
+      expect(code).to.equal(201);
       expect(res.success).to.be.true;
       expect(res.data.comments).to.be.an('array');
-      expect(res.data.comments).to.deep.equal([]);
+      expect(res.data.comments[0].likes).to.be.an('array');
+      expect(res.data.comments[0].likes).to.deep.equal([]);
     });
   });
 });

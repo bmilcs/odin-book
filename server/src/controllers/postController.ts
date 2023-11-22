@@ -1,4 +1,6 @@
 import { commentModel, likeModel, postModel } from '@/models'; // Importing the commentModel, likeModel, and postModel from the '@/models' module
+import { IComment } from '@/models/commentModel';
+import { ILike } from '@/models/likeModel';
 import { AppError, tryCatch } from '@/utils';
 import { NextFunction, Request, Response } from 'express';
 import { isValidObjectId } from 'mongoose';
@@ -25,11 +27,15 @@ const getPost = tryCatch(
     if (!isValidObjectId(postId)) {
       return next(new AppError('Invalid post id', 400));
     }
-    const post = await postModel.findById(postId);
+    const post = await postModel
+      .findById(postId)
+      .populate('author')
+      .populate('comments')
+      .populate('likes');
     if (!post) {
       return next(new AppError('Post not found', 404));
     }
-    res.success('Post found', post);
+    res.success('Post found', post, 201);
   },
 );
 
@@ -52,7 +58,7 @@ const updatePost = tryCatch(
     }
     post.content = content;
     await post.save();
-    res.success('Post updated', post);
+    res.success('Post updated', post, 201);
   },
 );
 
@@ -111,6 +117,11 @@ const unlikePost = tryCatch(
     if (!like) {
       return next(new AppError('Post not liked', 400));
     }
+    // delete like
+    post.likes = post.likes.filter(
+      (like: ILike['_id']) => like.toString() !== like._id,
+    );
+    await post.save();
     await like.deleteOne();
     res.success('Post unliked');
   },
@@ -135,6 +146,8 @@ const addComment = tryCatch(
       post: postId,
       content,
     });
+    post.comments.push(comment._id);
+    await post.save();
     res.success('Comment created', comment, 201);
   },
 );
@@ -204,6 +217,9 @@ const likeComment = tryCatch(
       user: req.userId,
       comment: commentId,
     });
+    // link like to comment
+    comment.likes.push(newLike._id);
+    await comment.save();
     res.success('Comment liked', newLike, 201);
   },
 );
@@ -236,6 +252,8 @@ const unlikeComment = tryCatch(
       return next(new AppError('Comment not liked', 400));
     }
     // delete the like
+    comment.likes = comment.likes.filter((like: ILike) => like !== like._id);
+    await comment.save();
     await like.deleteOne();
     res.success('Comment unliked');
   },
@@ -264,6 +282,14 @@ const deleteComment = tryCatch(
     if (comment.author.toString() !== req.userId) {
       return next(new AppError('Unauthorized', 401));
     }
+    // delete comment from post
+    post.comments = post.comments.filter(
+      (comment: IComment['_id']) => comment.toString() !== comment._id,
+    );
+    await post.save();
+    // delete all likes associated with the comment
+    const likes = await likeModel.find({ comment: commentId });
+    await Promise.all(likes.map((like) => like.deleteOne()));
     // delete comment
     await comment.deleteOne();
     res.success('Comment deleted');
