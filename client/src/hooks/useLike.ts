@@ -1,64 +1,61 @@
-import { AuthContext, TUser } from '@/components/services/auth-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
-import { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 type ApiResponse = {
   success: boolean;
-  data: TUser;
+  message: string;
   error: string;
+  data: {
+    likeCount: number;
+    isLikedByUser: boolean;
+  };
 };
 
-const useLike = ({
-  contentType,
-  _id,
-  isLiked,
-}: {
+type useLikeProps = {
   contentType: 'post' | 'comment';
   _id: string;
   isLiked: boolean;
-}) => {
-  const { setUser } = useContext(AuthContext);
+  likeCount: number;
+};
+
+const useLike = ({ contentType, _id, isLiked, likeCount }: useLikeProps) => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const [likeStatus, setLikeStatus] = useState(isLiked);
+  const [totalLikes, setTotalLikes] = useState(likeCount);
 
-  const toggleLike = async ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
+  const toggleLike = async () => {
     setStatus(STATUS.LOADING);
     setError('');
 
-    try {
-      const { success, data, error } = await api.post<ApiResponse>(
-        '/auth/login',
-        {
-          email,
-          password,
-        },
-      );
+    const action = likeStatus ? 'delete' : 'post';
+    const apiUrl =
+      contentType === 'post'
+        ? `/posts/${_id}/like`
+        : `/posts/${_id}/comments/${_id}/like`;
 
+    try {
+      const { success, data, error } =
+        action === 'post'
+          ? await api.post<ApiResponse>(apiUrl, {})
+          : await api.del<ApiResponse>(apiUrl);
       if (!success) {
         console.log(error);
         setStatus(STATUS.ERROR);
         setError(error);
         return;
       }
-
-      // successful login: redirect to feed
-      setUser(data);
+      setTotalLikes(data.likeCount);
+      setLikeStatus(data.isLikedByUser);
+      setStatus(STATUS.SUCCESS);
     } catch (error) {
       setStatus(STATUS.ERROR);
       console.log(error);
     }
   };
 
-  return { status, error, toggleLike, likeStatus };
+  return { status, error, toggleLike, likeStatus, totalLikes };
 };
 
 export default useLike;
