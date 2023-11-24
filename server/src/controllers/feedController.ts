@@ -18,8 +18,30 @@ const getFeed = tryCatch(
         friendRequestsSent: 0,
         friendRequestsReceived: 0,
       })
-      .populate('likes')
-      .populate('comments')
+      .populate({
+        path: 'author',
+        select:
+          '-password -friends -friendRequestsReceived -friendRequestsSent',
+      })
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'likes',
+          populate: {
+            path: 'user',
+            select:
+              '-password -friends -friendRequestsReceived -friendRequestsSent',
+          },
+        },
+      })
+      .populate({
+        path: 'likes',
+        populate: {
+          path: 'user',
+          select:
+            '-password -friends -friendRequestsReceived -friendRequestsSent',
+        },
+      })
       .sort({ createdAt: -1 });
 
     res.success('Feed retrieved', posts, 200);
