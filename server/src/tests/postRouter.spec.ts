@@ -54,8 +54,11 @@ describe('POST ROUTER', () => {
         .set('Cookie', USER_TWO.jwtCookie)
         .send({ content: 'Comment 1' });
       validCommentId = commentBody.data._id;
-      const { body: likeBody } = await request(app)
+      const { body: likePostBody } = await request(app)
         .post(`/posts/${validPostId}/like`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      const { body: likeCommentBody } = await request(app)
+        .post(`/posts/${validPostId}/comments/${validCommentId}/like`)
         .set('Cookie', USER_ONE.jwtCookie);
     });
 
@@ -91,6 +94,17 @@ describe('POST ROUTER', () => {
       expect(statusCode).to.equal(201);
       expect(body.success).to.be.true;
       expect(body.message).to.equal('Post found');
+      expect(body.data).to.be.an('object');
+      expect(body.data.content).to.equal('This is a test post');
+      expect(body.data.likes).to.be.an('array');
+      expect(body.data.likes[0]).to.be.an.string;
+      expect(body.data.likes[0].user._id).to.equal(USER_ONE._id);
+      expect(body.data.comments).to.be.an('array');
+      expect(body.data.comments[0]).to.be.an('object');
+      expect(body.data.comments[0].content).to.equal('Comment 1');
+      expect(body.data.comments[0].likes).to.be.an('array');
+      expect(body.data.comments[0].likes[0]).to.be.an.string;
+      expect(body.data.comments[0].likes[0].user._id).to.equal(USER_ONE._id);
     });
   });
 
@@ -285,6 +299,9 @@ describe('POST ROUTER', () => {
       expect(statusCode).to.equal(201);
       expect(body.success).to.be.true;
       expect(body.message).to.equal('Post liked');
+      expect(body.data).to.be.an('object');
+      expect(body.data.isLikedByUser).to.be.true;
+      expect(body.data.likeCount).to.equal(1);
       // check db
       const { statusCode: code, body: res } = await request(app)
         .get(`/posts/${validPostId}`)
@@ -339,13 +356,16 @@ describe('POST ROUTER', () => {
       expect(body.error).to.equal('Post not found');
     });
 
-    it('should return 200 if post is unliked successfully', async () => {
+    it('should return 201 if post is unliked successfully', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/${validPostId}/like`)
         .set('Cookie', USER_ONE.jwtCookie);
-      expect(statusCode).to.equal(200);
+      expect(statusCode).to.equal(201);
       expect(body.success).to.be.true;
       expect(body.message).to.equal('Post unliked');
+      expect(body.data).to.be.an('object');
+      expect(body.data.isLikedByUser).to.be.false;
+      expect(body.data.likeCount).to.equal(0);
     });
   });
 
@@ -575,7 +595,7 @@ describe('POST ROUTER', () => {
       expect(body.error).to.equal('Comment not found');
     });
 
-    it('should return 200 if comment is deleted successfully w/ db check', async () => {
+    it('should return 201 if comment is deleted successfully w/ db check', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/${validPostId}/comments/${validCommentId}`)
         .set('Cookie', USER_ONE.jwtCookie);
@@ -756,13 +776,16 @@ describe('POST ROUTER', () => {
       expect(body.error).to.equal('Comment not found');
     });
 
-    it('should return 200 if comment is unliked successfully w/ db check', async () => {
+    it('should return 201 if comment is unliked successfully w/ db check', async () => {
       const { statusCode, body } = await request(app)
         .delete(`/posts/${validPostId}/comments/${validCommentId}/like`)
         .set('Cookie', USER_ONE.jwtCookie);
-      expect(statusCode).to.equal(200);
+      expect(statusCode).to.equal(201);
       expect(body.success).to.be.true;
       expect(body.message).to.equal('Comment unliked');
+      expect(body.data).to.be.an('object');
+      expect(body.data.isLikedByUser).to.be.false;
+      expect(body.data.likeCount).to.equal(0);
       // check db
       const { statusCode: code, body: res } = await request(app)
         .get(`/posts/${validPostId}`)

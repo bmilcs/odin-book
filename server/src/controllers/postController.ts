@@ -29,14 +29,30 @@ const getPost = tryCatch(
     }
     const post = await postModel
       .findById(postId)
-      .populate('author', {
-        password: 0,
-        friends: 0,
-        friendRequestsReceived: 0,
-        friendRequestsSent: 0,
+      .populate({
+        path: 'author',
+        select:
+          '-password -friends -friendRequestsReceived -friendRequestsSent',
       })
-      .populate('comments')
-      .populate('likes');
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'likes',
+          populate: {
+            path: 'user',
+            select:
+              '-password -friends -friendRequestsReceived -friendRequestsSent',
+          },
+        },
+      })
+      .populate({
+        path: 'likes',
+        populate: {
+          path: 'user',
+          select:
+            '-password -friends -friendRequestsReceived -friendRequestsSent',
+        },
+      });
     if (!post) {
       return next(new AppError('Post not found', 404));
     }
@@ -103,8 +119,16 @@ const likePost = tryCatch(
     if (like) {
       return next(new AppError('Post already liked', 400));
     }
+    // create new like
     const newLike = await likeModel.create({ user: req.userId, post: postId });
-    res.success('Post liked', newLike, 201);
+    post.likes.push(newLike._id);
+    await post.save();
+    // return updated like info
+    const data = {
+      isLikedByUser: true,
+      likeCount: post.likes.length,
+    };
+    res.success('Post liked', data, 201);
   },
 );
 
@@ -124,11 +148,16 @@ const unlikePost = tryCatch(
     }
     // delete like
     post.likes = post.likes.filter(
-      (like: ILike['_id']) => like.toString() !== like._id,
+      (likeObj: ILike) => like._id.toString() !== likeObj._id.toString(),
     );
     await post.save();
     await like.deleteOne();
-    res.success('Post unliked');
+    // return updated like info
+    const data = {
+      isLikedByUser: false,
+      likeCount: post.likes.length,
+    };
+    res.success('Post unliked', data, 201);
   },
 );
 
@@ -225,7 +254,12 @@ const likeComment = tryCatch(
     // link like to comment
     comment.likes.push(newLike._id);
     await comment.save();
-    res.success('Comment liked', newLike, 201);
+    // return updated like info
+    const data = {
+      isLikedByUser: true,
+      likeCount: comment.likes.length,
+    };
+    res.success('Comment liked', data, 201);
   },
 );
 
@@ -257,10 +291,17 @@ const unlikeComment = tryCatch(
       return next(new AppError('Comment not liked', 400));
     }
     // delete the like
-    comment.likes = comment.likes.filter((like: ILike) => like !== like._id);
+    comment.likes = comment.likes.filter(
+      (likeObj: ILike) => like._id.toString() !== likeObj._id.toString(),
+    );
     await comment.save();
     await like.deleteOne();
-    res.success('Comment unliked');
+    // return updated like info
+    const data = {
+      isLikedByUser: false,
+      likeCount: comment.likes.length,
+    };
+    res.success('Comment unliked', data, 201);
   },
 );
 
