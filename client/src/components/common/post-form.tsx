@@ -1,13 +1,7 @@
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@/components/ui/form';
+import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
-import usePost from '@/hooks/usePost';
+import useNewPost from '@/hooks/useNewPost';
 import { CLIENT_MODE } from '@/utils/env';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
@@ -26,9 +20,14 @@ const formSchema = z.object({
 });
 
 const PostForm = ({ className }: { className?: string }) => {
-  const { error, submitPost, status } = usePost();
+  const { error, submitPost, status } = useNewPost();
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  const {
+    handleSubmit,
+    register,
+    formState: { isSubmitting },
+    reset,
+  } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues:
       CLIENT_MODE === 'development'
@@ -46,42 +45,30 @@ const PostForm = ({ className }: { className?: string }) => {
 
   useEffect(() => {
     if (status === 'success') {
-      form.reset();
+      reset();
     }
-  }, [error, status, form]);
+  }, [error, status, reset]);
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className={`space-y-8 ${className}`}
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className={`flex w-full items-center gap-2 ${className}`}
+    >
+      <Input
+        type="post"
+        placeholder="I love this app!"
+        {...register('content')}
+      />
+      <Button
+        type="submit"
+        variant="secondary"
+        disabled={isSubmitting}
+        className="h-full"
       >
-        <FormItem>
-          <FormField
-            control={form.control}
-            name="content"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input
-                    placeholder="Wow. I love this social media platform!"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage>{error}</FormMessage>
-              </FormItem>
-            )}
-          />
-          <Button
-            className="w-full"
-            type="submit"
-            disabled={status === 'loading'}
-          >
-            Submit Post
-          </Button>
-        </FormItem>
-      </form>
-    </Form>
+        <Icons.submit />
+        <span className="sr-only">Submit Post</span>
+      </Button>
+    </form>
   );
 };
 
