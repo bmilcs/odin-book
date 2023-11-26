@@ -19,9 +19,11 @@ type ApiResponse = {
 export type TComment = {
   _id: string;
   content: string;
-  user: TUser;
-  post: TPost;
+  author: TUser;
+  post: TPost['_id'];
+  likes: TLike[];
   createdAt: string;
+  updatedAt: string;
 };
 
 export type TPost = {
@@ -31,6 +33,7 @@ export type TPost = {
   comments: TComment[];
   likes: TLike[];
   createdAt: string;
+  updatedAt: string;
 };
 
 export type TLike = {
