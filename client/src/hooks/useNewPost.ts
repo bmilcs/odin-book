@@ -8,7 +8,7 @@ type ApiResponse = {
   error: string;
 };
 
-const usePost = () => {
+const useNewPost = () => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const { updateFeed } = useContext(FeedContext);
@@ -19,10 +19,8 @@ const usePost = () => {
         content,
       });
       if (success) {
-        console.log('usePost: post submitted');
         setStatus(STATUS.SUCCESS);
         await updateFeed();
-        console.log('usePost: feed updated');
         return;
       }
       setError(error);
@@ -35,4 +33,4 @@ const usePost = () => {
   return { submitPost, status, error };
 };
 
-export default usePost;
+export default useNewPost;
