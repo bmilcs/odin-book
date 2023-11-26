@@ -35,6 +35,14 @@ const getFeed = tryCatch(
         },
       })
       .populate({
+        path: 'comments',
+        populate: {
+          path: 'author',
+          select:
+            '-password -friends -friendRequestsReceived -friendRequestsSent',
+        },
+      })
+      .populate({
         path: 'likes',
         populate: {
           path: 'user',
