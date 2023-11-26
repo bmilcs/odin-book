@@ -5,19 +5,22 @@ import { FC } from 'react';
 
 type LikeButtonProps = {
   isLiked: boolean;
-  _id: string;
+  postId: string;
+  commentId?: string;
   contentType: 'post' | 'comment';
   likeCount: number;
 };
 
 const LikeButton: FC<LikeButtonProps> = ({
   isLiked,
-  _id,
+  postId,
   contentType,
   likeCount,
+  commentId,
 }) => {
   const { status, error, likeStatus, toggleLike, totalLikes } = useLike({
-    _id,
+    commentId,
+    postId,
     contentType,
     isLiked,
     likeCount,
@@ -26,15 +29,21 @@ const LikeButton: FC<LikeButtonProps> = ({
   return (
     <div className="flex items-center gap-2 text-sm">
       <Button
-        variant={'outline'}
+        variant={'ghost'}
         size={'icon'}
         onClick={toggleLike}
         disabled={status === 'loading' || !!error}
       >
         {likeStatus ? (
-          <Icons.like className="text-blue-500 dark:text-blue-400" />
+          <>
+            <Icons.like className="text-blue-500 dark:text-blue-400" />
+            <span className="sr-only">Unlike ${contentType}</span>
+          </>
         ) : (
-          <Icons.dislike />
+          <>
+            <Icons.dislike />
+            <span className="sr-only">Like ${contentType}</span>
+          </>
         )}
       </Button>
       <span>{totalLikes} Likes</span>

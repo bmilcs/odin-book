@@ -14,12 +14,19 @@ type ApiResponse = {
 
 type useLikeProps = {
   contentType: 'post' | 'comment';
-  _id: string;
+  postId: string;
+  commentId?: string;
   isLiked: boolean;
   likeCount: number;
 };
 
-const useLike = ({ contentType, _id, isLiked, likeCount }: useLikeProps) => {
+const useLike = ({
+  contentType,
+  postId,
+  commentId,
+  isLiked,
+  likeCount,
+}: useLikeProps) => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const [likeStatus, setLikeStatus] = useState(isLiked);
@@ -32,8 +39,8 @@ const useLike = ({ contentType, _id, isLiked, likeCount }: useLikeProps) => {
     const action = likeStatus ? 'delete' : 'post';
     const apiUrl =
       contentType === 'post'
-        ? `/posts/${_id}/like`
-        : `/posts/${_id}/comments/${_id}/like`;
+        ? `/posts/${postId}/like`
+        : `/posts/${postId}/comments/${commentId}/like`;
 
     try {
       const { success, data, error } =
