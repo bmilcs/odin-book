@@ -1,5 +1,5 @@
 import Feed from '@/components/common/feed';
-import PostForm from '@/components/common/post-form';
+import PostNewForm from '@/components/common/post-new-form';
 import { AuthContext } from '@/components/services/auth-provider';
 import { useContext, useEffect } from 'react';
 
@@ -12,7 +12,7 @@ const FeedPage = () => {
 
   return (
     <>
-      <PostForm />
+      <PostNewForm />
       <Feed />
     </>
   );

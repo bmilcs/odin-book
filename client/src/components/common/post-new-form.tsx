@@ -19,7 +19,7 @@ const formSchema = z.object({
     }),
 });
 
-const PostForm = ({ className }: { className?: string }) => {
+const PostNewForm = ({ className }: { className?: string }) => {
   const { error, submitPost, status } = useNewPost();
 
   const {
@@ -72,4 +72,4 @@ const PostForm = ({ className }: { className?: string }) => {
   );
 };
 
-export default PostForm;
+export default PostNewForm;
