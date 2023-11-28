@@ -1,4 +1,4 @@
-import { TUser } from '@/components/services/auth-provider';
+import { AuthContext, TUser } from '@/components/services/auth-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import {
@@ -6,6 +6,7 @@ import {
   ReactNode,
   createContext,
   useCallback,
+  useContext,
   useEffect,
   useState,
 } from 'react';
@@ -63,6 +64,7 @@ type FeedProviderProps = {
 };
 
 const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
+  const { isAuthenticated } = useContext(AuthContext);
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const [feed, setFeed] = useState<TPost[]>([]);
@@ -86,14 +88,11 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
     }
   }, []);
 
-  useEffect(
-    function fetchFeedOnInitialRender() {
-      if (status === STATUS.IDLE) {
-        updateFeed();
-      }
-    },
-    [status, updateFeed],
-  );
+  useEffect(() => {
+    if (isAuthenticated()) {
+      updateFeed();
+    }
+  }, [isAuthenticated, updateFeed]);
 
   return (
     <FeedContext.Provider value={{ status, error, feed, updateFeed }}>
