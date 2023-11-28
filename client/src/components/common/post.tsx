@@ -1,6 +1,7 @@
 import CommentForm from '@/components/common/comment-form';
 import LikeButton from '@/components/common/like-button';
 import PostComment from '@/components/common/post-comment';
+import PostEditForm from '@/components/common/post-edit-form';
 import { AuthContext } from '@/components/services/auth-provider';
 import { TPost } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,7 @@ import {
 import { Icons } from '@/components/ui/icons';
 import useExistingPost from '@/hooks/useExistingPost';
 import { formatDate } from '@/utils/formatters';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 const Post = ({
   data,
@@ -24,7 +25,8 @@ const Post = ({
   data: TPost;
   className?: string;
 }) => {
-  const { deletePost, updatePost } = useExistingPost({ postId: data._id });
+  const [editPostMode, setEditPostMode] = useState(false);
+  const { deletePost } = useExistingPost({ postId: data._id });
   const { user } = useContext(AuthContext);
   const initialPostLikeCount = data.likes.length;
   const initialIsLikedByUser = data.likes.some(
@@ -33,7 +35,17 @@ const Post = ({
   const isPostCreatedByUser =
     data.author._id.toString() === user?._id.toString();
 
-  console.log(data.comments);
+  const handleEditPost = () => {
+    setEditPostMode((prev) => !prev);
+  };
+
+  const handleDeletePost = () => {
+    deletePost();
+  };
+
+  const handleSuccessfulEdit = () => {
+    setEditPostMode(false);
+  };
 
   return (
     <Card className={className} {...props}>
@@ -46,10 +58,22 @@ const Post = ({
           </CardDescription>
         </div>
       </CardHeader>
+
       {/* Post content */}
       <CardContent>
-        <p>{data.content}</p>
+        {editPostMode ? (
+          <PostEditForm
+            postId={data._id}
+            postContent={data.content}
+            onSuccess={() => {
+              handleSuccessfulEdit();
+            }}
+          />
+        ) : (
+          <p>{data.content}</p>
+        )}
       </CardContent>
+
       {/* Buttons */}
       <CardContent className="border-y-2 py-2">
         <div className="flex justify-between">
@@ -66,17 +90,22 @@ const Post = ({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => updatePost({ content: 'New Post Data!' })}
+                onClick={() => handleEditPost()}
               >
                 <Icons.edit />
               </Button>
-              <Button variant="ghost" onClick={() => deletePost()} size="icon">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleDeletePost()}
+              >
                 <Icons.delete />
               </Button>
             </div>
           )}
         </div>
       </CardContent>
+
       {/* Comments */}
       <CardContent className="grid gap-4 py-4">
         <CommentForm postId={data._id} className="" />
