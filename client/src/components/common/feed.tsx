@@ -21,7 +21,7 @@ const Feed = () => {
   return (
     <div className="mx-auto my-4 max-w-5xl">
       {feed.map((post) => (
-        <Post key={post._id} data={post} className="my-4" />
+        <Post key={post._id} data={post} className="my-8" />
       ))}
     </div>
   );
