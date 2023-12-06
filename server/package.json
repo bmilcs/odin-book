@@ -28,6 +28,7 @@
     "socket.io": "^4.7.2"
   },
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.4.11",
     "@types/bcryptjs": "^2.4.5",
     "@types/chai": "^4.3.9",
     "@types/compression": "^1.7.4",
