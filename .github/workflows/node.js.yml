@@ -3,8 +3,12 @@ name: Node.js CI/CD with Fly.io PaaS
 on:
   push:
     branches: ["main"]
+    paths:
+      - "server/**"
   pull_request:
     branches: ["main"]
+    paths:
+      - "server/**"
 
 jobs:
   test:
