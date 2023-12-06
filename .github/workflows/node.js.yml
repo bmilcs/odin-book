@@ -46,6 +46,7 @@ jobs:
   deploy:
     name: Deploy to Fly
     runs-on: ubuntu-latest
+    environment: PRODUCTION
     needs: test
     steps:
       - uses: actions/checkout@v3
