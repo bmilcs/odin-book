@@ -1,7 +1,6 @@
 import LikeButton from '@/components/common/like-button';
 import { TComment } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
-import { Icons } from '@/components/ui/icons';
 import useExistingComment from '@/hooks/useExistingComment';
 import { formatDate } from '@/utils/formatters';
 
@@ -16,7 +15,6 @@ const PostComment = ({
     postId: data.post,
     commentId: data._id,
   });
-  console.log(data);
   const initialIsLikedByUser = data.likes.some(
     (like) => like.user._id.toString() === data.author._id.toString(),
   );
@@ -36,7 +34,9 @@ const PostComment = ({
             : formatDate(data.createdAt)}
         </div>
         <span className="text-sm">{data.content}</span>
-        <div className="flex justify-between">
+
+        {/* Buttons */}
+        <div className="flex">
           <LikeButton
             isLiked={initialIsLikedByUser}
             likeCount={initialLikeCount}
@@ -45,20 +45,20 @@ const PostComment = ({
             contentType="comment"
           />
           {isCommentCreatedByUser && (
-            <div>
+            <div className="ml-8 flex gap-2">
               <Button
-                variant="ghost"
+                variant="link"
                 onClick={() => updateComment({ content: 'NewCommentHere' })}
                 size="icon"
               >
-                <Icons.edit />
+                Edit
               </Button>
               <Button
-                variant="ghost"
+                variant="link"
                 onClick={() => deleteComment()}
                 size="icon"
               >
-                <Icons.delete />
+                Delete
               </Button>
             </div>
           )}
