@@ -10,6 +10,7 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    environment: PRODUCTION
 
     steps:
       - name: Checkout
@@ -33,6 +34,6 @@ jobs:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          deploy_key: ${{ secrets.GH_PAGES_DEPLOY_KEY }}
           cname: odinbook.bmilcs.com
           publish_dir: ./client/dist
