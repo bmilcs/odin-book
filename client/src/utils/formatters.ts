@@ -9,19 +9,17 @@ export function formatDate(date: string): string {
   const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30));
   const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
 
-  if (seconds < 60) {
-    return `moments ago`;
-  } else if (minutes === 1) {
-    return `${minutes} minute ago`;
-  } else if (minutes < 60) {
-    return `${minutes} minutes ago`;
-  } else if (hours < 24) {
-    return `${hours} hours ago`;
-  } else if (days < 30) {
-    return `${days} days ago`;
-  } else if (months < 12) {
-    return `${months} months ago`;
-  } else {
-    return `${years} years ago`;
-  }
+  return seconds < 60
+    ? `moments ago`
+    : minutes === 1
+    ? `${minutes} minute ago`
+    : minutes < 60
+    ? `${minutes} minutes ago`
+    : hours < 24
+    ? `${hours} hours ago`
+    : days < 30
+    ? `${days} days ago`
+    : months < 12
+    ? `${months} months ago`
+    : `${years} years ago`;
 }
