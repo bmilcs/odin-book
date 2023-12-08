@@ -15,7 +15,7 @@ export const PRODUCTION_DB = process.env.PRODUCTION_DB ?? 'production';
 export const DEVELOPMENT_DB = process.env.DEVELOPMENT_DB ?? 'development';
 
 // production url: required for CORS
-export const PRODUCTION_URL = process.env.PRODUCTION_URL ?? '';
+export const CLIENT_PRODUCTION_URL = process.env.CLIENT_PRODUCTION_URL ?? '';
 
 // jwt tokens
 export const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET ?? '';

@@ -19,7 +19,7 @@ jobs:
       CLIENT_PORT: ${{ secrets.CLIENT_PORT }}
       SERVER_PORT: ${{ secrets.SERVER_PORT }}
       SOCKET_PORT: ${{ secrets.SOCKET_PORT }}
-      PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
+      CLIENT_PRODUCTION_URL: ${{ secrets.CLIENT_PRODUCTION_URL }}
       MONGO_DB: ${{ secrets.MONGO_DB }}
       DEVELOPMENT_DB: ${{ secrets.DEVELOPMENT_DB }}
       PRODUCTION_DB: ${{ secrets.PRODUCTION_DB }}

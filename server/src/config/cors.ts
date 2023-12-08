@@ -1,6 +1,9 @@
-import { CLIENT_PORT, NODE_ENV, PRODUCTION_URL } from '@/config/env';
+import { CLIENT_PORT, CLIENT_PRODUCTION_URL, NODE_ENV } from '@/config/env';
 
-const corsOrigin = NODE_ENV === 'production' ? `https://${PRODUCTION_URL}` : `http://localhost:${CLIENT_PORT}`;
+const corsOrigin =
+  NODE_ENV === 'production'
+    ? `https://${CLIENT_PRODUCTION_URL}`
+    : `http://localhost:${CLIENT_PORT}`;
 
 const corsOptions = {
   origin: corsOrigin,
