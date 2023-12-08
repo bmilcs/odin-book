@@ -1,4 +1,4 @@
-name: Node.js CI/CD with Fly.io PaaS
+name: Server Test & Deploy
 
 on:
   push:
@@ -27,14 +27,11 @@ jobs:
       REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
       ACCESS_TOKEN_EXPIRATION: ${{ secrets.ACCESS_TOKEN_EXPIRATION }}
       REFRESH_TOKEN_EXPIRATION: ${{ secrets.REFRESH_TOKEN_EXPIRATION }}
-
     strategy:
       matrix:
         node-version: [18.x]
-
     steps:
       - uses: actions/checkout@v3
-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -53,7 +50,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: PRODUCTION
     needs: test
-
     steps:
       - uses: actions/checkout@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
