@@ -1,4 +1,4 @@
-name: Server Test & Deploy
+name: Server
 
 on:
   push:
