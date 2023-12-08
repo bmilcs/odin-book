@@ -1,14 +1,18 @@
-name: Client Deploy
+name: Client
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
+    # paths:
+    #   - "client/**"
+  pull_request:
+    branches: ["main"]
     # paths:
     #   - "client/**"
 
 jobs:
   build-deploy:
+    name: Client Build & Deploy
     runs-on: ubuntu-latest
     environment: PRODUCTION
     env:
