@@ -83,7 +83,12 @@ const LoginForm = ({ className }: { className?: string }) => {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="**********"
+                        autoComplete="current-password"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage>{error}</FormMessage>
                   </FormItem>

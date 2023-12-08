@@ -112,7 +112,12 @@ const SignupForm = ({ className }: { className?: string }) => {
                   <FormItem>
                     <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="**********"
+                        autoComplete="new-password"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage>
                       {getFieldErrorMsg(error, 'password')}
@@ -127,7 +132,12 @@ const SignupForm = ({ className }: { className?: string }) => {
                   <FormItem>
                     <FormLabel>Confirm Password</FormLabel>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input
+                        type="password"
+                        placeholder="**********"
+                        autoComplete="new-password"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage>
                       {getFieldErrorMsg(error, 'confirmPassword')}
