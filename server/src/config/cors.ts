@@ -5,8 +5,6 @@ const corsOrigin =
     ? `https://${CLIENT_PRODUCTION_URL}`
     : `http://localhost:${CLIENT_PORT}`;
 
-console.log('corsOrigin', corsOrigin);
-
 const corsOptions = {
   origin: corsOrigin,
   optionsSuccessStatus: 200,
