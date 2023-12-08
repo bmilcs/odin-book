@@ -8,7 +8,7 @@ on:
     #   - "client/**"
 
 jobs:
-  build:
+  build-deploy:
     runs-on: ubuntu-latest
     environment: PRODUCTION
     env:
@@ -28,12 +28,6 @@ jobs:
           cd client
           npm ci
           npm run build
-
-  deploy:
-    runs-on: ubuntu-latest
-    environment: PRODUCTION
-    needs: build
-    steps:
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
