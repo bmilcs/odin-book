@@ -71,7 +71,11 @@ const LoginForm = ({ className }: { className?: string }) => {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="coolguy@gmail.com" {...field} />
+                      <Input
+                        placeholder="coolguy@gmail.com"
+                        autoComplete="email"
+                        {...field}
+                      />
                     </FormControl>
                   </FormItem>
                 )}

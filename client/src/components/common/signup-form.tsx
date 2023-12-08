@@ -82,7 +82,11 @@ const SignupForm = ({ className }: { className?: string }) => {
                   <FormItem>
                     <FormLabel>Username</FormLabel>
                     <FormControl>
-                      <Input placeholder="CoolGuy" {...field} />
+                      <Input
+                        placeholder="CoolGuy"
+                        autoComplete="username"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage>
                       {getFieldErrorMsg(error, 'username')}
@@ -97,7 +101,11 @@ const SignupForm = ({ className }: { className?: string }) => {
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input placeholder="coolguy@gmail.com" {...field} />
+                      <Input
+                        placeholder="coolguy@gmail.com"
+                        autoComplete="email"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage>
                       {getFieldErrorMsg(error, 'email')}
