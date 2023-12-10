@@ -24,6 +24,13 @@ The final project of the Odin Project tasks you with creating a social media clo
 - Cookie-Parser / Body-Parser
 - Chai / Mocha / Supertest
 
+**CI/CD**
+
+- GitHub Actions
+- Client & Server Workflows
+- Environments & Secrets
+- Automated Tests, Builds & Deployments
+
 ## High Level Overview
 
 Tackling a project of this magnitude required a good deal of planning. Here are some of the steps I took while whiteboarding:
