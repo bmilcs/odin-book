@@ -60,7 +60,7 @@ const PostEditForm = ({
         className={`flex w-full items-center gap-2 ${className}`}
       >
         <Input
-          type="post"
+          type="text"
           placeholder="I love this app!"
           autoFocus
           {...register('content')}

@@ -28,6 +28,7 @@ const Post = ({
   const [editPostMode, setEditPostMode] = useState(false);
   const { deletePost } = useExistingPost({ postId: data._id });
   const { user } = useContext(AuthContext);
+
   const initialPostLikeCount = data.likes.length;
   const initialIsLikedByUser = data.likes.some(
     (like) => like.user._id.toString() === user?._id.toString(),
