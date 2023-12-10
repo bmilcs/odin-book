@@ -22,6 +22,7 @@ type AuthContextProps = {
   isAuthenticated: () => boolean;
   logout: () => void;
   redirectUnauthenticatedUser: (path: string) => void;
+  redirectAuthenticatedUser: (path: string) => void;
 };
 
 export const AuthContext = createContext<AuthContextProps>({
@@ -30,6 +31,7 @@ export const AuthContext = createContext<AuthContextProps>({
   logout: () => {},
   isAuthenticated: () => false,
   redirectUnauthenticatedUser: () => {},
+  redirectAuthenticatedUser: () => {},
 });
 
 type AuthProviderProps = {
@@ -45,6 +47,13 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   function redirectUnauthenticatedUser(path: string) {
     if (isLoading) return;
     if (!isAuthenticated()) {
+      navigate(path);
+    }
+  }
+
+  function redirectAuthenticatedUser(path: string) {
+    if (isLoading) return;
+    if (isAuthenticated()) {
       navigate(path);
     }
   }
@@ -109,6 +118,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         isAuthenticated,
         logout,
         redirectUnauthenticatedUser,
+        redirectAuthenticatedUser,
       }}
     >
       {children}
