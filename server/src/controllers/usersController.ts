@@ -16,19 +16,26 @@ const updateProfile = tryCatch(
 
 const search = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { username } = req.params;
+    const { searchTerm } = req.params;
+    if (!searchTerm) {
+      return next(new AppError('Please provide a search term', 400));
+    }
     const user = await userModel.findById(req.userId);
     if (!user) {
       return next(new AppError('Your user information was not found', 400));
     }
-    const friends = await userModel.find(
+    // find users with username or email that match the search term
+    const users = await userModel.find(
       {
-        username: { $regex: username, $options: 'i' },
-        _id: { $in: user.friends },
+        $or: [
+          { username: { $regex: searchTerm, $options: 'i' } },
+          { email: { $regex: searchTerm, $options: 'i' } },
+        ],
       },
       { _id: 1, username: 1 },
     );
-    res.success('Friends found', friends, 200);
+    const usersFound = users.length > 0;
+    res.success('Search complete', users, usersFound ? 201 : 200);
   },
 );
 
