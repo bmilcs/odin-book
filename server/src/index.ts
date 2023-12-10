@@ -12,7 +12,7 @@ import {
   feedRouter,
   friendRouter,
   postRouter,
-  userProfileRouter,
+  usersRouter,
 } from '@/routes';
 import setupSocketServer from '@/services/socket';
 import bodyParser from 'body-parser';
@@ -63,7 +63,7 @@ app.use(jwtCookieHandler);
 //
 
 app.use('/auth', authRouter);
-app.use('/users', userProfileRouter);
+app.use('/users', usersRouter);
 app.use('/friends', friendRouter);
 app.use('/posts', postRouter);
 app.use('/feed', feedRouter);

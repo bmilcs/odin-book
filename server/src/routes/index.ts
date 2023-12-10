@@ -1,6 +1,6 @@
 export { default as authRouter } from './authRouter';
 
-export { default as userProfileRouter } from './userProfileRouter';
+export { default as usersRouter } from './usersRouter';
 
 export { default as friendRouter } from './friendRouter';
 

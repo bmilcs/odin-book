@@ -11,7 +11,7 @@ import {
   feedRouter,
   friendRouter,
   postRouter,
-  userProfileRouter,
+  usersRouter,
 } from '@/routes';
 import bodyParser from 'body-parser';
 import compression from 'compression';
@@ -49,7 +49,7 @@ app.use(helmet());
 app.use(responseMethods);
 app.use(jwtCookieHandler);
 app.use('/auth', authRouter);
-app.use('/users', userProfileRouter);
+app.use('/users', usersRouter);
 app.use('/friends', friendRouter);
 app.use('/posts', postRouter);
 app.use('/feed', feedRouter);
