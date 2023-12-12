@@ -24,6 +24,23 @@ const sendRequest = tryCatch(
     if (sendingUser.friends.includes(receivingUser._id)) {
       return next(new AppError('Already friends', 400));
     }
+    if (
+      sendingUser.friendRequestsSent.includes(receivingUser._id) ||
+      receivingUser.friendRequestsReceived.includes(sendingUser._id)
+    ) {
+      return next(new AppError('Friend request already sent', 400));
+    }
+    if (
+      receivingUser.friendRequestsSent.includes(sendingUser._id) ||
+      sendingUser.friendRequestsReceived.includes(receivingUser._id)
+    ) {
+      return next(
+        new AppError(
+          'Unable to send friend request. User already sent you a friend request.',
+          400,
+        ),
+      );
+    }
     sendingUser.friendRequestsSent.push(receivingUser._id);
     receivingUser.friendRequestsReceived.push(sendingUser._id);
     await sendingUser.save();

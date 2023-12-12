@@ -73,6 +73,36 @@ describe('FRIEND ROUTER', () => {
       expect(body.error).to.equal('User not found');
     });
 
+    it('should return 400 if friend request was already sent', async () => {
+      // send a friend request from USER_ONE to USER_TWO
+      await request(app)
+        .post(`/friends/send-request/${USER_TWO._id}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      // send another friend request from USER_ONE to USER_TWO
+      const { statusCode, body } = await request(app)
+        .post(`/friends/send-request/${USER_TWO._id}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(statusCode).to.equal(400);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal('Friend request already sent');
+    });
+
+    it('should return 400 if friend request already exists (reverse)', async () => {
+      // send a friend request from USER_ONE to USER_TWO
+      await request(app)
+        .post(`/friends/send-request/${USER_TWO._id}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      // send another friend request from USER_TWO to USER_ONE
+      const { statusCode, body } = await request(app)
+        .post(`/friends/send-request/${USER_ONE._id}`)
+        .set('Cookie', USER_TWO.jwtCookie);
+      expect(statusCode).to.equal(400);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal(
+        'Unable to send friend request. User already sent you a friend request.',
+      );
+    });
+
     it('should send a friend request w/ database checks', async () => {
       const { statusCode, body } = await request(app)
         .post(`/friends/send-request/${USER_TWO._id}`)
