@@ -7,14 +7,15 @@ const status = tryCatch(
     // jwtCookieHandler middleware attaches userId to req object if authenticated
     const isAuthenticated = req.userId;
     if (isAuthenticated) {
-      const user = await userModel.findById(req.userId, {
-        _id: 1,
-        username: 1,
-        email: 1,
-      });
+      const user = await userModel
+        .findById(req.userId, {
+          password: 0,
+        })
+        .populate('friends', 'username email')
+        .populate('friendRequestsSent', 'username email')
+        .populate('friendRequestsReceived', 'username email');
       return res.success('Authenticated', user, 200);
     }
-
     res.success('Not authenticated', null, 200);
   },
 );
@@ -34,7 +35,14 @@ const signup = tryCatch(
         new AppError('Unable to create a user at this time', 500, 'AppError'),
       );
     }
-    const data = { username: user.username, email: user.email, _id: user.id };
+    const data = {
+      username: user.username,
+      email: user.email,
+      _id: user.id,
+      friends: user.friends,
+      friendRequestsSent: user.friendRequestsSent,
+      friendRequestsReceived: user.friendRequestsReceived,
+    };
     res.addJwtCookies(user.id);
     res.success('User created successfully', data, 200);
   },
@@ -60,6 +68,9 @@ const login = tryCatch(
           username: user.username,
           email: user.email,
           _id: user.id,
+          friends: user.friends,
+          friendRequestsSent: user.friendRequestsSent,
+          friendRequestsReceived: user.friendRequestsReceived,
         };
         res.addJwtCookies(user.id);
         res.success('LoginSuccess', data, 200);

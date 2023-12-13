@@ -194,6 +194,14 @@ describe('AUTH ROUTER', () => {
       expect(body.message).to.equal('LoginSuccess');
       const { username } = body.data;
       expect(username).to.equal(AUTH_USER.username);
+      expect(body.data).to.have.all.keys(
+        'username',
+        'email',
+        '_id',
+        'friends',
+        'friendRequestsSent',
+        'friendRequestsReceived',
+      );
       // cookie check: jwt cookie is set
       const cookies = headers['set-cookie'];
       expect(cookies).to.have.lengthOf(2);
@@ -271,6 +279,14 @@ describe('AUTH ROUTER', () => {
         username: AUTH_USER.username,
         email: AUTH_USER.email,
       });
+      expect(statusRes.body.data).to.contain.all.keys(
+        'username',
+        'email',
+        '_id',
+        'friends',
+        'friendRequestsSent',
+        'friendRequestsReceived',
+      );
     });
   });
 });
