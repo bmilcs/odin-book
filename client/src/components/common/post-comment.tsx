@@ -43,9 +43,9 @@ const PostComment = ({
       <div className="w-full">
         <div className="text-xs text-gray-400">
           {data.author.username}{' '}
-          {data.updatedAt
+          {data.updatedAt !== data.createdAt
             ? `edited ${formatDate(data.updatedAt)}`
-            : formatDate(data.createdAt)}
+            : `posted ${formatDate(data.createdAt)}`}
         </div>
 
         {/* Comment Content */}

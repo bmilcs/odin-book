@@ -55,7 +55,9 @@ const Post = ({
         <div className="space-y-1">
           <CardTitle>{data.author.username}</CardTitle>
           <CardDescription className="ml-auto font-normal">
-            {formatDate(data.createdAt)}
+            {data.updatedAt !== data.createdAt
+              ? `edited ${formatDate(data.updatedAt)}`
+              : `posted ${formatDate(data.createdAt)}`}
           </CardDescription>
         </div>
       </CardHeader>
