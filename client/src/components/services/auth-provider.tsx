@@ -3,17 +3,31 @@ import api from '@/utils/api';
 import { FC, ReactNode, createContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type ApiResponse = {
+type TApiResponse = {
   data: TUser;
   success: boolean;
   message: string;
   error: string;
 };
 
+export type TFriend = {
+  _id: string;
+  username: string;
+};
+
+export type TFriendRequest = {
+  _id: string;
+  username: TFriend;
+  email: TFriend;
+};
+
 export type TUser = {
   _id: string;
   username: string;
   email: string;
+  friends: TFriend[];
+  friendRequestsReceived: TFriendRequest[];
+  friendRequestsSent: TFriendRequest[];
 };
 
 type AuthContextProps = {
@@ -65,7 +79,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
   async function logout() {
     try {
-      const result: ApiResponse = await api.post('/auth/logout', {});
+      const result: TApiResponse = await api.post('/auth/logout', {});
       if (result.success) {
         setUser(null);
         navigate('/login');
@@ -80,8 +94,9 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
 
     async function getUserDataOnInitialLoad() {
       try {
-        const result: ApiResponse = await api.get('/auth/status');
+        const result: TApiResponse = await api.get('/auth/status');
         if (result.success && result.data) {
+          console.log(result.data);
           setUser(result.data);
         } else {
           setUser(null);
@@ -99,7 +114,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     if (!isLoading) {
       const timer = setTimeout(() => {
         setShowSpinner(false);
-      }, 1000);
+      }, 250);
       return () => {
         clearTimeout(timer);
       };
