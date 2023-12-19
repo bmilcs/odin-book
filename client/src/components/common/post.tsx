@@ -1,6 +1,6 @@
+import Comment from '@/components/common/comment';
 import CommentForm from '@/components/common/comment-form';
 import LikeButton from '@/components/common/like-button';
-import PostComment from '@/components/common/post-comment';
 import PostEditForm from '@/components/common/post-edit-form';
 import { AuthContext } from '@/components/services/auth-provider';
 import { TPost } from '@/components/services/feed-provider';
@@ -113,7 +113,7 @@ const Post = ({
       <CardContent className="grid gap-4 py-4">
         <CommentForm postId={data._id} className="" />
         {data.comments.map((comment) => (
-          <PostComment key={comment._id} data={comment} className="pl-4" />
+          <Comment key={comment._id} data={comment} className="pl-4" />
         ))}
       </CardContent>
     </Card>

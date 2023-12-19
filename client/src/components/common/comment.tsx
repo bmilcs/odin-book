@@ -1,12 +1,13 @@
 import CommentEditForm from '@/components/common/comment-edit-form';
 import LikeButton from '@/components/common/like-button';
+import { AuthContext } from '@/components/services/auth-provider';
 import { TComment } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
 import useExistingComment from '@/hooks/useExistingComment';
 import { formatDate } from '@/utils/formatters';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
-const PostComment = ({
+const Comment = ({
   data,
   className,
 }: {
@@ -18,12 +19,13 @@ const PostComment = ({
     postId: data.post,
     commentId: data._id,
   });
+  const { user } = useContext(AuthContext);
+
   const initialIsLikedByUser = data.likes.some(
     (like) => like.user._id.toString() === data.author._id.toString(),
   );
   const initialLikeCount = data.likes.length;
-  const isCommentCreatedByUser =
-    data.author._id.toString() === data.author._id.toString();
+  const isCommentCreatedByUser = data.author._id.toString() === user?._id;
 
   const handleEditComment = () => {
     setEditCommentMode((prev) => !prev);
@@ -96,4 +98,4 @@ const PostComment = ({
   );
 };
 
-export default PostComment;
+export default Comment;
