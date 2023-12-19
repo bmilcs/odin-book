@@ -159,7 +159,7 @@ const SignupForm = ({ className }: { className?: string }) => {
               type="submit"
               disabled={status === 'loading'}
             >
-              Submit
+              Signup
             </Button>
           </form>
         </Form>

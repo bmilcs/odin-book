@@ -104,7 +104,7 @@ const LoginForm = ({ className }: { className?: string }) => {
               type="submit"
               disabled={status === 'loading'}
             >
-              Submit
+              Login
             </Button>
           </form>
         </Form>
