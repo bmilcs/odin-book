@@ -1,3 +1,4 @@
+import UserSearchForm from '@/components/common/user-search-form';
 import { AuthContext } from '@/components/services/auth-provider';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,6 +26,7 @@ const Header = () => {
               // User is Logged In
               //
               <>
+                <UserSearchForm />
                 <li className="px-2">
                   <Link to={'/feed'}>Feed</Link>
                 </li>
