@@ -1,6 +1,23 @@
 # Project Whiteboard
 
-Project Requirements:
+**TODO**
+
+- Notification Component
+
+  - Icon with badge
+  - Dropdown menu
+  - Show incoming friend requests
+
+- Toast window
+
+  - Errors, etc.
+
+- User Profile Pages
+  - Username
+  - Email
+  - Bio
+
+## Requirements
 
 - Users
   - authentication: jwt
@@ -178,10 +195,3 @@ const likeSchema: Schema = new Schema(
 - click toggle: via custom `useLike` hook
 - issue fetch requests to server, wait for response, toggle like state
 - disable clicking again until complete
-
-## REMINDERS
-
-- Add feedRouter tests once likes & comments are implemented
-- Ensure feed / posts populate all likes/comments/comment likes
-
-Test
