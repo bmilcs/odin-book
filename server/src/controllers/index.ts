@@ -7,3 +7,5 @@ export { default as postController } from './postController';
 export { default as usersController } from './usersController';
 
 export { default as feedController } from './feedController';
+
+export { default as notificationController } from './notificationController';
