@@ -11,6 +11,7 @@ import {
   authRouter,
   feedRouter,
   friendRouter,
+  notificationRouter,
   postRouter,
   usersRouter,
 } from '@/routes';
@@ -67,6 +68,7 @@ app.use('/users', usersRouter);
 app.use('/friends', friendRouter);
 app.use('/posts', postRouter);
 app.use('/feed', feedRouter);
+app.use('/notifications', notificationRouter);
 
 //
 // errors
