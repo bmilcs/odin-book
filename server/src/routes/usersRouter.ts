@@ -1,5 +1,5 @@
 import { usersController } from '@/controllers';
-import ensureAuthenticated from '@/middleware/ensureAuthenticated';
+import { ensureAuthenticated } from '@/middleware';
 import { Router } from 'express';
 
 const usersRouter = Router();

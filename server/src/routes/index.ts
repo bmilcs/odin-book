@@ -7,3 +7,5 @@ export { default as friendRouter } from './friendRouter';
 export { default as postRouter } from './postRouter';
 
 export { default as feedRouter } from './feedRouter';
+
+export { default as notificationRouter } from './notificationRouter';

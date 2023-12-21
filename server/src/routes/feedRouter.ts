@@ -1,5 +1,5 @@
 import { feedController } from '@/controllers';
-import ensureAuthenticated from '@/middleware/ensureAuthenticated';
+import { ensureAuthenticated } from '@/middleware';
 import { Router } from 'express';
 
 const feedRouter = Router();

@@ -1,6 +1,5 @@
 import { authController } from '@/controllers';
-import { handleValidationErrors } from '@/middleware';
-import ensureAuthenticated from '@/middleware/ensureAuthenticated';
+import { ensureAuthenticated, handleValidationErrors } from '@/middleware';
 import { validateLogin, validateSignup } from '@/validation';
 import { Router } from 'express';
 

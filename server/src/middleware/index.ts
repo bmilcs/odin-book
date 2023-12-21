@@ -9,3 +9,5 @@ export { default as invalidPathHandler } from '@/middleware/invalidPathHandler';
 export { default as responseMethods } from '@/middleware/responseMethods';
 
 export { default as jwtCookieHandler } from '@/middleware/jwtCookieHandler';
+
+export { default as ensureAuthenticated } from '@/middleware/ensureAuthenticated';
