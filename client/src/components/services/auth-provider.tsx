@@ -1,3 +1,4 @@
+import { TNotification } from '@/components/common/notification';
 import LoadingPage from '@/components/pages/loading-page';
 import api from '@/utils/api';
 import { FC, ReactNode, createContext, useEffect, useState } from 'react';
@@ -28,6 +29,7 @@ export type TUser = {
   friends: TFriend[];
   friendRequestsReceived: TFriendRequest[];
   friendRequestsSent: TFriendRequest[];
+  notifications: TNotification[];
 };
 
 type AuthContextProps = {
@@ -109,7 +111,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
   }, []);
 
-  // Ensure spinner shows for at least 1 second
+  // Ensure spinner shows for at least .25 seconds
   useEffect(() => {
     if (!isLoading) {
       const timer = setTimeout(() => {
