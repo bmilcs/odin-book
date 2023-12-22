@@ -1,24 +1,18 @@
 import { userModel } from '@/models';
-import { USER_ONE, USER_TWO, app } from '@/tests/setup';
+import {
+  USER_ONE,
+  USER_TWO,
+  app,
+  deleteFriendsAndRequestsFromAllTestUsers,
+  deleteNotificationsFromAllTestUsers,
+} from '@/tests/setup';
 import { expect } from 'chai';
 import request from 'supertest';
 
 describe('FRIEND ROUTER', () => {
   afterEach(async function clearAllFriendRequests() {
-    try {
-      await userModel.updateMany(
-        {},
-        {
-          $set: {
-            friends: [],
-            friendRequestsSent: [],
-            friendRequestsReceived: [],
-          },
-        },
-      );
-    } catch (error) {
-      console.error(error);
-    }
+    await deleteNotificationsFromAllTestUsers();
+    await deleteFriendsAndRequestsFromAllTestUsers();
   });
 
   //
