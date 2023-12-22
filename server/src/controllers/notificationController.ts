@@ -6,22 +6,43 @@ import { isValidObjectId } from 'mongoose';
 const getNotifications = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req;
+
     const notifications = await notificationModel
       .find({
         toUser: userId,
       })
       .populate('fromUser', 'username email _id')
       .populate('post');
+
     if (!notifications) {
       return next(new AppError('Notifications not found', 400));
     }
+
     res.success('Notifications fetched successfully', notifications, 201);
   },
 );
 
 const getUnreadNotifications = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    res.success('Unread notifications fetched successfully', null, 201);
+    const { userId } = req;
+
+    const notifications = await notificationModel
+      .find({
+        toUser: userId,
+        read: false,
+      })
+      .populate('fromUser', 'username email _id')
+      .populate('post');
+
+    if (!notifications) {
+      return next(new AppError('Notifications not found', 400));
+    }
+
+    res.success(
+      'Unread notifications fetched successfully',
+      notifications,
+      201,
+    );
   },
 );
 
@@ -62,10 +83,12 @@ const markAllNotificationsAsRead = tryCatch(
       return next(new AppError('Notifications not found', 400));
     }
 
-    notifications.forEach(async (notification) => {
-      notification.read = true;
-      notification.save();
-    });
+    await Promise.all(
+      notifications.map(async (notification) => {
+        notification.read = true;
+        await notification.save();
+      }),
+    );
 
     res.success('Marked all notifications as read successfully', null, 200);
   },
@@ -74,12 +97,18 @@ const markAllNotificationsAsRead = tryCatch(
 const deleteNotification = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { notificationId } = req.params;
+    const { userId } = req;
+
     if (!isValidObjectId(notificationId)) {
       return next(new AppError('Notification ID is invalid', 400));
     }
 
-    const notification = notificationModel.findById(notificationId);
+    const notification = await notificationModel.findById(notificationId);
     if (!notification) {
+      return next(new AppError('Notification not found', 400));
+    }
+
+    if (notification.toUser.toString() !== userId) {
       return next(new AppError('Notification not found', 400));
     }
 
