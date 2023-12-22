@@ -1,6 +1,7 @@
+import { FeedContext } from '@/components/services/feed-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
 type ApiResponse = {
   success: boolean;
@@ -11,6 +12,7 @@ type ApiResponse = {
 const useFriends = () => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
+  const { updateFeed } = useContext(FeedContext);
 
   const sendFriendRequest = async (userId: string) => {
     setStatus(STATUS.LOADING);
@@ -49,6 +51,7 @@ const useFriends = () => {
         setError(error);
         return;
       }
+      await updateFeed();
       setStatus(STATUS.SUCCESS);
     } catch (error) {
       setStatus(STATUS.ERROR);
