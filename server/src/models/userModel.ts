@@ -15,6 +15,7 @@ export interface IUser extends Document {
   friends: mongoose.Types.ObjectId[];
   friendRequestsSent: mongoose.Types.ObjectId[];
   friendRequestsReceived: mongoose.Types.ObjectId[];
+  notifications: mongoose.Types.ObjectId[];
   createdAt: Date;
   comparePassword: (
     candidatePassword: string,
@@ -37,6 +38,7 @@ const userSchema = new Schema<IUser>(
     friends: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     friendRequestsSent: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     friendRequestsReceived: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    notifications: [{ type: Schema.Types.ObjectId, ref: 'Notification' }],
   },
   { timestamps: true }, // auto create 'createdAt' and 'updatedAt' fields
 );
