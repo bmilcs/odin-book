@@ -1,3 +1,4 @@
+import NotificationIcon from '@/components/common/notification';
 import UserSearchForm from '@/components/common/user-search-form';
 import { AuthContext } from '@/components/services/auth-provider';
 import { Button } from '@/components/ui/button';
@@ -32,6 +33,9 @@ const Header = () => {
                 </li>
                 <li className="px-2">
                   <Link to={'/profile'}>Profile</Link>
+                </li>
+                <li>
+                  <NotificationIcon />
                 </li>
                 <li>
                   <DropdownMenu>
