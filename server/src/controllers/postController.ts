@@ -101,7 +101,7 @@ const deletePost = tryCatch(
     await Promise.all(likes.map((like) => like.deleteOne()));
     // delete the post
     await post.deleteOne();
-    res.success('Post deleted');
+    res.success('Post deleted', null, 200);
   },
 );
 
@@ -338,7 +338,7 @@ const deleteComment = tryCatch(
     await Promise.all(likes.map((like) => like.deleteOne()));
     // delete comment
     await comment.deleteOne();
-    res.success('Comment deleted');
+    res.success('Comment deleted', null, 200);
   },
 );
 
