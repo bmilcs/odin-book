@@ -37,7 +37,7 @@ describe('FEED ROUTER', () => {
       const { statusCode, body } = await request(app)
         .get('/feed')
         .set('Cookie', USER_ONE.jwtCookie);
-      expect(statusCode).to.equal(200);
+      expect(statusCode).to.equal(201);
       expect(body.success).to.be.true;
       expect(body.data).to.be.an('array');
       expect(body.data.length).to.equal(4);
@@ -51,7 +51,7 @@ describe('FEED ROUTER', () => {
       const { statusCode: statusCode2, body: body2 } = await request(app)
         .get('/feed')
         .set('Cookie', USER_TWO.jwtCookie);
-      expect(statusCode2).to.equal(200);
+      expect(statusCode2).to.equal(201);
       expect(body2.success).to.be.true;
       expect(body2.data).to.be.an('array');
       expect(body2.data.length).to.equal(4);

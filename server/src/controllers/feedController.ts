@@ -52,7 +52,7 @@ const getFeed = tryCatch(
       })
       .sort({ createdAt: -1 });
 
-    res.success('Feed retrieved', posts, 200);
+    res.success('Feed retrieved', posts, 201);
   },
 );
 
