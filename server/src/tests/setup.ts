@@ -5,7 +5,13 @@ import {
   jwtCookieHandler,
   responseMethods,
 } from '@/middleware';
-import { commentModel, likeModel, postModel, userModel } from '@/models';
+import {
+  commentModel,
+  likeModel,
+  notificationModel,
+  postModel,
+  userModel,
+} from '@/models';
 import {
   authRouter,
   feedRouter,
@@ -143,7 +149,7 @@ export const USER_THREE = {
   _id: '',
 };
 
-before(async function signupUsersAndSaveUserOneJWTCookies() {
+before(async function signupUsersAndSaveJwtTokens() {
   const users = [USER_ONE, USER_TWO, USER_THREE];
 
   for (const user of users) {
@@ -156,7 +162,7 @@ before(async function signupUsersAndSaveUserOneJWTCookies() {
         username: user.username,
       })
       .expect('Content-Type', /json/)
-      .expect(200);
+      .expect(201);
 
     user._id = body.data._id;
     user.jwtCookie = header['set-cookie'][0];
@@ -164,3 +170,32 @@ before(async function signupUsersAndSaveUserOneJWTCookies() {
 });
 
 export const NONEXISTENT_MONGODB_ID = '111111111111111111111111';
+
+//
+// utility functions
+//
+
+export const deleteFriendsAndRequestsFromAllTestUsers = async () => {
+  try {
+    await userModel.updateMany(
+      {},
+      {
+        $set: {
+          friends: [],
+          friendRequestsSent: [],
+          friendRequestsReceived: [],
+        },
+      },
+    );
+  } catch (error) {
+    console.error('Error deleting friends from all test users:', error);
+  }
+};
+
+export const deleteNotificationsFromAllTestUsers = async () => {
+  try {
+    await notificationModel.deleteMany({});
+  } catch (error) {
+    console.error('Error deleting all notifications:', error);
+  }
+};
