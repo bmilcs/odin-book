@@ -83,7 +83,7 @@ describe('AUTH ROUTER', () => {
         .send(AUTH_USER)
         .expect('Content-Type', /json/);
       // response check: success, userId is valid
-      expect(statusCode).equal(200);
+      expect(statusCode).equal(201);
       expect(body.success).to.be.true;
       const { username } = body.data;
       expect(username).to.equal(AUTH_USER.username);
@@ -189,7 +189,7 @@ describe('AUTH ROUTER', () => {
         })
         .expect('Content-Type', /json/);
       // response check: success, userId is valid
-      expect(statusCode).equal(200);
+      expect(statusCode).equal(201);
       expect(body.success).to.be.true;
       expect(body.message).to.equal('LoginSuccess');
       const { username } = body.data;
@@ -201,6 +201,7 @@ describe('AUTH ROUTER', () => {
         'friends',
         'friendRequestsSent',
         'friendRequestsReceived',
+        'notifications',
       );
       // cookie check: jwt cookie is set
       const cookies = headers['set-cookie'];
@@ -272,7 +273,7 @@ describe('AUTH ROUTER', () => {
       const statusRes = await request(app)
         .get('/auth/status')
         .set('Cookie', jwtCookie);
-      expect(statusRes.statusCode).equal(200);
+      expect(statusRes.statusCode).equal(201);
       expect(statusRes.body.message).to.equal('Authenticated');
       expect(statusRes.body.success).to.be.true;
       expect(statusRes.body.data).to.deep.include({

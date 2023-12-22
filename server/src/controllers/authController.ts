@@ -13,8 +13,17 @@ const status = tryCatch(
         })
         .populate('friends', 'username email')
         .populate('friendRequestsSent', 'username email')
-        .populate('friendRequestsReceived', 'username email');
-      return res.success('Authenticated', user, 200);
+        .populate('friendRequestsReceived', 'username email')
+        .populate('notifications')
+        .populate({
+          path: 'notifications',
+          populate: {
+            path: 'fromUser',
+            select:
+              '-password -friends -friendRequestsReceived -friendRequestsSent',
+          },
+        });
+      return res.success('Authenticated', user, 201);
     }
     res.success('Not authenticated', null, 200);
   },
@@ -42,9 +51,10 @@ const signup = tryCatch(
       friends: user.friends,
       friendRequestsSent: user.friendRequestsSent,
       friendRequestsReceived: user.friendRequestsReceived,
+      notifications: user.notifications,
     };
     res.addJwtCookies(user.id);
-    res.success('User created successfully', data, 200);
+    res.success('User created successfully', data, 201);
   },
 );
 
@@ -71,9 +81,10 @@ const login = tryCatch(
           friends: user.friends,
           friendRequestsSent: user.friendRequestsSent,
           friendRequestsReceived: user.friendRequestsReceived,
+          notifications: user.notifications,
         };
         res.addJwtCookies(user.id);
-        res.success('LoginSuccess', data, 200);
+        res.success('LoginSuccess', data, 201);
       },
     );
   },
