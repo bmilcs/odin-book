@@ -61,7 +61,20 @@ const signup = tryCatch(
 const login = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
-    const user = await userModel.findOne({ email });
+    const user = await userModel
+      .findOne({ email })
+      .populate('friends', 'username email')
+      .populate('friendRequestsSent', 'username email')
+      .populate('friendRequestsReceived', 'username email')
+      .populate('notifications')
+      .populate({
+        path: 'notifications',
+        populate: {
+          path: 'fromUser',
+          select:
+            '-password -friends -friendRequestsReceived -friendRequestsSent',
+        },
+      });
     if (!user) {
       return next(new AppError('Invalid email or password', 401, 'LoginError'));
     }
