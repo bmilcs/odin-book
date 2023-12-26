@@ -64,7 +64,7 @@ const CommentForm = ({
       onSubmit={handleSubmit(onSubmit)}
       className={`flex w-full items-center gap-2 ${className}`}
     >
-      <Input type="post" {...register('content')} />
+      <Input type="post" className="bg-border" {...register('content')} />
       <Button
         type="submit"
         disabled={isSubmitting}
