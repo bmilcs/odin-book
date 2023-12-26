@@ -111,10 +111,10 @@ const Post = ({
 
       {/* Comments */}
       <CardContent className="grid gap-4 py-4">
-        <CommentForm postId={data._id} className="" />
         {data.comments.map((comment) => (
-          <Comment key={comment._id} data={comment} className="pl-4" />
+          <Comment key={comment._id} data={comment} className="" />
         ))}
+        <CommentForm postId={data._id} className="" />
       </CardContent>
     </Card>
   );
