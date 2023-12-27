@@ -45,33 +45,29 @@ const NotificationIcon = () => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
+  edited;
 };
 
 const Notification = ({ data }: { data: TNotification }) => {
-  const { markNotificationAsRead, deleteNotification, getUnreadNotifications } =
+  const { markNotificationAsRead, deleteNotification } =
     useContext(NotificationContext);
-
-  const notificationType = data.type;
   const { acceptFriendRequest, rejectFriendRequest } = useFriends();
+  const notificationType = data.type;
 
   async function handleAcceptFriendRequest(fromUserId: string) {
     await acceptFriendRequest(fromUserId);
-    await getUnreadNotifications();
   }
 
   async function handleRejectFriendRequest(fromUserId: string) {
     await rejectFriendRequest(fromUserId);
-    await getUnreadNotifications();
   }
 
   async function handleMarkNotificationAsRead(notificationId: string) {
     await markNotificationAsRead(notificationId);
-    await getUnreadNotifications();
   }
 
   async function handleDeleteNotification(notificationId: string) {
     await deleteNotification(notificationId);
-    await getUnreadNotifications();
   }
 
   if (notificationType === 'incoming_friend_request') {

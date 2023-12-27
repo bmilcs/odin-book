@@ -39,7 +39,7 @@ type AuthContextProps = {
   logout: () => void;
   redirectUnauthenticatedUser: (path: string) => void;
   redirectAuthenticatedUser: (path: string) => void;
-  updateUserData: () => void;
+  updateUserData: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextProps>({
@@ -49,7 +49,7 @@ export const AuthContext = createContext<AuthContextProps>({
   isAuthenticated: () => false,
   redirectUnauthenticatedUser: () => {},
   redirectAuthenticatedUser: () => {},
-  updateUserData: () => {},
+  updateUserData: async () => {},
 });
 
 type AuthProviderProps = {
