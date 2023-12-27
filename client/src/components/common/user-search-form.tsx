@@ -1,11 +1,22 @@
+import {
+  AuthContext,
+  TFriend,
+  TFriendRequest,
+} from '@/components/services/auth-provider';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import useFriends from '@/hooks/useFriends';
 import useUserSearch from '@/hooks/useUserSearch';
 import { CLIENT_MODE } from '@/utils/env';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -22,12 +33,20 @@ const formSchema = z.object({
 
 const UserSearchForm = ({ className }: { className?: string }) => {
   const { error, search, results, status } = useUserSearch();
-  const {
-    sendFriendRequest,
-    acceptFriendRequest,
-    rejectFriendRequest,
-    deleteFriend,
-  } = useFriends();
+  const { user } = useContext(AuthContext);
+  const [friends, setFriends] = useState<TFriend[]>([]);
+  const [incomingFriendRequests, setIncomingFriendRequests] = useState<
+    TFriendRequest[]
+  >([]);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setFriends(user.friends);
+      setIncomingFriendRequests(user.friendRequestsReceived);
+      console.log(user);
+    }
+  }, [user]);
 
   const {
     handleSubmit,
@@ -53,8 +72,67 @@ const UserSearchForm = ({ className }: { className?: string }) => {
   }, [error, status, reset]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    setOpen(true);
     search(values);
   }
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className={`relative flex w-full items-center gap-2 ${className}`}
+    >
+      <DropdownMenu open={open} onOpenChange={setOpen}>
+        <Input type="post" {...register('searchTerm')} autoComplete="off" />
+        <DropdownMenuTrigger asChild>
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            variant="ghost"
+            className="h-full"
+          >
+            <Icons.search />
+            <span className="sr-only">Search for user</span>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {results.length > 0 ? (
+            <>
+              {results.map((result) => (
+                <UserSearchResult
+                  key={result._id}
+                  result={result}
+                  currentFriends={friends}
+                  currentFriendRequests={incomingFriendRequests}
+                />
+              ))}
+            </>
+          ) : (
+            <DropdownMenuItem>
+              <p>No users found</p>
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </form>
+  );
+};
+
+const UserSearchResult = ({
+  result,
+  currentFriends,
+  currentFriendRequests,
+}: {
+  result: TFriend;
+  currentFriends: TFriend[];
+  currentFriendRequests: TFriendRequest[];
+}) => {
+  const {
+    sendFriendRequest,
+    acceptFriendRequest,
+    rejectFriendRequest,
+    deleteFriend,
+  } = useFriends();
+  const { user } = useContext(AuthContext);
 
   function handleAddFriend(id: string) {
     sendFriendRequest(id);
@@ -72,62 +150,96 @@ const UserSearchForm = ({ className }: { className?: string }) => {
     deleteFriend(id);
   }
 
-  return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className={`relative flex w-full items-center gap-2 ${className}`}
-    >
-      <Input type="post" {...register('searchTerm')} />
-      <Button
-        type="submit"
-        disabled={isSubmitting}
-        variant="ghost"
-        className="h-full"
-      >
-        <Icons.search />
-        <span className="sr-only">User Search</span>
-      </Button>
-
-      {results.length > 0 && (
-        <div className="absolute top-full translate-y-4 overflow-hidden rounded-md text-sm">
-          {results.map((result) => {
-            return (
-              <div
-                className="flex items-center gap-4 bg-secondary p-2"
-                key={result._id}
-              >
-                <p>{result.username}</p>
-                <Button
-                  type="button"
-                  onClick={() => handleAddFriend(result._id)}
-                >
-                  Add
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => handleAcceptFriendRequest(result._id)}
-                >
-                  Accept
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => handleRejectFriendRequest(result._id)}
-                >
-                  Reject
-                </Button>
-                <Button
-                  type="button"
-                  onClick={() => handleDeleteFriend(result._id)}
-                >
-                  Delete
-                </Button>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </form>
+  const isFriend = currentFriends.some((friend) => friend._id === result._id);
+  const isUser = result._id === user?._id;
+  const isIncomingFriendRequest = currentFriendRequests.some(
+    (friendRequest) => friendRequest._id === result._id,
   );
+  const isOutgoingFriendRequest = user?.friendRequestsSent.some(
+    (friendRequest) => friendRequest._id === result._id,
+  );
+
+  if (isUser) {
+    return (
+      <DropdownMenuItem>
+        <p>
+          <strong>{result.username}</strong> (You)
+        </p>
+      </DropdownMenuItem>
+    );
+  }
+
+  if (isFriend) {
+    return (
+      <DropdownMenuItem className="flex items-center gap-4" key={result._id}>
+        <p>
+          <strong>{result.username}</strong> (Friend)
+        </p>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleDeleteFriend(result._id)}
+        >
+          <Icons.delete />
+          <span className="sr-only">Delete Friend</span>
+        </Button>
+      </DropdownMenuItem>
+    );
+  }
+
+  if (isOutgoingFriendRequest) {
+    return (
+      <DropdownMenuItem className="flex items-center gap-4" key={result._id}>
+        <p>
+          <strong>{result.username}</strong> (Friend Request Sent)
+        </p>
+      </DropdownMenuItem>
+    );
+  }
+
+  if (isIncomingFriendRequest) {
+    return (
+      <DropdownMenuItem className="flex items-center gap-4" key={result._id}>
+        <p>
+          <strong>{result.username}</strong>
+        </p>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleAcceptFriendRequest(result._id)}
+        >
+          <Icons.check />
+          <span className="sr-only">Accept Friend Request</span>
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleRejectFriendRequest(result._id)}
+        >
+          <Icons.close />
+          <span className="sr-only">Reject Friend Request</span>
+        </Button>
+      </DropdownMenuItem>
+    );
+  }
+
+  if (!isFriend && !isUser) {
+    return (
+      <DropdownMenuItem className="flex items-center gap-4" key={result._id}>
+        <p>
+          <strong>{result.username}</strong>
+        </p>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleAddFriend(result._id)}
+        >
+          <Icons.add />
+          <span className="sr-only">Add Friend</span>
+        </Button>
+      </DropdownMenuItem>
+    );
+  }
 };
 
 export default UserSearchForm;
