@@ -95,6 +95,7 @@ const useFriends = () => {
         setError(error);
         return;
       }
+      await updateFeed();
       setStatus(STATUS.SUCCESS);
     } catch (error) {
       setStatus(STATUS.ERROR);
