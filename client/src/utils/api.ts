@@ -3,7 +3,7 @@ import { API_BASE_URL } from '@/utils/env';
 /**
  * HTTP methods supported by the API.
  */
-type Method = 'GET' | 'POST' | 'DELETE' | 'PATCH';
+type Method = 'GET' | 'POST' | 'DELETE' | 'PATCH' | 'PUT';
 
 /**
  * Calls the API with the specified HTTP method, path and data.
@@ -73,6 +73,16 @@ const api = {
    */
   patch: <T>(path: string, data: Record<string, unknown>): Promise<T> =>
     callApi<T>('PATCH', path, data),
+
+  /**
+   * Sends a PUT request to the specified API endpoint with the specified data.
+   * @param path The path to the API endpoint.
+   * @param data The data to send with the request.
+   * @returns A Promise that resolves to the response data.
+   * @throws An error if the API request fails.
+   **/
+  put: <T>(path: string, data: Record<string, unknown>): Promise<T> =>
+    callApi<T>('PUT', path, data),
 };
 
 export default api;
