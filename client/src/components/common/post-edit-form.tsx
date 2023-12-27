@@ -72,7 +72,7 @@ const PostEditForm = ({
           className="h-full"
         >
           <Icons.submit />
-          <span className="sr-only">Submit Post</span>
+          <span className="sr-only">Submit Post Updates</span>
         </Button>
       </form>
       {errors.content && (

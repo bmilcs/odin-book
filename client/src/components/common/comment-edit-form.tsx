@@ -75,7 +75,7 @@ const CommentEditForm = ({
           className="h-full"
         >
           <Icons.submit />
-          <span className="sr-only">Submit Comment</span>
+          <span className="sr-only">Submit Comment Updates</span>
         </Button>
       </form>
       {errors.content && (

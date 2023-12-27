@@ -26,10 +26,13 @@ const NotificationIcon = () => {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
           {notifications.length === 0 ? (
-            <Icons.notificationEmpty />
+            <>
+              <Icons.notificationEmpty />
+            </>
           ) : (
             <Icons.notificationFilled />
           )}
+          <span className="sr-only">Open notification menu</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -91,6 +94,9 @@ const Notification = ({ data }: { data: TNotification }) => {
           onClick={() => handleAcceptFriendRequest(data.fromUser._id)}
         >
           <Icons.add />
+          <span className="sr-only">
+            Accept friend request from {data.fromUser.username}
+          </span>
         </Button>
         <Button
           variant="ghost"
@@ -98,6 +104,9 @@ const Notification = ({ data }: { data: TNotification }) => {
           onClick={() => handleRejectFriendRequest(data.fromUser._id)}
         >
           <Icons.remove />
+          <span className="sr-only">
+            Reject friend request from {data.fromUser.username}
+          </span>
         </Button>
       </div>
     );
@@ -118,7 +127,10 @@ const Notification = ({ data }: { data: TNotification }) => {
           size="icon"
           onClick={() => handleDeleteNotification(data._id)}
         >
-          <Icons.close />
+          <Icons.delete />
+          <span className="sr-only">
+            Delete notification from {data.fromUser.username}
+          </span>
         </Button>
       </div>
     );

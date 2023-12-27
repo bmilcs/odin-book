@@ -10,6 +10,7 @@ const Footer = () => {
         >
           Created by BMILCS
           <Icons.gitHub className="w-5" />
+          <span className="sr-only">View BMILCS GitHub Profile</span>
         </a>
       </div>
     </footer>

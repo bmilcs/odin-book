@@ -96,6 +96,7 @@ const Post = ({
                 onClick={() => handleEditPost()}
               >
                 <Icons.edit />
+                <span className="sr-only">Edit Post</span>
               </Button>
               <Button
                 variant="ghost"
@@ -103,6 +104,7 @@ const Post = ({
                 onClick={() => handleDeletePost()}
               >
                 <Icons.delete />
+                <span className="sr-only">Delete Post</span>
               </Button>
             </div>
           )}
