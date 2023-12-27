@@ -5,6 +5,7 @@ import LoginPage from '@/components/pages/login-page';
 import SignupPage from '@/components/pages/signup-page';
 import AuthProvider from '@/components/services/auth-provider';
 import FeedProvider from '@/components/services/feed-provider';
+import NotificationProvider from '@/components/services/notification-provider';
 import { ScrollToTop } from '@/components/services/scroll-to-top';
 import { ThemeProvider } from '@/components/services/theme-provider';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -14,18 +15,20 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <FeedProvider>
-          <ThemeProvider>
-            <Layout>
-              <ScrollToTop />
-              <Routes>
-                <Route path="/" Component={HomePage} />
-                <Route path="/login" Component={LoginPage} />
-                <Route path="/signup" Component={SignupPage} />
-                <Route path="/feed" Component={FeedPage} />
-                <Route path="*" Component={FeedPage} />
-              </Routes>
-            </Layout>
-          </ThemeProvider>
+          <NotificationProvider>
+            <ThemeProvider>
+              <Layout>
+                <ScrollToTop />
+                <Routes>
+                  <Route path="/" Component={HomePage} />
+                  <Route path="/login" Component={LoginPage} />
+                  <Route path="/signup" Component={SignupPage} />
+                  <Route path="/feed" Component={FeedPage} />
+                  <Route path="*" Component={FeedPage} />
+                </Routes>
+              </Layout>
+            </ThemeProvider>
+          </NotificationProvider>
         </FeedProvider>
       </AuthProvider>
     </BrowserRouter>
