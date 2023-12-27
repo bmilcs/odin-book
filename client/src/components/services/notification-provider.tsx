@@ -1,7 +1,14 @@
-import { TUser } from '@/components/services/auth-provider';
+import { AuthContext, TUser } from '@/components/services/auth-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
-import { FC, createContext, useCallback, useEffect, useState } from 'react';
+import {
+  FC,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 type ApiResponse = {
   success: boolean;
@@ -43,14 +50,23 @@ type TNotificationProviderPros = {
 };
 
 const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
+  const { user } = useContext(AuthContext);
   const [notifications, setNotifications] = useState<TNotification[]>([]);
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
 
+  useEffect(
+    function updateNotificationsOnUserChange() {
+      if (user) {
+        setNotifications(user.notifications);
+      }
+    },
+    [user],
+  );
+
   const getAllNotifications = useCallback(async () => {
     setStatus(STATUS.LOADING);
     setError('');
-
     try {
       const { success, data, error } =
         await api.get<ApiResponse>('/notifications');
@@ -139,10 +155,6 @@ const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
     },
     [getUnreadNotifications],
   );
-
-  useEffect(() => {
-    getUnreadNotifications();
-  }, [getUnreadNotifications]);
 
   return (
     <NotificationContext.Provider

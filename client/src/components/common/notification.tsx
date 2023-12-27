@@ -11,15 +11,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Icons } from '@/components/ui/icons';
 import useFriends from '@/hooks/useFriends';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 
 const NotificationIcon = () => {
-  const { notifications, getUnreadNotifications } =
-    useContext(NotificationContext);
-
-  useEffect(() => {
-    getUnreadNotifications();
-  }, [getUnreadNotifications]);
+  const { notifications } = useContext(NotificationContext);
 
   return (
     <DropdownMenu>
