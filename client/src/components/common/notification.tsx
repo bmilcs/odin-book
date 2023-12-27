@@ -1,4 +1,7 @@
-import { AuthContext, TUser } from '@/components/services/auth-provider';
+import {
+  NotificationContext,
+  TNotification,
+} from '@/components/services/notification-provider';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -8,59 +11,80 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Icons } from '@/components/ui/icons';
 import useFriends from '@/hooks/useFriends';
-import { useContext, useEffect, useState } from 'react';
-
-export type TNotification = {
-  type: string;
-  fromUser: TUser;
-  toUser: string;
-  post: string;
-  read: boolean;
-  _id: string;
-};
+import { useContext, useEffect } from 'react';
 
 const NotificationIcon = () => {
-  const { user } = useContext(AuthContext);
-  const [notifications, setNotifications] = useState<TNotification[]>([]);
+  const { notifications, getUnreadNotifications } =
+    useContext(NotificationContext);
 
   useEffect(() => {
-    setNotifications(user?.notifications || []);
-  }, [user?.notifications]);
+    getUnreadNotifications();
+  }, [getUnreadNotifications]);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="animate-bounce">
-          <Icons.notificationEmpty />
+        <Button variant="ghost" size="icon">
+          {notifications.length === 0 ? (
+            <Icons.notificationEmpty />
+          ) : (
+            <Icons.notificationFilled />
+          )}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        {notifications.map((notification) => (
-          <DropdownMenuItem key={notification._id}>
-            <Notification data={notification} />
+        {notifications.length > 0 ? (
+          notifications.map((notification) => (
+            <DropdownMenuItem key={notification._id}>
+              <Notification data={notification} />
+            </DropdownMenuItem>
+          ))
+        ) : (
+          <DropdownMenuItem>
+            <p>No new notifications</p>
           </DropdownMenuItem>
-        ))}
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
 };
 
 const Notification = ({ data }: { data: TNotification }) => {
+  const { markNotificationAsRead, deleteNotification, getUnreadNotifications } =
+    useContext(NotificationContext);
+
   const notificationType = data.type;
   const { acceptFriendRequest, rejectFriendRequest } = useFriends();
 
-  function handleAcceptFriendRequest(fromUserId: string) {
-    acceptFriendRequest(fromUserId);
+  async function handleAcceptFriendRequest(fromUserId: string) {
+    await acceptFriendRequest(fromUserId);
+    await getUnreadNotifications();
   }
 
-  function handleRejectFriendRequest(fromUserId: string) {
-    rejectFriendRequest(fromUserId);
+  async function handleRejectFriendRequest(fromUserId: string) {
+    await rejectFriendRequest(fromUserId);
+    await getUnreadNotifications();
+  }
+
+  async function handleMarkNotificationAsRead(notificationId: string) {
+    await markNotificationAsRead(notificationId);
+    await getUnreadNotifications();
+  }
+
+  async function handleDeleteNotification(notificationId: string) {
+    await deleteNotification(notificationId);
+    await getUnreadNotifications();
   }
 
   if (notificationType === 'incoming_friend_request') {
     return (
-      <div>
-        <strong>{data.fromUser.username}</strong> wants to be friends!
+      <div
+        className="flex items-center"
+        onClick={() => handleMarkNotificationAsRead(data._id)}
+      >
+        <p>
+          <strong>{data.fromUser.username}</strong> wants to be friends!
+        </p>
         <Button
           variant="ghost"
           size="icon"
@@ -81,8 +105,21 @@ const Notification = ({ data }: { data: TNotification }) => {
 
   if (notificationType === 'accepted_friend_request') {
     return (
-      <div>
-        <strong>{data.fromUser.username}</strong> accepted your friend request!
+      <div
+        className="flex items-center"
+        onClick={() => handleMarkNotificationAsRead(data._id)}
+      >
+        <p>
+          <strong>{data.fromUser.username}</strong> accepted your friend
+          request!
+        </p>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleDeleteNotification(data._id)}
+        >
+          <Icons.close />
+        </Button>
       </div>
     );
   }
