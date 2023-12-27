@@ -1,5 +1,5 @@
-import { TNotification } from '@/components/common/notification';
 import LoadingPage from '@/components/pages/loading-page';
+import { TNotification } from '@/components/services/notification-provider';
 import api from '@/utils/api';
 import { FC, ReactNode, createContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -39,6 +39,7 @@ type AuthContextProps = {
   logout: () => void;
   redirectUnauthenticatedUser: (path: string) => void;
   redirectAuthenticatedUser: (path: string) => void;
+  updateUserData: () => void;
 };
 
 export const AuthContext = createContext<AuthContextProps>({
@@ -48,6 +49,7 @@ export const AuthContext = createContext<AuthContextProps>({
   isAuthenticated: () => false,
   redirectUnauthenticatedUser: () => {},
   redirectAuthenticatedUser: () => {},
+  updateUserData: () => {},
 });
 
 type AuthProviderProps = {
@@ -91,24 +93,24 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
   }
 
-  useEffect(() => {
-    getUserDataOnInitialLoad();
-
-    async function getUserDataOnInitialLoad() {
-      try {
-        const result: TApiResponse = await api.get('/auth/status');
-        if (result.success && result.data) {
-          console.log(result.data);
-          setUser(result.data);
-        } else {
-          setUser(null);
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoading(false);
+  async function updateUserData() {
+    try {
+      const result: TApiResponse = await api.get('/auth/status');
+      if (result.success && result.data) {
+        console.log(result.data);
+        setUser(result.data);
+      } else {
+        setUser(null);
       }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
+  }
+
+  useEffect(() => {
+    updateUserData();
   }, []);
 
   // Ensure spinner shows for at least .25 seconds
@@ -136,6 +138,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         logout,
         redirectUnauthenticatedUser,
         redirectAuthenticatedUser,
+        updateUserData,
       }}
     >
       {children}
