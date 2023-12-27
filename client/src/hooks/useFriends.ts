@@ -1,3 +1,4 @@
+import { AuthContext } from '@/components/services/auth-provider';
 import { FeedContext } from '@/components/services/feed-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
@@ -13,6 +14,7 @@ const useFriends = () => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const { updateFeed } = useContext(FeedContext);
+  const { updateUserData } = useContext(AuthContext);
 
   const sendFriendRequest = async (userId: string) => {
     setStatus(STATUS.LOADING);
@@ -30,6 +32,7 @@ const useFriends = () => {
         return;
       }
       setStatus(STATUS.SUCCESS);
+      await updateUserData();
     } catch (error) {
       setStatus(STATUS.ERROR);
       console.log(error);
@@ -52,6 +55,7 @@ const useFriends = () => {
         return;
       }
       await updateFeed();
+      await updateUserData();
       setStatus(STATUS.SUCCESS);
     } catch (error) {
       setStatus(STATUS.ERROR);
@@ -75,6 +79,7 @@ const useFriends = () => {
         return;
       }
       setStatus(STATUS.SUCCESS);
+      await updateUserData();
     } catch (error) {
       setStatus(STATUS.ERROR);
       console.log(error);
@@ -96,6 +101,7 @@ const useFriends = () => {
         return;
       }
       await updateFeed();
+      await updateUserData();
       setStatus(STATUS.SUCCESS);
     } catch (error) {
       setStatus(STATUS.ERROR);
