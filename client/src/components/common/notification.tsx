@@ -45,7 +45,6 @@ const NotificationIcon = () => {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-  edited;
 };
 
 const Notification = ({ data }: { data: TNotification }) => {
