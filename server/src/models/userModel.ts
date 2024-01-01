@@ -23,18 +23,13 @@ export interface IUser extends Document {
   ) => void;
 }
 
-const userProfileSchema = new Schema<IUserProfile>({
-  bio: { type: String, maxlength: 1000 },
-  location: { type: String, maxlength: 150 },
-});
-
 const userSchema = new Schema<IUser>(
   {
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     photo: { type: String },
-    profile: { type: userProfileSchema },
+    profile: { type: Object, default: { bio: '', location: '' } },
     friends: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     friendRequestsSent: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     friendRequestsReceived: [{ type: Schema.Types.ObjectId, ref: 'User' }],
