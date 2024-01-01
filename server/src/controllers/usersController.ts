@@ -1,16 +1,39 @@
 import { userModel } from '@/models';
+import { IUser } from '@/models/userModel';
 import { AppError, tryCatch } from '@/utils';
 import { NextFunction, Request, Response } from 'express';
 
 const getProfile = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    res.success('get profile');
+    const { userId } = req;
+    const { username } = req.params;
+
+    const activeUser = await userModel.findById(userId).populate('friends');
+    if (!activeUser) {
+      return next(new AppError('Your user information was not found', 400));
+    }
+
+    const isProfileOwner = activeUser.username === username;
+    const isAFriend = activeUser.friends.some((friend: IUser) => {
+      return friend.username === username;
+    });
+    if (!isProfileOwner && !isAFriend) {
+      return next(new AppError('You are not friends with this user', 400));
+    }
+
+    // get user profile
+    const user = await userModel.findOne({ username }, { password: 0 });
+    if (!user) {
+      return next(new AppError('User not found', 400));
+    }
+
+    res.success('User profile fetched successfully', user, 201);
   },
 );
 
 const updateProfile = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
-    res.success('update profile');
+    res.success('User profile updated successfully', null, 201);
   },
 );
 

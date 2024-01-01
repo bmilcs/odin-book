@@ -10,10 +10,10 @@ usersRouter.get(
   usersController.search,
 );
 
-usersRouter.get('/:userId', ensureAuthenticated, usersController.getProfile);
+usersRouter.get('/:username', ensureAuthenticated, usersController.getProfile);
 
 usersRouter.patch(
-  ':/userId',
+  '/:username',
   ensureAuthenticated,
   usersController.updateProfile,
 );
