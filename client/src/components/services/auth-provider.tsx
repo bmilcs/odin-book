@@ -26,10 +26,16 @@ export type TUser = {
   _id: string;
   username: string;
   email: string;
+  profile: {
+    bio: string;
+    location: string;
+  };
   friends: TFriend[];
   friendRequestsReceived: TFriendRequest[];
   friendRequestsSent: TFriendRequest[];
   notifications: TNotification[];
+  createdAt: string;
+  updatedAt: string;
 };
 
 type AuthContextProps = {
