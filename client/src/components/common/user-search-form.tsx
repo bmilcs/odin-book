@@ -80,7 +80,7 @@ const UserSearchForm = ({ className }: { className?: string }) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className={`relative flex w-full items-center gap-2 ${className}`}
+      className={`flex w-full items-center ${className}`}
     >
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <Input
