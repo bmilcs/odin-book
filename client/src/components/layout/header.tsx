@@ -8,48 +8,60 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Icons } from '@/components/ui/icons';
 import { ModeToggle } from '@/components/ui/mode-toggle';
-import { GearIcon } from '@radix-ui/react-icons';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 
 const Header = () => {
   const { isAuthenticated, logout } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+
+  const handleSettingsClick = () => {
+    alert('Settings');
+  };
+
+  const handleLogoutClick = () => {
+    logout();
+  };
 
   return (
     <header>
       <div className="mx-auto flex max-w-7xl items-center justify-between border-b-2 p-2">
-        <p className="text-lg font-black">FriendLink</p>
+        <p className="text-lg font-black">
+          <Link to={isAuthenticated() ? `/feed` : `/login`}>FriendLink</Link>
+        </p>
         <nav>
           <ul className="flex items-center font-normal">
             {isAuthenticated() ? (
-              //
               // User is Logged In
-              //
               <>
                 <UserSearchForm />
                 <li className="px-2">
                   <Link to={'/feed'}>Feed</Link>
                 </li>
                 <li className="px-2">
-                  <Link to={'/profile'}>Profile</Link>
+                  <Link to={`/users/${user?.username}`}>Profile</Link>
                 </li>
                 <li>
                   <NotificationIcon />
                 </li>
+                <li className="">
+                  <ModeToggle />
+                </li>
                 <li>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="icon">
-                        <GearIcon />
+                      <Button variant="ghost" size="icon">
+                        <Icons.more />
                         <span className="sr-only">Settings Menu</span>
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => alert('Settings')}>
+                      <DropdownMenuItem onClick={handleSettingsClick}>
                         Settings
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={logout}>
+                      <DropdownMenuItem onClick={handleLogoutClick}>
                         Logout
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -57,9 +69,7 @@ const Header = () => {
                 </li>
               </>
             ) : (
-              //
               // User is Logged Out
-              //
               <>
                 <li className="px-2">
                   <Link to={'/login'}>Login</Link>
@@ -67,14 +77,11 @@ const Header = () => {
                 <li className="px-2">
                   <Link to={'/signup'}>Signup</Link>
                 </li>
+                <li className="">
+                  <ModeToggle />
+                </li>
               </>
             )}
-            {/* 
-            Theme Toggle 
-            */}
-            <li className="px-2">
-              <ModeToggle />
-            </li>
           </ul>
         </nav>
       </div>
