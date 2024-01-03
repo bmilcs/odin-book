@@ -8,26 +8,35 @@ const getProfile = tryCatch(
     const { userId } = req;
     const { username } = req.params;
 
-    const activeUser = await userModel.findById(userId).populate('friends');
-    if (!activeUser) {
+    // get info for requesting user
+    const requestingUser = await userModel.findById(userId).populate('friends');
+    if (!requestingUser) {
       return next(new AppError('Your user information was not found', 400));
     }
 
-    const isProfileOwner = activeUser.username === username;
-    const isAFriend = activeUser.friends.some((friend: IUser) => {
+    const isProfileOwner = requestingUser.username === username;
+    const isAFriend = requestingUser.friends.some((friend: IUser) => {
       return friend.username === username;
     });
-    if (!isProfileOwner && !isAFriend) {
-      return next(new AppError('You are not friends with this user', 400));
-    }
 
-    // get user profile
-    const user = await userModel.findOne({ username }, { password: 0 });
-    if (!user) {
-      return next(new AppError('User not found', 400));
+    if (isProfileOwner || isAFriend) {
+      // get full user profile
+      const user = await userModel.findOne({ username }, { password: 0 });
+      if (!user) {
+        return next(new AppError('User not found', 400));
+      }
+      res.success('Full user profile fetched successfully', user, 201);
+    } else {
+      // get partial user profile
+      const user = await userModel.findOne(
+        { username },
+        { _id: 1, username: 1 },
+      );
+      if (!user) {
+        return next(new AppError('User not found', 400));
+      }
+      return res.success('Partial user info fetched successfully', user, 201);
     }
-
-    res.success('User profile fetched successfully', user, 201);
   },
 );
 

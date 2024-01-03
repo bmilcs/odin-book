@@ -15,7 +15,6 @@ describe('USERS ROUTER', () => {
   //
 
   describe('GET /search/:username', () => {
-    // users 1-3 are created in the setup file, so we can use them here
     it('should return 401 if user is not logged in', async () => {
       const { statusCode, body } = await request(app).get('/users/search/1');
       expect(statusCode).to.equal(401);
@@ -39,11 +38,6 @@ describe('USERS ROUTER', () => {
       expect(body.success).to.be.true;
       expect(body.data).to.have.lengthOf(0);
     });
-
-    //
-    // 3 users are created in the setup file, so we can use them here
-    // all 3 users have 'user' in their username: userone, usertwo, userthree
-    //
 
     it('should return 201 w/ user if found via username', async () => {
       const { statusCode, body } = await request(app)
@@ -97,13 +91,23 @@ describe('USERS ROUTER', () => {
     });
   });
 
-  it('should return 400 if username is not a friend of logged in user', async () => {
+  it('should return 400 if username is not found', async () => {
     const { statusCode, body } = await request(app)
-      .get(`/users/${USER_TWO.username}`)
+      .get('/users/NOT_A_USER')
       .set('Cookie', USER_ONE.jwtCookie);
     expect(statusCode).to.equal(400);
     expect(body.success).to.be.false;
-    expect(body.error).to.equal('You are not friends with this user');
+    expect(body.error).to.equal('User not found');
+  });
+
+  it('should return 201 w/ partial user info if username is not a friend of logged in user', async () => {
+    const { statusCode, body } = await request(app)
+      .get(`/users/${USER_TWO.username}`)
+      .set('Cookie', USER_ONE.jwtCookie);
+    expect(statusCode).to.equal(201);
+    expect(body.success).to.be.true;
+    expect(body.message).to.equal('Partial user info fetched successfully');
+    expect(body.data.username).to.equal(USER_TWO.username);
   });
 
   it('should return 201 w/ user profile if username is a friend of logged in user', async () => {
