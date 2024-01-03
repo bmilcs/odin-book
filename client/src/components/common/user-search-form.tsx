@@ -18,6 +18,7 @@ import { CLIENT_MODE } from '@/utils/env';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
 const formSchema = z.object({
@@ -82,7 +83,12 @@ const UserSearchForm = ({ className }: { className?: string }) => {
       className={`relative flex w-full items-center gap-2 ${className}`}
     >
       <DropdownMenu open={open} onOpenChange={setOpen}>
-        <Input type="post" {...register('searchTerm')} autoComplete="off" />
+        <Input
+          type="post"
+          {...register('searchTerm')}
+          autoComplete="off"
+          placeholder="Find Friends"
+        />
         <DropdownMenuTrigger asChild>
           <Button
             type="submit"
@@ -163,7 +169,10 @@ const UserSearchResult = ({
     return (
       <DropdownMenuItem>
         <p>
-          <strong>{result.username}</strong> (You)
+          <strong>
+            <Link to={`/users/${result.username}`}>{result.username}</Link>
+          </strong>{' '}
+          (You)
         </p>
       </DropdownMenuItem>
     );
@@ -173,7 +182,10 @@ const UserSearchResult = ({
     return (
       <DropdownMenuItem className="flex items-center gap-4" key={result._id}>
         <p>
-          <strong>{result.username}</strong> (Friend)
+          <strong>
+            <Link to={`/users/${result.username}`}>{result.username}</Link>
+          </strong>{' '}
+          (Friend)
         </p>
         <Button
           variant="ghost"
@@ -191,7 +203,10 @@ const UserSearchResult = ({
     return (
       <DropdownMenuItem className="flex items-center gap-4" key={result._id}>
         <p>
-          <strong>{result.username}</strong> (Friend Request Sent)
+          <strong>
+            <Link to={`/users/${result.username}`}>{result.username}</Link>
+          </strong>{' '}
+          (Friend Request Sent)
         </p>
       </DropdownMenuItem>
     );
@@ -201,7 +216,9 @@ const UserSearchResult = ({
     return (
       <DropdownMenuItem className="flex items-center gap-4" key={result._id}>
         <p>
-          <strong>{result.username}</strong>
+          <strong>
+            <Link to={`/users/${result.username}`}>{result.username}</Link>
+          </strong>
         </p>
         <Button
           variant="ghost"
@@ -227,7 +244,9 @@ const UserSearchResult = ({
     return (
       <DropdownMenuItem className="flex items-center gap-4" key={result._id}>
         <p>
-          <strong>{result.username}</strong>
+          <strong>
+            <Link to={`/users/${result.username}`}>{result.username}</Link>
+          </strong>
         </p>
         <Button
           variant="ghost"

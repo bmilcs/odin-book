@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import useExistingComment from '@/hooks/useExistingComment';
 import { formatDate } from '@/utils/formatters';
 import { useContext, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Comment = ({
   data,
@@ -44,7 +45,9 @@ const Comment = ({
       {/* Comment Author & Date Posted */}
       <div className="w-full">
         <div className="text-xs text-gray-400">
-          {data.author.username}{' '}
+          <Link to={`/users/${data.author.username}`}>
+            {data.author.username}
+          </Link>{' '}
           {data.updatedAt !== data.createdAt
             ? `edited ${formatDate(data.updatedAt)}`
             : `posted ${formatDate(data.createdAt)}`}
@@ -56,7 +59,7 @@ const Comment = ({
             commentId={data._id}
             postId={data.post}
             commentContent={data.content}
-            onSuccess={() => handleSuccessfulEdit()}
+            onSuccess={handleSuccessfulEdit}
             className="mt-2"
           />
         ) : (
@@ -76,18 +79,10 @@ const Comment = ({
           {/* OP Actions: Edit/Delete */}
           {isCommentCreatedByUser && (
             <div className="ml-8 flex gap-2">
-              <Button
-                variant="link"
-                onClick={() => handleEditComment()}
-                size="icon"
-              >
+              <Button variant="link" onClick={handleEditComment} size="icon">
                 Edit
               </Button>
-              <Button
-                variant="link"
-                onClick={() => handleDeleteComment()}
-                size="icon"
-              >
+              <Button variant="link" onClick={handleDeleteComment} size="icon">
                 Delete
               </Button>
             </div>

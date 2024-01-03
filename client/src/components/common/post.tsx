@@ -16,6 +16,7 @@ import { Icons } from '@/components/ui/icons';
 import useExistingPost from '@/hooks/useExistingPost';
 import { formatDate } from '@/utils/formatters';
 import { useContext, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const Post = ({
   data,
@@ -53,7 +54,11 @@ const Post = ({
       {/* Post Author & Date Posted */}
       <CardHeader className="flex items-start">
         <div className="space-y-1">
-          <CardTitle>{data.author.username}</CardTitle>
+          <CardTitle>
+            <Link to={`/users/${data.author.username}`}>
+              {data.author.username}
+            </Link>
+          </CardTitle>
           <CardDescription className="ml-auto font-normal">
             {data.updatedAt !== data.createdAt
               ? `edited ${formatDate(data.updatedAt)}`
@@ -90,19 +95,11 @@ const Post = ({
           {/* OP Action Buttons: Edit/Delete */}
           {isPostCreatedByUser && (
             <div className="flex">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleEditPost()}
-              >
+              <Button variant="ghost" size="icon" onClick={handleEditPost}>
                 <Icons.edit />
                 <span className="sr-only">Edit Post</span>
               </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => handleDeletePost()}
-              >
+              <Button variant="ghost" size="icon" onClick={handleDeletePost}>
                 <Icons.delete />
                 <span className="sr-only">Delete Post</span>
               </Button>
