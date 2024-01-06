@@ -14,11 +14,10 @@ import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import useFriends from '@/hooks/useFriends';
 import useUserSearch from '@/hooks/useUserSearch';
-import { CLIENT_MODE } from '@/utils/env';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useContext, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 const formSchema = z.object({
@@ -33,54 +32,42 @@ const formSchema = z.object({
 });
 
 const UserSearchForm = ({ className }: { className?: string }) => {
-  const { error, search, results, status } = useUserSearch();
-  const { user } = useContext(AuthContext);
-  const [friends, setFriends] = useState<TFriend[]>([]);
-  const [incomingFriendRequests, setIncomingFriendRequests] = useState<
-    TFriendRequest[]
-  >([]);
+  const {
+    search,
+    results,
+    error: searchError,
+    status,
+    friends,
+    incomingFriendRequests,
+  } = useUserSearch();
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      setFriends(user.friends);
-      setIncomingFriendRequests(user.friendRequestsReceived);
-      console.log(user);
-    }
-  }, [user]);
 
   const {
     handleSubmit,
     register,
-    formState: { isSubmitting },
-    reset,
+    formState: { isSubmitting, errors: useFormErrors },
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues:
-      CLIENT_MODE === 'development'
-        ? {
-            searchTerm: 'may',
-          }
-        : {
-            searchTerm: '',
-          },
+    defaultValues: { searchTerm: '' },
   });
 
-  useEffect(() => {
-    if (status === 'success') {
-      reset();
-    }
-  }, [error, status, reset]);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    await search(values);
+  };
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setOpen(true);
-    search(values);
-  }
+  useEffect(
+    function openMenuAfterSuccessfulSearch() {
+      if (status === 'success' || useFormErrors.searchTerm) {
+        setOpen(true);
+      }
+    },
+    [status, useFormErrors],
+  );
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className={`flex w-full items-center ${className}`}
+      className={`relative flex w-full items-center ${className}`}
     >
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <Input
@@ -89,19 +76,32 @@ const UserSearchForm = ({ className }: { className?: string }) => {
           autoComplete="off"
           placeholder="Find Friends"
         />
-        <DropdownMenuTrigger asChild>
-          <Button
-            type="submit"
-            disabled={isSubmitting}
-            variant="ghost"
-            className="h-full"
-          >
-            <Icons.search />
-            <span className="sr-only">Search for user</span>
-          </Button>
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          variant="ghost"
+          className="h-full"
+        >
+          <Icons.search />
+          <span className="sr-only">Search for user</span>
+        </Button>
+        <DropdownMenuTrigger className="absolute bottom-0 left-0">
+          {/* Dropdown menu is triggered manually using open & setOpen state variables
+              so we don't need to render anything here. This is a workaround
+              for the fact that the DropdownMenuTrigger component doesn't support
+              async logic.
+           */}
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          {results.length > 0 ? (
+        <DropdownMenuContent align="start">
+          {searchError ? (
+            <DropdownMenuItem>
+              <p>{searchError}</p>
+            </DropdownMenuItem>
+          ) : useFormErrors.searchTerm ? (
+            <DropdownMenuItem>
+              {useFormErrors.searchTerm.message}
+            </DropdownMenuItem>
+          ) : results.length > 0 ? (
             <>
               {results.map((result) => (
                 <UserSearchResult
@@ -109,6 +109,7 @@ const UserSearchForm = ({ className }: { className?: string }) => {
                   result={result}
                   currentFriends={friends}
                   currentFriendRequests={incomingFriendRequests}
+                  closeMenu={() => setOpen(false)}
                 />
               ))}
             </>
@@ -127,10 +128,12 @@ const UserSearchResult = ({
   result,
   currentFriends,
   currentFriendRequests,
+  closeMenu,
 }: {
   result: TFriend;
   currentFriends: TFriend[];
   currentFriendRequests: TFriendRequest[];
+  closeMenu: () => void;
 }) => {
   const {
     sendFriendRequest,
@@ -139,21 +142,31 @@ const UserSearchResult = ({
     deleteFriend,
   } = useFriends();
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   function handleAddFriend(id: string) {
     sendFriendRequest(id);
+    closeMenu();
   }
 
   function handleAcceptFriendRequest(id: string) {
     acceptFriendRequest(id);
+    closeMenu();
   }
 
   function handleRejectFriendRequest(id: string) {
     rejectFriendRequest(id);
+    closeMenu();
   }
 
   function handleDeleteFriend(id: string) {
     deleteFriend(id);
+    closeMenu();
+  }
+
+  function handleGenericClick(username: string) {
+    navigate(`/users/${username}`);
+    closeMenu();
   }
 
   const isFriend = currentFriends.some((friend) => friend._id === result._id);
@@ -167,7 +180,7 @@ const UserSearchResult = ({
 
   if (isUser) {
     return (
-      <DropdownMenuItem>
+      <DropdownMenuItem onClick={() => handleGenericClick(result.username)}>
         <p>
           <strong>
             <Link to={`/users/${result.username}`}>{result.username}</Link>
@@ -180,7 +193,11 @@ const UserSearchResult = ({
 
   if (isFriend) {
     return (
-      <DropdownMenuItem className="flex items-center gap-4" key={result._id}>
+      <DropdownMenuItem
+        className="flex items-center gap-4"
+        key={result._id}
+        onClick={() => handleGenericClick(result.username)}
+      >
         <p>
           <strong>
             <Link to={`/users/${result.username}`}>{result.username}</Link>
@@ -201,7 +218,11 @@ const UserSearchResult = ({
 
   if (isOutgoingFriendRequest) {
     return (
-      <DropdownMenuItem className="flex items-center gap-4" key={result._id}>
+      <DropdownMenuItem
+        className="flex items-center gap-4"
+        key={result._id}
+        onClick={() => handleGenericClick(result.username)}
+      >
         <p>
           <strong>
             <Link to={`/users/${result.username}`}>{result.username}</Link>
@@ -214,7 +235,11 @@ const UserSearchResult = ({
 
   if (isIncomingFriendRequest) {
     return (
-      <DropdownMenuItem className="flex items-center gap-4" key={result._id}>
+      <DropdownMenuItem
+        className="flex items-center gap-4"
+        key={result._id}
+        onClick={() => handleGenericClick(result.username)}
+      >
         <p>
           <strong>
             <Link to={`/users/${result.username}`}>{result.username}</Link>
@@ -242,7 +267,11 @@ const UserSearchResult = ({
 
   if (!isFriend && !isUser) {
     return (
-      <DropdownMenuItem className="flex items-center gap-4" key={result._id}>
+      <DropdownMenuItem
+        className="flex items-center gap-4"
+        key={result._id}
+        onClick={() => handleGenericClick(result.username)}
+      >
         <p>
           <strong>
             <Link to={`/users/${result.username}`}>{result.username}</Link>
