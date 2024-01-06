@@ -55,14 +55,11 @@ const UserSearchForm = ({ className }: { className?: string }) => {
     await search(values);
   };
 
-  useEffect(
-    function openMenuAfterSuccessfulSearch() {
-      if (status === 'success' || useFormErrors.searchTerm) {
-        setOpen(true);
-      }
-    },
-    [status, useFormErrors],
-  );
+  useEffect(() => {
+    if (status === 'success' || useFormErrors.searchTerm) {
+      setOpen(true);
+    }
+  }, [status, useFormErrors]);
 
   return (
     <form
