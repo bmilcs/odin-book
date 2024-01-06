@@ -50,10 +50,10 @@ const Post = ({
   };
 
   return (
-    <Card className={className} {...props}>
+    <Card className={`${className}`} {...props}>
       {/* Post Author & Date Posted */}
       <CardHeader className="flex items-start">
-        <div className="space-y-1">
+        <div>
           <CardTitle>
             <Link to={`/users/${data.author.username}`}>
               {data.author.username}
@@ -83,7 +83,7 @@ const Post = ({
       </CardContent>
 
       {/* Buttons */}
-      <CardContent className="border-y-2 py-2">
+      <CardContent className="border-b-2">
         <div className="flex justify-between">
           {/* Like Button */}
           <LikeButton
@@ -109,7 +109,7 @@ const Post = ({
       </CardContent>
 
       {/* Comments */}
-      <CardContent className="grid gap-4 py-4">
+      <CardContent className="grid gap-4 p-5">
         {data.comments.map((comment) => (
           <Comment key={comment._id} data={comment} className="" />
         ))}
