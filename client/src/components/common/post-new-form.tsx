@@ -57,12 +57,11 @@ const PostNewForm = ({ className }: { className?: string }) => {
       <Input
         type="post"
         placeholder="I love this app!"
-        className="bg-border"
         {...register('content')}
       />
       <Button
         type="submit"
-        variant="secondary"
+        variant="ghost"
         disabled={isSubmitting}
         className="h-full"
       >
