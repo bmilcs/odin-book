@@ -39,7 +39,7 @@ const formSchema = z.object({
 });
 
 const SignupForm = ({ className }: { className?: string }) => {
-  const { error, signup, status } = useSignup();
+  const { error, validationErrors, signup, status } = useSignup();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -89,7 +89,7 @@ const SignupForm = ({ className }: { className?: string }) => {
                       />
                     </FormControl>
                     <FormMessage>
-                      {getFieldErrorMsg(error, 'username')}
+                      {getFieldErrorMsg(validationErrors, 'username')}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -108,7 +108,7 @@ const SignupForm = ({ className }: { className?: string }) => {
                       />
                     </FormControl>
                     <FormMessage>
-                      {getFieldErrorMsg(error, 'email')}
+                      {getFieldErrorMsg(validationErrors, 'email')}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -128,7 +128,7 @@ const SignupForm = ({ className }: { className?: string }) => {
                       />
                     </FormControl>
                     <FormMessage>
-                      {getFieldErrorMsg(error, 'password')}
+                      {getFieldErrorMsg(validationErrors, 'password')}
                     </FormMessage>
                   </FormItem>
                 )}
@@ -148,12 +148,13 @@ const SignupForm = ({ className }: { className?: string }) => {
                       />
                     </FormControl>
                     <FormMessage>
-                      {getFieldErrorMsg(error, 'confirmPassword')}
+                      {getFieldErrorMsg(validationErrors, 'confirmPassword')}
                     </FormMessage>
                   </FormItem>
                 )}
               />
             </FormItem>
+            <FormMessage>{error}</FormMessage>
             <Button
               className="w-full"
               type="submit"
