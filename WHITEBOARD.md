@@ -2,16 +2,10 @@
 
 **TODO**
 
-- Notification Component
-
-  - Icon with badge
-  - Dropdown menu
-  - Show incoming friend requests
-
+- FIX postController
+  - Allow multiple likes on posts/comments if user is unique
 - Toast window
-
   - Errors, etc.
-
 - User Profile Pages
   - Username
   - Email
