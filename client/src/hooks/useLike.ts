@@ -1,5 +1,6 @@
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
+import { getErrorMsg } from '@/utils/errors';
 import { useState } from 'react';
 
 type ApiResponse = {
@@ -47,17 +48,18 @@ const useLike = ({
         action === 'post'
           ? await api.post<ApiResponse>(apiUrl, {})
           : await api.del<ApiResponse>(apiUrl);
-      if (!success) {
-        console.log(error);
-        setStatus(STATUS.ERROR);
-        setError(error);
+      if (success) {
+        setStatus(STATUS.SUCCESS);
+        setTotalLikes(data.likeCount);
+        setLikeStatus(data.isLikedByUser);
         return;
       }
-      setTotalLikes(data.likeCount);
-      setLikeStatus(data.isLikedByUser);
-      setStatus(STATUS.SUCCESS);
+      setStatus(STATUS.ERROR);
+      setError(error);
     } catch (error) {
       setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
       console.log(error);
     }
   };

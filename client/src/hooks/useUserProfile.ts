@@ -1,6 +1,7 @@
 import { TUser } from '@/components/services/auth-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
+import { getErrorMsg } from '@/utils/errors';
 import { useCallback, useState } from 'react';
 
 type ApiResponse = {
@@ -17,19 +18,28 @@ const useUserProfile = () => {
   const getUserProfile = useCallback(async (username: string) => {
     setStatus(STATUS.LOADING);
     setError('');
+
+    if (!username) {
+      setStatus(STATUS.ERROR);
+      setError('Username is required');
+      return;
+    }
+
     try {
       const { success, data, error } = await api.get<ApiResponse>(
         `/users/${username}`,
       );
-      if (!success) {
-        setStatus(STATUS.ERROR);
-        setError(error);
+      if (success) {
+        setStatus(STATUS.SUCCESS);
+        setUserProfile(data);
         return;
       }
-      setUserProfile(data);
-      setStatus(STATUS.SUCCESS);
+      setStatus(STATUS.ERROR);
+      setError(error);
     } catch (error) {
       setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
       console.log(error);
     }
   }, []);

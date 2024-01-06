@@ -1,6 +1,7 @@
 import { FeedContext } from '@/components/services/feed-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
+import { getErrorMsg } from '@/utils/errors';
 import { useContext, useState } from 'react';
 
 type ApiResponse = {
@@ -20,11 +21,15 @@ const useExistingComment = ({
   const { updateFeed } = useContext(FeedContext);
 
   const deleteComment = async () => {
+    setStatus(STATUS.LOADING);
+    setError('');
+
     if (!postId) {
-      setError('Post ID not found');
       setStatus(STATUS.ERROR);
+      setError('Post ID is required');
       return;
     }
+
     try {
       const { success, error } = await api.del<ApiResponse>(
         `/posts/${postId}/comments/${commentId}`,
@@ -34,19 +39,32 @@ const useExistingComment = ({
         await updateFeed();
         return;
       }
-      setError(error);
       setStatus(STATUS.ERROR);
+      setError(error);
     } catch (error) {
+      setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
       console.log(error);
     }
   };
 
   const updateComment = async ({ content }: { content: string }) => {
+    setStatus(STATUS.LOADING);
+    setError('');
+
     if (!postId) {
-      setError('Post ID not found');
       setStatus(STATUS.ERROR);
+      setError('Post ID is required');
       return;
     }
+
+    if (!content) {
+      setStatus(STATUS.ERROR);
+      setError('Comment content is required');
+      return;
+    }
+
     try {
       const { success, error } = await api.patch<ApiResponse>(
         `/posts/${postId}/comments/${commentId}`,
@@ -59,9 +77,12 @@ const useExistingComment = ({
         await updateFeed();
         return;
       }
-      setError(error);
       setStatus(STATUS.ERROR);
+      setError(error);
     } catch (error) {
+      setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
       console.log(error);
     }
   };

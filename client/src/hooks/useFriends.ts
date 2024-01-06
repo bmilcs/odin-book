@@ -2,6 +2,7 @@ import { AuthContext } from '@/components/services/auth-provider';
 import { FeedContext } from '@/components/services/feed-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
+import { getErrorMsg } from '@/utils/errors';
 import { useContext, useState } from 'react';
 
 type ApiResponse = {
@@ -19,22 +20,29 @@ const useFriends = () => {
   const sendFriendRequest = async (userId: string) => {
     setStatus(STATUS.LOADING);
     setError('');
+
+    if (!userId) {
+      setStatus(STATUS.ERROR);
+      setError('User ID is required');
+      return;
+    }
+
     try {
       const { success, error } = await api.post<ApiResponse>(
         `/friends/send-request/${userId}`,
         {},
       );
-      console.log(success, error);
-      if (!success) {
-        console.log(error);
-        setStatus(STATUS.ERROR);
-        setError(error);
+      if (success) {
+        setStatus(STATUS.SUCCESS);
+        await updateUserData();
         return;
       }
-      setStatus(STATUS.SUCCESS);
-      await updateUserData();
+      setStatus(STATUS.ERROR);
+      setError(error);
     } catch (error) {
       setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
       console.log(error);
     }
   };
@@ -42,23 +50,30 @@ const useFriends = () => {
   const acceptFriendRequest = async (userId: string) => {
     setStatus(STATUS.LOADING);
     setError('');
+
+    if (!userId) {
+      setStatus(STATUS.ERROR);
+      setError('User ID is required');
+      return;
+    }
+
     try {
       const { success, error } = await api.patch<ApiResponse>(
         `/friends/accept-request/${userId}`,
         {},
       );
-      console.log(success, error);
-      if (!success) {
-        console.log(error);
-        setStatus(STATUS.ERROR);
-        setError(error);
+      if (success) {
+        setStatus(STATUS.SUCCESS);
+        await updateFeed();
+        await updateUserData();
         return;
       }
-      await updateFeed();
-      await updateUserData();
-      setStatus(STATUS.SUCCESS);
+      setStatus(STATUS.ERROR);
+      setError(error);
     } catch (error) {
       setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
       console.log(error);
     }
   };
@@ -66,22 +81,29 @@ const useFriends = () => {
   const rejectFriendRequest = async (userId: string) => {
     setStatus(STATUS.LOADING);
     setError('');
+
+    if (!userId) {
+      setStatus(STATUS.ERROR);
+      setError('User ID is required');
+      return;
+    }
+
     try {
       const { success, error } = await api.patch<ApiResponse>(
         `/friends/reject-request/${userId}`,
         {},
       );
-      console.log(success, error);
-      if (!success) {
-        console.log(error);
-        setStatus(STATUS.ERROR);
-        setError(error);
+      if (success) {
+        setStatus(STATUS.SUCCESS);
+        await updateUserData();
         return;
       }
-      setStatus(STATUS.SUCCESS);
-      await updateUserData();
+      setStatus(STATUS.ERROR);
+      setError(error);
     } catch (error) {
       setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
       console.log(error);
     }
   };
@@ -89,22 +111,29 @@ const useFriends = () => {
   const deleteFriend = async (userId: string) => {
     setStatus(STATUS.LOADING);
     setError('');
+
+    if (!userId) {
+      setStatus(STATUS.ERROR);
+      setError('User ID is required');
+      return;
+    }
+
     try {
       const { success, error } = await api.del<ApiResponse>(
         `/friends/${userId}`,
       );
-      console.log(success, error);
-      if (!success) {
-        console.log(error);
-        setStatus(STATUS.ERROR);
-        setError(error);
+      if (success) {
+        setStatus(STATUS.SUCCESS);
+        await updateFeed();
+        await updateUserData();
         return;
       }
-      await updateFeed();
-      await updateUserData();
-      setStatus(STATUS.SUCCESS);
+      setStatus(STATUS.ERROR);
+      setError(error);
     } catch (error) {
       setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
       console.log(error);
     }
   };

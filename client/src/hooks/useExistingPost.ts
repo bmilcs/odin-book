@@ -1,6 +1,7 @@
 import { FeedContext } from '@/components/services/feed-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
+import { getErrorMsg } from '@/utils/errors';
 import { useContext, useState } from 'react';
 
 type ApiResponse = {
@@ -14,11 +15,15 @@ const useExistingPost = ({ postId }: { postId: string }) => {
   const { updateFeed } = useContext(FeedContext);
 
   const deletePost = async () => {
+    setStatus(STATUS.LOADING);
+    setError('');
+
     if (!postId) {
-      setError('Post ID not found');
       setStatus(STATUS.ERROR);
+      setError('Post ID is required');
       return;
     }
+
     try {
       const { success, error } = await api.del<ApiResponse>(`/posts/${postId}`);
       if (success) {
@@ -26,17 +31,23 @@ const useExistingPost = ({ postId }: { postId: string }) => {
         await updateFeed();
         return;
       }
-      setError(error);
       setStatus(STATUS.ERROR);
+      setError(error);
     } catch (error) {
+      setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
       console.log(error);
     }
   };
 
   const updatePost = async ({ content }: { content: string }) => {
+    setStatus(STATUS.LOADING);
+    setError('');
+
     if (!postId) {
-      setError('Post ID not found');
       setStatus(STATUS.ERROR);
+      setError('Post ID is required');
       return;
     }
 
@@ -52,9 +63,12 @@ const useExistingPost = ({ postId }: { postId: string }) => {
         await updateFeed();
         return;
       }
-      setError(error);
       setStatus(STATUS.ERROR);
+      setError(error);
     } catch (error) {
+      setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
       console.log(error);
     }
   };

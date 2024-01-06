@@ -1,6 +1,7 @@
 import { AuthContext, TUser } from '@/components/services/auth-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
+import { getErrorMsg } from '@/utils/errors';
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -26,6 +27,12 @@ const useLogin = () => {
     setStatus(STATUS.LOADING);
     setError('');
 
+    if (!email || !password) {
+      setStatus(STATUS.ERROR);
+      setError('Email and password are required');
+      return;
+    }
+
     try {
       const { success, data, error } = await api.post<ApiResponse>(
         '/auth/login',
@@ -34,19 +41,18 @@ const useLogin = () => {
           password,
         },
       );
-
-      if (!success) {
-        console.log(error);
-        setStatus(STATUS.ERROR);
-        setError(error);
+      if (success) {
+        setStatus(STATUS.SUCCESS);
+        setUser(data);
+        navigate('/feed');
         return;
       }
-
-      // successful login: redirect to feed
-      setUser(data);
-      navigate('/feed');
+      setStatus(STATUS.ERROR);
+      setError(error);
     } catch (error) {
       setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
       console.log(error);
     }
   };
