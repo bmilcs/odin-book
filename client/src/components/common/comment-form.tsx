@@ -2,7 +2,6 @@ import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import useNewComment from '@/hooks/useNewComment';
-import { CLIENT_MODE } from '@/utils/env';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -35,14 +34,9 @@ const CommentForm = ({
     reset,
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues:
-      CLIENT_MODE === 'development'
-        ? {
-            content: 'This is a test comment!',
-          }
-        : {
-            content: '',
-          },
+    defaultValues: {
+      content: '',
+    },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
@@ -62,13 +56,17 @@ const CommentForm = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className={`flex w-full items-center gap-2 ${className}`}
+      className={`flex w-full items-center gap-1  ${className}`}
     >
-      <Input type="post" className="bg-border" {...register('content')} />
+      <Input
+        type="post"
+        {...register('content')}
+        placeholder="Add a comment..."
+      />
       <Button
         type="submit"
         disabled={isSubmitting}
-        variant="secondary"
+        variant="ghost"
         className="h-full"
       >
         <Icons.submit />
