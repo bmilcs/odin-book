@@ -27,7 +27,7 @@ const LikeButton: FC<LikeButtonProps> = ({
   });
 
   return (
-    <div className="flex items-center gap-2 text-sm">
+    <div className="flex items-center text-sm">
       <Button
         variant={'ghost'}
         size={'icon'}
@@ -46,7 +46,7 @@ const LikeButton: FC<LikeButtonProps> = ({
           </>
         )}
       </Button>
-      <span>{totalLikes} Likes</span>
+      <span>{totalLikes}</span>
     </div>
   );
 };
