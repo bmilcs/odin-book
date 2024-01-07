@@ -1,4 +1,10 @@
-import { NONEXISTENT_MONGODB_ID, USER_ONE, USER_TWO, app } from '@/tests/setup';
+import {
+  NONEXISTENT_MONGODB_ID,
+  USER_ONE,
+  USER_THREE,
+  USER_TWO,
+  app,
+} from '@/tests/setup';
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import request from 'supertest';
@@ -41,27 +47,6 @@ describe('POST ROUTER', () => {
   //
 
   describe('GET /posts/:id', () => {
-    let validPostId: string;
-    let validCommentId: string;
-    before(async function createPost() {
-      const { statusCode, body } = await request(app)
-        .post('/posts')
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({ content: 'This is a test post' });
-      validPostId = body.data._id;
-      const { body: commentBody } = await request(app)
-        .post(`/posts/${validPostId}/comments`)
-        .set('Cookie', USER_TWO.jwtCookie)
-        .send({ content: 'Comment 1' });
-      validCommentId = commentBody.data._id;
-      const { body: likePostBody } = await request(app)
-        .post(`/posts/${validPostId}/like`)
-        .set('Cookie', USER_ONE.jwtCookie);
-      const { body: likeCommentBody } = await request(app)
-        .post(`/posts/${validPostId}/comments/${validCommentId}/like`)
-        .set('Cookie', USER_ONE.jwtCookie);
-    });
-
     it('should return 401 if user is not logged in', async () => {
       const { statusCode, body } = await request(app).get('/posts/1');
       expect(statusCode).to.equal(401);
@@ -87,7 +72,32 @@ describe('POST ROUTER', () => {
       expect(body.error).to.equal('Post not found');
     });
 
-    it('should return 201 if post is received', async () => {
+    it('should return 201 if post is received with comments & likes', async () => {
+      // user 1 create post
+      const { body: newPostBody } = await request(app)
+        .post('/posts')
+        .set('Cookie', USER_ONE.jwtCookie)
+        .send({ content: 'This is a test post' });
+      expect(newPostBody.success).to.be.true;
+      const validPostId = newPostBody.data._id;
+      // user 2 create comment
+      const { body: commentBody } = await request(app)
+        .post(`/posts/${validPostId}/comments`)
+        .set('Cookie', USER_TWO.jwtCookie)
+        .send({ content: 'Comment 1' });
+      expect(commentBody.success).to.be.true;
+      const validCommentId = commentBody.data._id;
+      // user 1 like post
+      const { body: likePostBody } = await request(app)
+        .post(`/posts/${validPostId}/like`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(likePostBody.success).to.be.true;
+      // user 2 like comment
+      const { body: likeCommentBody } = await request(app)
+        .post(`/posts/${validPostId}/comments/${validCommentId}/like`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(likeCommentBody.success).to.be.true;
+      // user 1 get post
       const { statusCode, body } = await request(app)
         .get(`/posts/${validPostId}`)
         .set('Cookie', USER_ONE.jwtCookie);
@@ -182,28 +192,6 @@ describe('POST ROUTER', () => {
   //
 
   describe('DELETE /posts/:id', () => {
-    let validPostId: string;
-    let validCommentId: string;
-    let validLikeId: string;
-    before(async function createPostWithCommentsAndLikes() {
-      const { body } = await request(app)
-        .post('/posts')
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({ content: 'Original test post' });
-      validPostId = body.data._id;
-      // add comments
-      const { body: commentBody } = await request(app)
-        .post(`/posts/${validPostId}/comments`)
-        .set('Cookie', USER_TWO.jwtCookie)
-        .send({ content: 'Comment 1' });
-      validCommentId = commentBody.data._id;
-      // add likes
-      const { body: likeBody } = await request(app)
-        .post(`/posts/${validPostId}/like`)
-        .set('Cookie', USER_ONE.jwtCookie);
-      validLikeId = likeBody.data._id;
-    });
-
     it('should return 401 if user is not logged in', async () => {
       const { statusCode, body } = await request(app).delete('/posts/1');
       expect(statusCode).to.equal(401);
@@ -230,6 +218,22 @@ describe('POST ROUTER', () => {
     });
 
     it('should return 200 if post is deleted successfully w/ db check', async () => {
+      const { body: postBody } = await request(app)
+        .post('/posts')
+        .set('Cookie', USER_ONE.jwtCookie)
+        .send({ content: 'Original test post' });
+      expect(postBody.success).to.be.true;
+      const validPostId = postBody.data._id;
+      expect(validPostId).to.be.a('string');
+      // add comments
+      const { body: commentBody } = await request(app)
+        .post(`/posts/${validPostId}/comments`)
+        .set('Cookie', USER_TWO.jwtCookie)
+        .send({ content: 'Comment 1' });
+      expect(commentBody.success).to.be.true;
+      const validCommentId = commentBody.data._id;
+      expect(validCommentId).to.be.a('string');
+      // delete post
       const { statusCode, body } = await request(app)
         .delete(`/posts/${validPostId}`)
         .set('Cookie', USER_ONE.jwtCookie);
@@ -260,10 +264,11 @@ describe('POST ROUTER', () => {
   describe('POST /posts/:id/like', () => {
     let validPostId: string;
     before(async function createPost() {
-      const { statusCode, body } = await request(app)
+      const { body } = await request(app)
         .post('/posts')
         .set('Cookie', USER_ONE.jwtCookie)
         .send({ content: 'Original test post' });
+      expect(body.success).to.be.true;
       validPostId = body.data._id;
     });
 
@@ -293,6 +298,7 @@ describe('POST ROUTER', () => {
     });
 
     it('should return 201 if post is liked successfully w/ db check', async () => {
+      // like post
       const { statusCode, body } = await request(app)
         .post(`/posts/${validPostId}/like`)
         .set('Cookie', USER_ONE.jwtCookie);
@@ -311,6 +317,30 @@ describe('POST ROUTER', () => {
       expect(res.data.likes).to.be.an('array');
       expect(res.data.likes[0]).to.be.an.string;
     });
+
+    it('should allow multiple users to like the same post', async () => {
+      // User Two likes the post
+      const { statusCode: statusCodeOne, body: bodyOne } = await request(app)
+        .post(`/posts/${validPostId}/like`)
+        .set('Cookie', USER_TWO.jwtCookie);
+      expect(statusCodeOne).to.equal(201);
+      expect(bodyOne.success).to.be.true;
+      expect(bodyOne.message).to.equal('Post liked');
+      expect(bodyOne.data).to.be.an('object');
+      expect(bodyOne.data.isLikedByUser).to.be.true;
+      expect(bodyOne.data.likeCount).to.equal(2);
+
+      // User Three likes the same post
+      const { statusCode: statusCodeTwo, body: bodyTwo } = await request(app)
+        .post(`/posts/${validPostId}/like`)
+        .set('Cookie', USER_THREE.jwtCookie);
+      expect(statusCodeTwo).to.equal(201);
+      expect(bodyTwo.success).to.be.true;
+      expect(bodyTwo.message).to.equal('Post liked');
+      expect(bodyTwo.data).to.be.an('object');
+      expect(bodyTwo.data.isLikedByUser).to.be.true;
+      expect(bodyTwo.data.likeCount).to.equal(3);
+    });
   });
 
   //
@@ -318,19 +348,6 @@ describe('POST ROUTER', () => {
   //
 
   describe('DELETE /posts/:id/like', () => {
-    let validPostId: string;
-    before(async function createPost() {
-      const { statusCode, body } = await request(app)
-        .post('/posts')
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({ content: 'Original test post' });
-      validPostId = body.data._id;
-      // like post
-      await request(app)
-        .post(`/posts/${validPostId}/like`)
-        .set('Cookie', USER_ONE.jwtCookie);
-    });
-
     it('should return 401 if user is not logged in', async () => {
       const { statusCode, body } = await request(app).delete('/posts/1/like');
       expect(statusCode).to.equal(401);
@@ -357,6 +374,18 @@ describe('POST ROUTER', () => {
     });
 
     it('should return 201 if post is unliked successfully', async () => {
+      // create post
+      const { body: createPostBody } = await request(app)
+        .post('/posts')
+        .set('Cookie', USER_ONE.jwtCookie)
+        .send({ content: 'Original test post' });
+      const validPostId = createPostBody.data._id;
+      // like post
+      const { body: likePostBody } = await request(app)
+        .post(`/posts/${validPostId}/like`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(likePostBody.success).to.be.true;
+      // unlike post
       const { statusCode, body } = await request(app)
         .delete(`/posts/${validPostId}/like`)
         .set('Cookie', USER_ONE.jwtCookie);
@@ -537,10 +566,11 @@ describe('POST ROUTER', () => {
     let validPostId: string;
     let validCommentId: string;
     before(async function createPostWithComments() {
-      const { body } = await request(app)
+      const { statusCode, body } = await request(app)
         .post('/posts')
         .set('Cookie', USER_ONE.jwtCookie)
         .send({ content: 'Original test post' });
+      expect(statusCode).to.equal(201);
       validPostId = body.data._id;
       // add comments
       const { body: commentBody } = await request(app)
@@ -701,6 +731,31 @@ describe('POST ROUTER', () => {
       expect(res.data.comments[0].content).to.equal(COMMENT_CONTENT);
       expect(res.data.comments[0].likes).to.be.an('array');
       expect(res.data.comments[0].likes[0]).to.be.an.string;
+      expect(res.data.comments[0].likes[0].user._id).to.equal(USER_ONE._id);
+    });
+
+    it('should allow multiple users to like the same comment', async () => {
+      // User Two likes the comment
+      const { statusCode: statusCodeOne, body: bodyOne } = await request(app)
+        .post(`/posts/${validPostId}/comments/${validCommentId}/like`)
+        .set('Cookie', USER_TWO.jwtCookie);
+      expect(statusCodeOne).to.equal(201);
+      expect(bodyOne.success).to.be.true;
+      expect(bodyOne.message).to.equal('Comment liked');
+      expect(bodyOne.data).to.be.an('object');
+      expect(bodyOne.data.isLikedByUser).to.be.true;
+      expect(bodyOne.data.likeCount).to.equal(2);
+
+      // User Three likes the same comment
+      const { statusCode: statusCodeTwo, body: bodyTwo } = await request(app)
+        .post(`/posts/${validPostId}/comments/${validCommentId}/like`)
+        .set('Cookie', USER_THREE.jwtCookie);
+      expect(statusCodeTwo).to.equal(201);
+      expect(bodyTwo.success).to.be.true;
+      expect(bodyTwo.message).to.equal('Comment liked');
+      expect(bodyTwo.data).to.be.an('object');
+      expect(bodyTwo.data.isLikedByUser).to.be.true;
+      expect(bodyTwo.data.likeCount).to.equal(3);
     });
   });
 

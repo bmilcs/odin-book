@@ -18,7 +18,14 @@ const likeSchema: Schema = new Schema(
   { timestamps: true }, // auto create 'createdAt' and 'updatedAt' fields
 );
 
-// A user can only like a post or comment once
-likeSchema.index({ post: 1, comment: 1 }, { unique: true, sparse: true });
+likeSchema.index(
+  { user: 1, post: 1 },
+  { unique: true, partialFilterExpression: { post: { $exists: true } } },
+);
+
+likeSchema.index(
+  { user: 1, comment: 1 },
+  { unique: true, partialFilterExpression: { comment: { $exists: true } } },
+);
 
 export default models['Like'] || model<ILike>('Like', likeSchema);
