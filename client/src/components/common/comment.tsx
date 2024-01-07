@@ -22,9 +22,9 @@ const Comment = ({
   });
   const { user } = useContext(AuthContext);
 
-  const initialIsLikedByUser = data.likes.some(
-    (like) => like.user._id.toString() === data.author._id.toString(),
-  );
+  const initialIsLikedByUser = data.likes.some((like) => {
+    return like.user._id.toString() === user?._id;
+  });
   const initialLikeCount = data.likes.length;
   const isCommentCreatedByUser = data.author._id.toString() === user?._id;
 
