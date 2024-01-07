@@ -2,6 +2,9 @@
 
 **TODO**
 
+- Add notifications for
+  - Friend creates a new post
+  - New comments on a user's post
 - FIX postController
   - Allow multiple likes on posts/comments if user is unique
 - Toast window
