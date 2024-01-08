@@ -19,11 +19,11 @@ describe('NOTIFICATION ROUTER', () => {
 
   describe('GET /notifications', () => {
     before(async () => {
-      await deleteNotificationsFromAllTestUsers();
       // send friend request from user two to user one
-      await request(app)
+      const { body } = await request(app)
         .post(`/friends/send-request/${USER_ONE._id}`)
         .set('Cookie', USER_TWO.jwtCookie);
+      expect(body.success).to.be.true;
     });
 
     after(async () => {
@@ -70,6 +70,80 @@ describe('NOTIFICATION ROUTER', () => {
         body.data[0].fromUser._id,
       );
       expect(notification.toUser.toString()).to.equal(body.data[0].toUser);
+    });
+
+    it('should return notification when a friend creates a new post', async () => {
+      // send friend request from user 1 to user 3
+      const { body: friendRequestBody } = await request(app)
+        .post(`/friends/send-request/${USER_THREE._id}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(friendRequestBody.success).to.be.true;
+      // accept friend request from user 1 to user 3
+      const { body: acceptRequestBody } = await request(app)
+        .patch(`/friends/accept-request/${USER_ONE._id}`)
+        .set('Cookie', USER_THREE.jwtCookie);
+      expect(acceptRequestBody.success).to.be.true;
+      // create a new post as user 3
+      const { body: postBody } = await request(app)
+        .post('/posts')
+        .set('Cookie', USER_THREE.jwtCookie)
+        .send({ content: 'new post' });
+      const postId = postBody.data._id;
+      expect(postBody.success).to.be.true;
+      // get notifications for user 1
+      const { body: notificationBody } = await request(app)
+        .get('/notifications')
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(notificationBody.success).to.be.true;
+      const relevantFields = notificationBody.data.map((n: any) => {
+        return {
+          type: n.type,
+          fromUser: n.fromUser._id.toString(),
+          toUser: n.toUser.toString(),
+          post: n.post?.toString(),
+        };
+      });
+      expect(relevantFields).to.deep.include({
+        type: 'new_post',
+        fromUser: USER_THREE._id,
+        toUser: USER_ONE._id,
+        post: postId,
+      });
+    });
+
+    it('should return notification when someone comments on your post', async () => {
+      // create a new post as user 1
+      const { body: postBody } = await request(app)
+        .post('/posts')
+        .set('Cookie', USER_ONE.jwtCookie)
+        .send({ content: 'new post' });
+      expect(postBody.success).to.be.true;
+      const postId = postBody.data._id;
+      // create a new comment on the post as user 2
+      const { body: commentBody } = await request(app)
+        .post(`/posts/${postId}/comments`)
+        .set('Cookie', USER_TWO.jwtCookie)
+        .send({ content: 'new comment' });
+      expect(commentBody.success).to.be.true;
+      // get notifications for user 1
+      const { body: notificationBody } = await request(app)
+        .get('/notifications')
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(notificationBody.success).to.be.true;
+      const relevantFields = notificationBody.data.map((n: any) => {
+        return {
+          type: n.type,
+          fromUser: n.fromUser._id.toString(),
+          toUser: n.toUser.toString(),
+          post: n.post?.toString(),
+        };
+      });
+      expect(relevantFields).to.deep.include({
+        type: 'new_comment',
+        fromUser: USER_TWO._id,
+        toUser: USER_ONE._id,
+        post: postBody.data._id,
+      });
     });
   });
 
