@@ -1,6 +1,7 @@
 import { AuthContext, TUser } from '@/components/services/auth-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
+import { getErrorMsg } from '@/utils/errors';
 import {
   FC,
   ReactNode,
@@ -64,7 +65,7 @@ type FeedProviderProps = {
 };
 
 const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, user } = useContext(AuthContext);
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const [feed, setFeed] = useState<TPost[]>([]);
@@ -72,6 +73,7 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
   const updateFeed = useCallback(async () => {
     setStatus(STATUS.LOADING);
     setFeed([]);
+
     try {
       const { success, error, data } = await api.get<ApiResponse>('/feed');
       if (success) {
@@ -79,11 +81,12 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
         setFeed(data);
         return;
       }
-      setError(error);
       setStatus(STATUS.ERROR);
+      setError(error);
     } catch (error) {
       setStatus(STATUS.ERROR);
-      setError('Unable to load feed at this time');
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
       console.log(error);
     }
   }, []);
@@ -92,7 +95,7 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
     if (isAuthenticated()) {
       updateFeed();
     }
-  }, [isAuthenticated, updateFeed]);
+  }, [isAuthenticated, updateFeed, user]);
 
   return (
     <FeedContext.Provider value={{ status, error, feed, updateFeed }}>

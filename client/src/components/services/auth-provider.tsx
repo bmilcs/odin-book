@@ -1,6 +1,7 @@
 import LoadingPage from '@/components/pages/loading-page';
 import { TNotification } from '@/components/services/notification-provider';
 import api from '@/utils/api';
+import { getErrorMsg } from '@/utils/errors';
 import { FC, ReactNode, createContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -68,58 +69,64 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [showSpinner, setShowSpinner] = useState(true);
   const navigate = useNavigate();
 
-  function redirectUnauthenticatedUser(path: string) {
+  const redirectUnauthenticatedUser = (path: string) => {
     if (isLoading) return;
     if (!isAuthenticated()) {
       navigate(path);
     }
-  }
+  };
 
-  function redirectAuthenticatedUser(path: string) {
+  const redirectAuthenticatedUser = (path: string) => {
     if (isLoading) return;
     if (isAuthenticated()) {
       navigate(path);
     }
-  }
+  };
 
-  function isAuthenticated() {
+  const isAuthenticated = () => {
     if (isLoading) return false;
     return !!user;
-  }
+  };
 
-  async function logout() {
+  const logout = async () => {
     try {
-      const result: TApiResponse = await api.post('/auth/logout', {});
-      if (result.success) {
+      const { success } = await api.post<TApiResponse>('/auth/logout', {});
+      if (success) {
         setUser(null);
         navigate('/login');
+        return;
       }
+      console.log('Unable to logout at this time');
     } catch (error) {
-      console.log(error);
+      const errorMsg = getErrorMsg(error);
+      console.log(errorMsg);
     }
-  }
+  };
 
-  async function updateUserData() {
+  const updateUserData = async () => {
+    setIsLoading(true);
     try {
-      const result: TApiResponse = await api.get('/auth/status');
-      if (result.success && result.data) {
-        console.log(result.data);
-        setUser(result.data);
-      } else {
-        setUser(null);
+      const { success, data } = await api.get<TApiResponse>('/auth/status');
+      if (success) {
+        setUser(data);
+        return;
       }
+      setUser(null);
+      console.log('Unable to update user data at this time');
     } catch (error) {
-      console.log(error);
+      const errorMsg = getErrorMsg(error);
+      console.log(errorMsg);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     updateUserData();
   }, []);
 
-  // Ensure spinner shows for at least .25 seconds
+  // Show spinner while waiting for user data to load for at least 250ms
+  // This prevents the spinner from flashing on the screen for a split second
   useEffect(() => {
     if (!isLoading) {
       const timer = setTimeout(() => {

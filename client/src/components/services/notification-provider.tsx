@@ -1,6 +1,7 @@
 import { AuthContext, TUser } from '@/components/services/auth-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
+import { getErrorMsg } from '@/utils/errors';
 import {
   FC,
   createContext,
@@ -67,19 +68,21 @@ const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
   const getAllNotifications = useCallback(async () => {
     setStatus(STATUS.LOADING);
     setError('');
+
     try {
       const { success, data, error } =
         await api.get<ApiResponse>('/notifications');
-      if (!success) {
-        console.log(error);
-        setStatus(STATUS.ERROR);
-        setError(error);
+      if (success) {
+        setStatus(STATUS.SUCCESS);
+        setNotifications(data);
         return;
       }
-      setNotifications(data);
-      setStatus(STATUS.SUCCESS);
+      setStatus(STATUS.ERROR);
+      setError(error);
     } catch (error) {
       setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
       console.log(error);
     }
   }, []);
@@ -92,16 +95,17 @@ const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
       const { success, data, error } = await api.get<ApiResponse>(
         '/notifications/unread',
       );
-      if (!success) {
-        console.log(error);
-        setStatus(STATUS.ERROR);
-        setError(error);
+      if (success) {
+        setStatus(STATUS.SUCCESS);
+        setNotifications(data);
         return;
       }
-      setNotifications(data);
-      setStatus(STATUS.SUCCESS);
+      setStatus(STATUS.ERROR);
+      setError(error);
     } catch (error) {
       setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
       console.log(error);
     }
   }, []);
@@ -116,16 +120,17 @@ const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
           `/notifications/${notificationId}/read`,
           {},
         );
-        if (!success) {
-          console.log(error);
-          setStatus(STATUS.ERROR);
-          setError(error);
+        if (success) {
+          setStatus(STATUS.SUCCESS);
+          await getUnreadNotifications();
           return;
         }
-        await getUnreadNotifications();
-        setStatus(STATUS.SUCCESS);
+        setStatus(STATUS.ERROR);
+        setError(error);
       } catch (error) {
         setStatus(STATUS.ERROR);
+        const errorMsg = getErrorMsg(error);
+        setError(errorMsg);
         console.log(error);
       }
     },
@@ -136,20 +141,22 @@ const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
     async (notificationId: string) => {
       setStatus(STATUS.LOADING);
       setError('');
+
       try {
         const { success, error } = await api.del<ApiResponse>(
           `/notifications/${notificationId}`,
         );
-        if (!success) {
-          console.log(error);
-          setStatus(STATUS.ERROR);
-          setError(error);
+        if (success) {
+          setStatus(STATUS.SUCCESS);
+          await getUnreadNotifications();
           return;
         }
-        await getUnreadNotifications();
-        setStatus(STATUS.SUCCESS);
+        setStatus(STATUS.ERROR);
+        setError(error);
       } catch (error) {
         setStatus(STATUS.ERROR);
+        const errorMsg = getErrorMsg(error);
+        setError(errorMsg);
         console.log(error);
       }
     },
