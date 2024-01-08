@@ -111,19 +111,19 @@ const acceptRequest = tryCatch(
     await sendingUser.save();
 
     // delete old friend request notification
-    const oldNotification = await notificationModel.deleteOne({
+    await notificationModel.deleteOne({
       type: 'incoming_friend_request',
       fromUser: sendingUser._id,
       toUser: acceptingUser._id,
     });
 
     // create notification for sending user that friend request was accepted
-    const notification = await notificationModel.create({
+    await notificationModel.create({
       type: 'accepted_friend_request',
       fromUser: acceptingUser._id,
       toUser: sendingUser._id,
     });
-    notification.save();
+
     res.success('Friend request accepted', null, 200);
   },
 );
