@@ -1,4 +1,10 @@
-import { commentModel, likeModel, postModel } from '@/models'; // Importing the commentModel, likeModel, and postModel from the '@/models' module
+import {
+  commentModel,
+  likeModel,
+  notificationModel,
+  postModel,
+  userModel,
+} from '@/models'; // Importing the commentModel, likeModel, and postModel from the '@/models' module
 import { IComment } from '@/models/commentModel';
 import { ILike } from '@/models/likeModel';
 import { AppError, tryCatch } from '@/utils';
@@ -8,15 +14,43 @@ import { isValidObjectId } from 'mongoose';
 const createPost = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { content } = req.body;
+    const { userId } = req;
+    // check if content was provided
     if (!content) {
       return next(new AppError('Please provide content for your post', 400));
     }
+    // check if user exists
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return next(new AppError('Your user information was not found', 500));
+    }
+    // create post
     const post = await postModel.create({ author: req.userId, content });
     if (!post) {
       return next(
         new AppError('Unable to create a post at this time', 500, 'AppError'),
       );
     }
+    // create notification for each friend
+    const postId = post._id;
+    await Promise.all(
+      user.friends.map((friendId: string) => {
+        return notificationModel
+          .create({
+            type: 'new_post',
+            fromUser: userId,
+            toUser: friendId,
+            post: postId,
+          })
+          .catch((error) => {
+            throw new AppError(
+              'Unable to create notification for friend at this time',
+              500,
+              'AppError',
+            );
+          });
+      }),
+    );
     res.success('Post created', post, 201);
   },
 );
@@ -24,9 +58,11 @@ const createPost = tryCatch(
 const getPost = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;
+    // check if post id is valid
     if (!isValidObjectId(postId)) {
       return next(new AppError('Invalid post id', 400));
     }
+    // find post
     const post = await postModel
       .findById(postId)
       .populate({
@@ -64,19 +100,24 @@ const updatePost = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;
     const { content } = req.body;
+    // check if post id is valid
     if (!isValidObjectId(postId)) {
       return next(new AppError('Invalid post id', 400));
     }
+    // check if content was provided
     if (!content) {
       return next(new AppError('Please provide content for your post', 400));
     }
+    // check if post exists
     const post = await postModel.findById(postId);
     if (!post) {
       return next(new AppError('Post not found', 404));
     }
+    // check if user is authorized to edit post
     if (post.author.toString() !== req.userId) {
       return next(new AppError('Unauthorized', 401));
     }
+    // update post
     post.content = content;
     await post.save();
     res.success('Post updated', post, 201);
@@ -86,9 +127,11 @@ const updatePost = tryCatch(
 const deletePost = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;
+    // check if post id is valid
     if (!isValidObjectId(postId)) {
       return next(new AppError('Invalid post id', 400));
     }
+    // check if post exists
     const post = await postModel.findById(postId);
     if (!post) {
       return next(new AppError('Post not found', 404));
@@ -108,19 +151,23 @@ const deletePost = tryCatch(
 const likePost = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;
+    // check if post id is valid
     if (!isValidObjectId(postId)) {
       return next(new AppError('Invalid post id', 400));
     }
+    // check if post exists
     const post = await postModel.findById(postId);
     if (!post) {
       return next(new AppError('Post not found', 404));
     }
+    // check if user has already liked post
     const like = await likeModel.findOne({ user: req.userId, post: postId });
     if (like) {
       return next(new AppError('Post already liked', 400));
     }
     // create new like
     const newLike = await likeModel.create({ user: req.userId, post: postId });
+    // link like to post
     post.likes.push(newLike._id);
     await post.save();
     // return updated like info
@@ -135,22 +182,26 @@ const likePost = tryCatch(
 const unlikePost = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;
+    // check if post id is valid
     if (!isValidObjectId(postId)) {
       return next(new AppError('Invalid post id', 400));
     }
+    // check if post exists
     const post = await postModel.findById(postId);
     if (!post) {
       return next(new AppError('Post not found', 404));
     }
+    // find the like
     const like = await likeModel.findOne({ user: req.userId, post: postId });
     if (!like) {
       return next(new AppError('Post not liked', 400));
     }
-    // delete like
+    // delete like from post
     post.likes = post.likes.filter(
       (likeObj: ILike) => like._id.toString() !== likeObj._id.toString(),
     );
     await post.save();
+    // delete like
     await like.deleteOne();
     // return updated like info
     const data = {
@@ -165,16 +216,21 @@ const addComment = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { postId } = req.params;
     const { content } = req.body;
+    const { userId } = req;
+    // check if post id is valid
     if (!isValidObjectId(postId)) {
       return next(new AppError('Invalid post id', 400));
     }
+    // check if content was provided
     if (!content) {
       return next(new AppError('Please provide content for your comment', 400));
     }
+    // check if post exists
     const post = await postModel.findById(postId);
     if (!post) {
       return next(new AppError('Post not found', 404));
     }
+    // create comment & link to post
     const comment = await commentModel.create({
       author: req.userId,
       post: postId,
@@ -182,6 +238,14 @@ const addComment = tryCatch(
     });
     post.comments.push(comment._id);
     await post.save();
+    // create notification for post author
+    await notificationModel.create({
+      type: 'new_comment',
+      fromUser: userId,
+      toUser: post.author,
+      post: postId,
+      comment: comment._id,
+    });
     res.success('Comment created', comment, 201);
   },
 );
@@ -190,12 +254,15 @@ const editComment = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { postId, commentId } = req.params;
     const { content } = req.body;
+    // check if comment id is valid
     if (!isValidObjectId(commentId)) {
       return next(new AppError('Invalid comment id', 400));
     }
+    // check if post id is valid
     if (!isValidObjectId(postId)) {
       return next(new AppError('Invalid post id', 400));
     }
+    // check if content was provided
     if (!content) {
       return next(new AppError('Please provide content for your comment', 400));
     }
@@ -213,6 +280,7 @@ const editComment = tryCatch(
     if (comment.author.toString() !== req.userId) {
       return next(new AppError('Unauthorized', 401));
     }
+    // update comment
     comment.content = content;
     comment.save();
     res.success('Comment updated', comment, 201);
@@ -222,9 +290,11 @@ const editComment = tryCatch(
 const likeComment = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { postId, commentId } = req.params;
+    // check if comment id is valid
     if (!isValidObjectId(commentId)) {
       return next(new AppError('Invalid comment id', 400));
     }
+    // check if post id is valid
     if (!isValidObjectId(postId)) {
       return next(new AppError('Invalid post id', 400));
     }
@@ -266,9 +336,11 @@ const likeComment = tryCatch(
 const unlikeComment = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { postId, commentId } = req.params;
+    // check if comment id is valid
     if (!isValidObjectId(commentId)) {
       return next(new AppError('Invalid comment id', 400));
     }
+    // check if post id is valid
     if (!isValidObjectId(postId)) {
       return next(new AppError('Invalid post id', 400));
     }
@@ -308,9 +380,11 @@ const unlikeComment = tryCatch(
 const deleteComment = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { postId, commentId } = req.params;
+    // check if comment id is valid
     if (!isValidObjectId(commentId)) {
       return next(new AppError('Invalid comment id', 400));
     }
+    // check if post id is valid
     if (!isValidObjectId(postId)) {
       return next(new AppError('Invalid post id', 400));
     }
