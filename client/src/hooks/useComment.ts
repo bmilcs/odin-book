@@ -9,18 +9,62 @@ type ApiResponse = {
   error: string;
 };
 
-const useExistingComment = ({
-  postId,
-  commentId,
-}: {
-  postId: string;
-  commentId: string;
-}) => {
+const useComment = () => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const { updateFeed } = useContext(FeedContext);
 
-  const deleteComment = async () => {
+  const createComment = async ({
+    postId,
+    content,
+  }: {
+    postId: string;
+    content: string;
+  }) => {
+    setStatus(STATUS.LOADING);
+    setError('');
+
+    if (!postId) {
+      setStatus(STATUS.ERROR);
+      setError('Post ID is required');
+      return;
+    }
+
+    if (!content) {
+      setStatus(STATUS.ERROR);
+      setError('Comment content is required');
+      return;
+    }
+
+    try {
+      const { success, error } = await api.post<ApiResponse>(
+        `/posts/${postId}/comments`,
+        {
+          content,
+        },
+      );
+      if (success) {
+        setStatus(STATUS.SUCCESS);
+        await updateFeed();
+        return;
+      }
+      setStatus(STATUS.ERROR);
+      setError(error);
+    } catch (error) {
+      setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
+      console.log(error);
+    }
+  };
+
+  const deleteComment = async ({
+    postId,
+    commentId,
+  }: {
+    postId: string;
+    commentId: string;
+  }) => {
     setStatus(STATUS.LOADING);
     setError('');
 
@@ -49,7 +93,15 @@ const useExistingComment = ({
     }
   };
 
-  const updateComment = async ({ content }: { content: string }) => {
+  const updateComment = async ({
+    postId,
+    commentId,
+    content,
+  }: {
+    postId: string;
+    commentId: string;
+    content: string;
+  }) => {
     setStatus(STATUS.LOADING);
     setError('');
 
@@ -88,11 +140,12 @@ const useExistingComment = ({
   };
 
   return {
-    deleteComment,
+    createComment,
     updateComment,
+    deleteComment,
     status,
     error,
   };
 };
 
-export default useExistingComment;
+export default useComment;
