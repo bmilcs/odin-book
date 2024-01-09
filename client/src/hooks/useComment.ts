@@ -17,9 +17,11 @@ const useComment = () => {
   const createComment = async ({
     postId,
     content,
+    onSuccess = updateFeed,
   }: {
     postId: string;
     content: string;
+    onSuccess?: () => void;
   }) => {
     setStatus(STATUS.LOADING);
     setError('');
@@ -45,7 +47,7 @@ const useComment = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
-        await updateFeed();
+        onSuccess();
         return;
       }
       setStatus(STATUS.ERROR);
@@ -61,9 +63,11 @@ const useComment = () => {
   const deleteComment = async ({
     postId,
     commentId,
+    onSuccess = updateFeed,
   }: {
     postId: string;
     commentId: string;
+    onSuccess?: () => void;
   }) => {
     setStatus(STATUS.LOADING);
     setError('');
@@ -80,7 +84,7 @@ const useComment = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
-        await updateFeed();
+        onSuccess();
         return;
       }
       setStatus(STATUS.ERROR);
@@ -97,10 +101,12 @@ const useComment = () => {
     postId,
     commentId,
     content,
+    onSuccess = updateFeed,
   }: {
     postId: string;
     commentId: string;
     content: string;
+    onSuccess?: () => void;
   }) => {
     setStatus(STATUS.LOADING);
     setError('');
@@ -126,7 +132,7 @@ const useComment = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
-        await updateFeed();
+        onSuccess();
         return;
       }
       setStatus(STATUS.ERROR);

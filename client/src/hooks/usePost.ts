@@ -50,7 +50,13 @@ const usePost = () => {
     }
   };
 
-  const createPost = async ({ content }: { content: string }) => {
+  const createPost = async ({
+    content,
+    onSuccess = updateFeed,
+  }: {
+    content: string;
+    onSuccess?: () => void;
+  }) => {
     setStatus(STATUS.LOADING);
     setError('');
 
@@ -66,7 +72,7 @@ const usePost = () => {
       });
       if (success) {
         setStatus(STATUS.SUCCESS);
-        await updateFeed();
+        onSuccess();
         return;
       }
       setStatus(STATUS.ERROR);
@@ -79,7 +85,13 @@ const usePost = () => {
     }
   };
 
-  const deletePost = async ({ postId }: { postId: string }) => {
+  const deletePost = async ({
+    postId,
+    onSuccess = updateFeed,
+  }: {
+    postId: string;
+    onSuccess?: () => void;
+  }) => {
     setStatus(STATUS.LOADING);
     setError('');
 
@@ -93,7 +105,7 @@ const usePost = () => {
       const { success, error } = await api.del<ApiResponse>(`/posts/${postId}`);
       if (success) {
         setStatus(STATUS.SUCCESS);
-        await updateFeed();
+        onSuccess();
         return;
       }
       setStatus(STATUS.ERROR);
@@ -109,9 +121,11 @@ const usePost = () => {
   const updatePost = async ({
     postId,
     content,
+    onSuccess = updateFeed,
   }: {
     postId: string;
     content: string;
+    onSuccess?: () => void;
   }) => {
     setStatus(STATUS.LOADING);
     setError('');
@@ -131,7 +145,7 @@ const usePost = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
-        await updateFeed();
+        onSuccess();
         return;
       }
       setStatus(STATUS.ERROR);
