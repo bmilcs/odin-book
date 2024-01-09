@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
-import useExistingComment from '@/hooks/useExistingComment';
+import useComment from '@/hooks/useComment';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -31,10 +31,7 @@ const CommentEditForm = ({
   onSuccess: () => void;
   className?: string;
 }) => {
-  const { error, updateComment, status } = useExistingComment({
-    postId,
-    commentId,
-  });
+  const { updateComment, status, error } = useComment();
 
   const {
     handleSubmit,
@@ -47,7 +44,7 @@ const CommentEditForm = ({
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    updateComment(values);
+    updateComment({ postId, commentId, content: values.content });
   }
 
   useEffect(() => {

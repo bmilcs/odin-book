@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
-import useNewComment from '@/hooks/useNewComment';
+import useComment from '@/hooks/useComment';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -25,7 +25,7 @@ const CommentForm = ({
   postId: string;
   className?: string;
 }) => {
-  const { error, submitComment, status } = useNewComment({ postId });
+  const { createComment, status, error } = useComment();
 
   const {
     handleSubmit,
@@ -40,7 +40,7 @@ const CommentForm = ({
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    submitComment(values);
+    createComment({ postId, content: values.content });
   }
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import LikeButton from '@/components/common/like-button';
 import { AuthContext } from '@/components/services/auth-provider';
 import { TComment } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
-import useExistingComment from '@/hooks/useExistingComment';
+import useComment from '@/hooks/useComment';
 import { formatDate } from '@/utils/formatters';
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -16,10 +16,7 @@ const Comment = ({
   className?: string;
 }) => {
   const [editCommentMode, setEditCommentMode] = useState(false);
-  const { deleteComment } = useExistingComment({
-    postId: data.post,
-    commentId: data._id,
-  });
+  const { deleteComment } = useComment();
   const { user } = useContext(AuthContext);
 
   const initialIsLikedByUser = data.likes.some((like) => {
@@ -33,7 +30,7 @@ const Comment = ({
   };
 
   const handleDeleteComment = () => {
-    deleteComment();
+    deleteComment({ postId: data.post, commentId: data._id });
   };
 
   const handleSuccessfulEdit = () => {
