@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
-import useNewPost from '@/hooks/useNewPost';
+import usePost from '@/hooks/usePost';
 import { CLIENT_MODE } from '@/utils/env';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
@@ -20,7 +20,7 @@ const formSchema = z.object({
 });
 
 const PostNewForm = ({ className }: { className?: string }) => {
-  const { error, submitPost, status } = useNewPost();
+  const { createPost, status, error } = usePost();
 
   const {
     handleSubmit,
@@ -40,7 +40,7 @@ const PostNewForm = ({ className }: { className?: string }) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    submitPost(values);
+    createPost({ content: values.content });
   }
 
   useEffect(() => {

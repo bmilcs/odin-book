@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Icons } from '@/components/ui/icons';
-import useExistingPost from '@/hooks/useExistingPost';
+import usePost from '@/hooks/usePost';
 import { formatDate } from '@/utils/formatters';
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -27,7 +27,7 @@ const Post = ({
   className?: string;
 }) => {
   const [editPostMode, setEditPostMode] = useState(false);
-  const { deletePost } = useExistingPost({ postId: data._id });
+  const { deletePost } = usePost();
   const { user } = useContext(AuthContext);
 
   const initialPostLikeCount = data.likes.length;
@@ -42,7 +42,7 @@ const Post = ({
   };
 
   const handleDeletePost = () => {
-    deletePost();
+    deletePost({ postId: data._id });
   };
 
   const handleSuccessfulEdit = () => {

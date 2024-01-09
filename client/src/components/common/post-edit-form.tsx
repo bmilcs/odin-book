@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
-import useExistingPost from '@/hooks/useExistingPost';
+import usePost from '@/hooks/usePost';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -29,9 +29,7 @@ const PostEditForm = ({
   onSuccess: () => void;
   className?: string;
 }) => {
-  const { error, updatePost, status } = useExistingPost({
-    postId,
-  });
+  const { updatePost, status, error } = usePost();
 
   const {
     handleSubmit,
@@ -44,7 +42,7 @@ const PostEditForm = ({
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    updatePost(values);
+    updatePost({ postId, content: values.content });
   }
 
   useEffect(() => {
