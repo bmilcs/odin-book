@@ -21,12 +21,12 @@ const formSchema = z.object({
 const PostEditForm = ({
   postId,
   postContent,
-  onSuccess,
+  onSuccessfulEditPost,
   className,
 }: {
   postId: string;
   postContent: string;
-  onSuccess: () => void;
+  onSuccessfulEditPost: () => void;
   className?: string;
 }) => {
   const { updatePost, status, error } = usePost();
@@ -47,9 +47,9 @@ const PostEditForm = ({
 
   useEffect(() => {
     if (status === 'success') {
-      onSuccess();
+      onSuccessfulEditPost();
     }
-  }, [error, status, reset, onSuccess]);
+  }, [error, status, reset, onSuccessfulEditPost]);
 
   return (
     <>

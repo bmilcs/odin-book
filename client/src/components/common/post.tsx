@@ -21,23 +21,26 @@ import { Link } from 'react-router-dom';
 const Post = ({
   data,
   className,
+  onSuccessfulEditPost,
+  onSuccessfulDeletePost,
   ...props
 }: {
+  onSuccessfulEditPost: () => void;
+  onSuccessfulDeletePost: () => void;
   data: TPost;
   className?: string;
 }) => {
   const [editPostMode, setEditPostMode] = useState(false);
-  const { deletePost } = usePost();
+  const { deletePost, status: deletePostStatus } = usePost();
   const { user } = useContext(AuthContext);
 
-  const initialPostLikeCount = data.likes.length;
-  const initialIsLikedByUser = data.likes.some(
+  const isCreatedByUser = data.author._id.toString() === user?._id.toString();
+  const likeCount = data.likes.length;
+  const isLikedByUser = data.likes.some(
     (like) => like.user._id.toString() === user?._id.toString(),
   );
-  const isPostCreatedByUser =
-    data.author._id.toString() === user?._id.toString();
 
-  const handleEditPost = () => {
+  const handleEditPostButtonClick = () => {
     setEditPostMode((prev) => !prev);
   };
 
@@ -45,9 +48,26 @@ const Post = ({
     deletePost({ postId: data._id });
   };
 
-  const handleSuccessfulEdit = () => {
+  const handleSuccessfulEditPost = () => {
     setEditPostMode(false);
+    onSuccessfulEditPost();
   };
+
+  const handleSuccessfulNewComment = () => {
+    onSuccessfulEditPost();
+  };
+
+  const handleSuccessfulEditComment = () => {
+    onSuccessfulEditPost();
+  };
+
+  const handleSuccessfulDeleteComment = () => {
+    onSuccessfulEditPost();
+  };
+
+  if (deletePostStatus === 'success') {
+    onSuccessfulDeletePost();
+  }
 
   return (
     <Card className={`${className}`} {...props}>
@@ -73,9 +93,7 @@ const Post = ({
           <PostEditForm
             postId={data._id}
             postContent={data.content}
-            onSuccess={() => {
-              handleSuccessfulEdit();
-            }}
+            onSuccessfulEditPost={handleSuccessfulEditPost}
           />
         ) : (
           <p>{data.content}</p>
@@ -87,15 +105,19 @@ const Post = ({
         <div className="flex justify-between">
           {/* Like Button */}
           <LikeButton
-            isLiked={initialIsLikedByUser}
+            isLiked={isLikedByUser}
             postId={data._id}
             contentType="post"
-            likeCount={initialPostLikeCount}
+            likeCount={likeCount}
           />
           {/* OP Action Buttons: Edit/Delete */}
-          {isPostCreatedByUser && (
+          {isCreatedByUser && (
             <div className="flex">
-              <Button variant="ghost" size="icon" onClick={handleEditPost}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleEditPostButtonClick}
+              >
                 <Icons.edit />
                 <span className="sr-only">Edit Post</span>
               </Button>
@@ -111,9 +133,19 @@ const Post = ({
       {/* Comments */}
       <CardContent className="grid gap-4 p-5">
         {data.comments.map((comment) => (
-          <Comment key={comment._id} data={comment} className="" />
+          <Comment
+            key={comment._id}
+            data={comment}
+            className=""
+            onSuccessfulDeleteComment={handleSuccessfulDeleteComment}
+            onSuccessfulEditComment={handleSuccessfulEditComment}
+          />
         ))}
-        <CommentForm postId={data._id} className="" />
+        <CommentForm
+          postId={data._id}
+          className=""
+          onSuccessfulNewComment={handleSuccessfulNewComment}
+        />
       </CardContent>
     </Card>
   );

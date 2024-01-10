@@ -1,10 +1,11 @@
+import { FeedContext } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import usePost from '@/hooks/usePost';
 import { CLIENT_MODE } from '@/utils/env';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -20,7 +21,8 @@ const formSchema = z.object({
 });
 
 const PostNewForm = ({ className }: { className?: string }) => {
-  const { createPost, status, error } = usePost();
+  const { createPost, status } = usePost();
+  const { updateFeed } = useContext(FeedContext);
 
   const {
     handleSubmit,
@@ -46,8 +48,9 @@ const PostNewForm = ({ className }: { className?: string }) => {
   useEffect(() => {
     if (status === 'success') {
       reset();
+      updateFeed();
     }
-  }, [error, status, reset]);
+  }, [status, reset, updateFeed]);
 
   return (
     <form
