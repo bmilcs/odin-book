@@ -175,13 +175,16 @@ const UserSearchResult = ({
 
   if (isActiveUser) {
     return (
-      <DropdownMenuItem onClick={() => handleGenericClick(result.username)}>
+      <DropdownMenuItem
+        onClick={() => handleGenericClick(result.username)}
+        className="flex w-full items-center justify-between gap-4"
+      >
         <p>
           <strong>
             <Link to={`/users/${result.username}`}>{result.username}</Link>
           </strong>{' '}
-          (You)
         </p>
+        <p>(You)</p>
       </DropdownMenuItem>
     );
   }
@@ -189,7 +192,7 @@ const UserSearchResult = ({
   if (isFriend) {
     return (
       <DropdownMenuItem
-        className="flex items-center gap-4"
+        className="flex w-full items-center justify-between gap-4"
         key={result._id}
         onClick={() => handleGenericClick(result.username)}
       >
@@ -214,7 +217,7 @@ const UserSearchResult = ({
   if (isOutgoingFriendRequest) {
     return (
       <DropdownMenuItem
-        className="flex items-center gap-4"
+        className="flex w-full items-center justify-between gap-4"
         key={result._id}
         onClick={() => handleGenericClick(result.username)}
       >
@@ -222,8 +225,8 @@ const UserSearchResult = ({
           <strong>
             <Link to={`/users/${result.username}`}>{result.username}</Link>
           </strong>{' '}
-          (Friend Request Sent)
         </p>
+        <p>(Friend Request Sent)</p>
       </DropdownMenuItem>
     );
   }
@@ -231,7 +234,7 @@ const UserSearchResult = ({
   if (isIncomingFriendRequest) {
     return (
       <DropdownMenuItem
-        className="flex items-center gap-4"
+        className="flex w-full items-center justify-between gap-4"
         key={result._id}
         onClick={() => handleGenericClick(result.username)}
       >
@@ -240,22 +243,24 @@ const UserSearchResult = ({
             <Link to={`/users/${result.username}`}>{result.username}</Link>
           </strong>
         </p>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => handleAcceptFriendRequest(result._id)}
-        >
-          <Icons.check />
-          <span className="sr-only">Accept Friend Request</span>
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => handleRejectFriendRequest(result._id)}
-        >
-          <Icons.close />
-          <span className="sr-only">Reject Friend Request</span>
-        </Button>
+        <div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleAcceptFriendRequest(result._id)}
+          >
+            <Icons.check />
+            <span className="sr-only">Accept Friend Request</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => handleRejectFriendRequest(result._id)}
+          >
+            <Icons.close />
+            <span className="sr-only">Reject Friend Request</span>
+          </Button>
+        </div>
       </DropdownMenuItem>
     );
   }
@@ -263,7 +268,7 @@ const UserSearchResult = ({
   if (!isFriend && !isActiveUser) {
     return (
       <DropdownMenuItem
-        className="flex items-center gap-4"
+        className="flex w-full items-center justify-between gap-4"
         key={result._id}
         onClick={() => handleGenericClick(result.username)}
       >
