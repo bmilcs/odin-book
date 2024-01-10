@@ -12,6 +12,7 @@ import {
 import { Icons } from '@/components/ui/icons';
 import useFriends from '@/hooks/useFriends';
 import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const NotificationIcon = () => {
   const { notifications } = useContext(NotificationContext);
@@ -34,7 +35,7 @@ const NotificationIcon = () => {
         {notifications.length > 0 ? (
           notifications.map((notification) => (
             <DropdownMenuItem key={notification._id}>
-              <Notification data={notification} />
+              <NotificationItem data={notification} />
             </DropdownMenuItem>
           ))
         ) : (
@@ -47,27 +48,50 @@ const NotificationIcon = () => {
   );
 };
 
-const Notification = ({ data }: { data: TNotification }) => {
+const NotificationItem = ({ data }: { data: TNotification }) => {
   const { markNotificationAsRead, deleteNotification } =
     useContext(NotificationContext);
   const { acceptFriendRequest, rejectFriendRequest } = useFriends();
+  const navigate = useNavigate();
   const notificationType = data.type;
 
-  async function handleAcceptFriendRequest(fromUserId: string) {
+  const handleAcceptFriendRequest = async (fromUserId: string) => {
     await acceptFriendRequest(fromUserId);
-  }
+  };
 
-  async function handleRejectFriendRequest(fromUserId: string) {
+  const handleRejectFriendRequest = async (fromUserId: string) => {
     await rejectFriendRequest(fromUserId);
-  }
+  };
 
-  async function handleMarkNotificationAsRead(notificationId: string) {
+  const handleMarkNotificationAsRead = async (notificationId: string) => {
     await markNotificationAsRead(notificationId);
-  }
+  };
 
-  async function handleDeleteNotification(notificationId: string) {
+  const handleDeleteNotification = async (notificationId: string) => {
     await deleteNotification(notificationId);
-  }
+  };
+
+  const handleNewCommentClick = async ({
+    notificationId,
+    postId,
+  }: {
+    notificationId: string;
+    postId: string;
+  }) => {
+    await markNotificationAsRead(notificationId);
+    navigate(`/posts/${postId}`);
+  };
+
+  const handleNewPostClick = async ({
+    notificationId,
+    postId,
+  }: {
+    notificationId: string;
+    postId: string;
+  }) => {
+    await markNotificationAsRead(notificationId);
+    navigate(`/posts/${postId}`);
+  };
 
   if (notificationType === 'incoming_friend_request') {
     return (
@@ -111,6 +135,62 @@ const Notification = ({ data }: { data: TNotification }) => {
         <p>
           <strong>{data.fromUser.username}</strong> accepted your friend
           request!
+        </p>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleDeleteNotification(data._id)}
+        >
+          <Icons.delete />
+          <span className="sr-only">
+            Delete notification from {data.fromUser.username}
+          </span>
+        </Button>
+      </div>
+    );
+  }
+
+  if (notificationType === 'new_comment') {
+    return (
+      <div
+        className="flex items-center"
+        onClick={() =>
+          handleNewCommentClick({
+            notificationId: data._id,
+            postId: data.post,
+          })
+        }
+      >
+        <p>
+          <strong>{data.fromUser.username}</strong> commented on your post!
+        </p>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => handleDeleteNotification(data._id)}
+        >
+          <Icons.delete />
+          <span className="sr-only">
+            Delete notification from {data.fromUser.username}
+          </span>
+        </Button>
+      </div>
+    );
+  }
+
+  if (notificationType === 'new_post') {
+    return (
+      <div
+        className="flex items-center"
+        onClick={() =>
+          handleNewPostClick({
+            notificationId: data._id,
+            postId: data.post,
+          })
+        }
+      >
+        <p>
+          <strong>{data.fromUser.username}</strong> created a new post!
         </p>
         <Button
           variant="ghost"
