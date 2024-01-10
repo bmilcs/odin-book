@@ -55,7 +55,7 @@ const PostNewForm = ({ className }: { className?: string }) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className={`mx-auto flex w-full max-w-5xl items-center gap-2 ${className}`}
+      className={`mx-auto flex w-full max-w-3xl items-center gap-2 ${className}`}
     >
       <Input
         type="post"
