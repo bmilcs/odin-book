@@ -35,7 +35,7 @@ const UserSearchForm = ({ className }: { className?: string }) => {
   const {
     search,
     results,
-    error: searchError,
+    error: apiError,
     status,
     friends,
     incomingFriendRequests,
@@ -45,7 +45,7 @@ const UserSearchForm = ({ className }: { className?: string }) => {
   const {
     handleSubmit,
     register,
-    formState: { isSubmitting, errors: useFormErrors },
+    formState: { isSubmitting, errors: formErrors },
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { searchTerm: '' },
@@ -56,10 +56,10 @@ const UserSearchForm = ({ className }: { className?: string }) => {
   };
 
   useEffect(() => {
-    if (status === 'success' || useFormErrors.searchTerm) {
+    if (status === 'success' || formErrors.searchTerm) {
       setOpen(true);
     }
-  }, [status, useFormErrors]);
+  }, [status, formErrors]);
 
   return (
     <form
@@ -90,14 +90,12 @@ const UserSearchForm = ({ className }: { className?: string }) => {
            */}
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
-          {searchError ? (
+          {apiError ? (
             <DropdownMenuItem>
-              <p>{searchError}</p>
+              <p>{apiError}</p>
             </DropdownMenuItem>
-          ) : useFormErrors.searchTerm ? (
-            <DropdownMenuItem>
-              {useFormErrors.searchTerm.message}
-            </DropdownMenuItem>
+          ) : formErrors.searchTerm ? (
+            <DropdownMenuItem>{formErrors.searchTerm.message}</DropdownMenuItem>
           ) : results.length > 0 ? (
             <>
               {results.map((result) => (
@@ -141,33 +139,33 @@ const UserSearchResult = ({
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  function handleAddFriend(id: string) {
+  const handleAddFriend = (id: string) => {
     sendFriendRequest(id);
     closeMenu();
-  }
+  };
 
-  function handleAcceptFriendRequest(id: string) {
+  const handleAcceptFriendRequest = (id: string) => {
     acceptFriendRequest(id);
     closeMenu();
-  }
+  };
 
-  function handleRejectFriendRequest(id: string) {
+  const handleRejectFriendRequest = (id: string) => {
     rejectFriendRequest(id);
     closeMenu();
-  }
+  };
 
-  function handleDeleteFriend(id: string) {
+  const handleDeleteFriend = (id: string) => {
     deleteFriend(id);
     closeMenu();
-  }
+  };
 
-  function handleGenericClick(username: string) {
+  const handleGenericClick = (username: string) => {
     navigate(`/users/${username}`);
     closeMenu();
-  }
+  };
 
   const isFriend = currentFriends.some((friend) => friend._id === result._id);
-  const isUser = result._id === user?._id;
+  const isActiveUser = result._id === user?._id;
   const isIncomingFriendRequest = currentFriendRequests.some(
     (friendRequest) => friendRequest._id === result._id,
   );
@@ -175,7 +173,7 @@ const UserSearchResult = ({
     (friendRequest) => friendRequest._id === result._id,
   );
 
-  if (isUser) {
+  if (isActiveUser) {
     return (
       <DropdownMenuItem onClick={() => handleGenericClick(result.username)}>
         <p>
@@ -262,7 +260,7 @@ const UserSearchResult = ({
     );
   }
 
-  if (!isFriend && !isUser) {
+  if (!isFriend && !isActiveUser) {
     return (
       <DropdownMenuItem
         className="flex items-center gap-4"
