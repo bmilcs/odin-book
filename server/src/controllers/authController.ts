@@ -17,6 +17,7 @@ const status = tryCatch(
         .populate('notifications')
         .populate({
           path: 'notifications',
+          match: { read: false },
           populate: {
             path: 'fromUser',
             select:
@@ -69,6 +70,7 @@ const login = tryCatch(
       .populate('notifications')
       .populate({
         path: 'notifications',
+        match: { read: false },
         populate: {
           path: 'fromUser',
           select:
