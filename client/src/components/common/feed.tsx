@@ -4,7 +4,15 @@ import { FeedContext } from '@/components/services/feed-provider';
 import { useContext } from 'react';
 
 const Feed = () => {
-  const { feed, status, error } = useContext(FeedContext);
+  const { feed, updateFeed, status, error } = useContext(FeedContext);
+
+  const handleSuccessfulEditPost = () => {
+    updateFeed();
+  };
+
+  const handleSuccessfulDeletePost = () => {
+    updateFeed();
+  };
 
   if (status === 'loading') {
     return (
@@ -21,7 +29,13 @@ const Feed = () => {
   return (
     <div className="mx-auto my-4 max-w-5xl">
       {feed.map((post) => (
-        <Post key={post._id} data={post} className="my-8" />
+        <Post
+          key={post._id}
+          data={post}
+          className="my-8"
+          onSuccessfulEditPost={handleSuccessfulEditPost}
+          onSuccessfulDeletePost={handleSuccessfulDeletePost}
+        />
       ))}
     </div>
   );
