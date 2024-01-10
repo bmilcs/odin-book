@@ -11,31 +11,40 @@ import { Link } from 'react-router-dom';
 const Comment = ({
   data,
   className,
+  onSuccessfulEditComment,
+  onSuccessfulDeleteComment,
 }: {
   data: TComment;
   className?: string;
+  onSuccessfulEditComment: () => void;
+  onSuccessfulDeleteComment: () => void;
 }) => {
   const [editCommentMode, setEditCommentMode] = useState(false);
-  const { deleteComment } = useComment();
+  const { deleteComment, status: deleteCommentStatus } = useComment();
   const { user } = useContext(AuthContext);
 
-  const initialIsLikedByUser = data.likes.some((like) => {
+  const likeCount = data.likes.length;
+  const isCreatedByUser = data.author._id.toString() === user?._id;
+  const isLikedByUser = data.likes.some((like) => {
     return like.user._id.toString() === user?._id;
   });
-  const initialLikeCount = data.likes.length;
-  const isCommentCreatedByUser = data.author._id.toString() === user?._id;
-
-  const handleEditComment = () => {
-    setEditCommentMode((prev) => !prev);
-  };
 
   const handleDeleteComment = () => {
     deleteComment({ postId: data.post, commentId: data._id });
   };
 
-  const handleSuccessfulEdit = () => {
-    setEditCommentMode(false);
+  const handleEditComment = () => {
+    setEditCommentMode((prev) => !prev);
   };
+
+  const handleSuccessfulEditComment = () => {
+    setEditCommentMode(false);
+    onSuccessfulEditComment();
+  };
+
+  if (deleteCommentStatus === 'success') {
+    onSuccessfulDeleteComment();
+  }
 
   return (
     <div key={data._id}>
@@ -61,7 +70,7 @@ const Comment = ({
               commentId={data._id}
               postId={data.post}
               commentContent={data.content}
-              onSuccess={handleSuccessfulEdit}
+              onSuccessfulEditComment={handleSuccessfulEditComment}
               className="mt-2 w-full"
             />
           ) : (
@@ -73,14 +82,14 @@ const Comment = ({
       <div className="flex">
         {/* Like Button */}
         <LikeButton
-          isLiked={initialIsLikedByUser}
-          likeCount={initialLikeCount}
+          isLiked={isLikedByUser}
+          likeCount={likeCount}
           postId={data.post}
           commentId={data._id}
           contentType="comment"
         />
         {/* OP Actions: Edit/Delete */}
-        {isCommentCreatedByUser && (
+        {isCreatedByUser && (
           <div className="ml-2 flex gap-2">
             <Button variant="link" onClick={handleEditComment} size="icon">
               Edit

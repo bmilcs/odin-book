@@ -20,9 +20,11 @@ const formSchema = z.object({
 
 const CommentForm = ({
   postId,
+  onSuccessfulNewComment,
   className,
 }: {
   postId: string;
+  onSuccessfulNewComment: () => void;
   className?: string;
 }) => {
   const { createComment, status, error } = useComment();
@@ -45,9 +47,10 @@ const CommentForm = ({
 
   useEffect(() => {
     if (status === 'success') {
+      onSuccessfulNewComment();
       reset();
     }
-  }, [error, status, reset]);
+  }, [onSuccessfulNewComment, status, reset]);
 
   if (error) {
     return <p>{error}</p>;

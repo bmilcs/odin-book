@@ -22,16 +22,16 @@ const CommentEditForm = ({
   postId,
   commentId,
   commentContent,
-  onSuccess,
+  onSuccessfulEditComment,
   className,
 }: {
   postId: string;
   commentId: string;
   commentContent: string;
-  onSuccess: () => void;
+  onSuccessfulEditComment: () => void;
   className?: string;
 }) => {
-  const { updateComment, status, error } = useComment();
+  const { updateComment, status } = useComment();
 
   const {
     handleSubmit,
@@ -49,9 +49,9 @@ const CommentEditForm = ({
 
   useEffect(() => {
     if (status === 'success') {
-      onSuccess();
+      onSuccessfulEditComment();
     }
-  }, [error, status, reset, onSuccess]);
+  }, [status, reset, onSuccessfulEditComment]);
 
   return (
     <>
