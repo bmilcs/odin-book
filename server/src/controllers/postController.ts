@@ -247,13 +247,16 @@ const addComment = tryCatch(
     post.comments.push(comment._id);
     await post.save();
     // create notification for post author
-    await notificationModel.create({
-      type: 'new_comment',
-      fromUser: userId,
-      toUser: post.author,
-      post: postId,
-      comment: comment._id,
-    });
+    const isCommentingOnOwnPost = userId === post.author.toString();
+    if (!isCommentingOnOwnPost) {
+      await notificationModel.create({
+        type: 'new_comment',
+        fromUser: userId,
+        toUser: post.author,
+        post: postId,
+        comment: comment._id,
+      });
+    }
     res.success('Comment created', comment, 201);
   },
 );
