@@ -2,6 +2,7 @@ import Layout from '@/components/layout';
 import FeedPage from '@/components/pages/feed-page';
 import HomePage from '@/components/pages/home-page';
 import LoginPage from '@/components/pages/login-page';
+import PostPage from '@/components/pages/post-page';
 import SignupPage from '@/components/pages/signup-page';
 import UserProfilePage from '@/components/pages/user-profile';
 import AuthProvider from '@/components/services/auth-provider';
@@ -25,6 +26,8 @@ function App() {
                   <Route path="/login" Component={LoginPage} />
                   <Route path="/signup" Component={SignupPage} />
                   <Route path="/feed" Component={FeedPage} />
+                  <Route path="/feed" Component={FeedPage} />
+                  <Route path="/posts/:postId" Component={PostPage} />
                   <Route path="/users/:username" Component={UserProfilePage} />
                   <Route path="*" Component={FeedPage} />
                 </Routes>
