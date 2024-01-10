@@ -1,8 +1,8 @@
-import { FeedContext, TPost } from '@/components/services/feed-provider';
+import { TPost } from '@/components/services/feed-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import { useContext, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 type ApiResponse = {
   success: boolean;
@@ -19,9 +19,8 @@ const usePost = () => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const [postData, setPostData] = useState<TPost | null>(null);
-  const { updateFeed } = useContext(FeedContext);
 
-  const getPost = async ({ postId }: { postId: string }) => {
+  const getPost = useCallback(async ({ postId }: { postId: string }) => {
     setStatus(STATUS.LOADING);
     setError('');
 
@@ -48,15 +47,9 @@ const usePost = () => {
       setError(errorMsg);
       console.log(error);
     }
-  };
+  }, []);
 
-  const createPost = async ({
-    content,
-    onSuccess = updateFeed,
-  }: {
-    content: string;
-    onSuccess?: () => void;
-  }) => {
+  const createPost = async ({ content }: { content: string }) => {
     setStatus(STATUS.LOADING);
     setError('');
 
@@ -72,7 +65,6 @@ const usePost = () => {
       });
       if (success) {
         setStatus(STATUS.SUCCESS);
-        onSuccess();
         return;
       }
       setStatus(STATUS.ERROR);
@@ -85,13 +77,7 @@ const usePost = () => {
     }
   };
 
-  const deletePost = async ({
-    postId,
-    onSuccess = updateFeed,
-  }: {
-    postId: string;
-    onSuccess?: () => void;
-  }) => {
+  const deletePost = async ({ postId }: { postId: string }) => {
     setStatus(STATUS.LOADING);
     setError('');
 
@@ -105,7 +91,6 @@ const usePost = () => {
       const { success, error } = await api.del<ApiResponse>(`/posts/${postId}`);
       if (success) {
         setStatus(STATUS.SUCCESS);
-        onSuccess();
         return;
       }
       setStatus(STATUS.ERROR);
@@ -121,11 +106,9 @@ const usePost = () => {
   const updatePost = async ({
     postId,
     content,
-    onSuccess = updateFeed,
   }: {
     postId: string;
     content: string;
-    onSuccess?: () => void;
   }) => {
     setStatus(STATUS.LOADING);
     setError('');
@@ -145,7 +128,6 @@ const usePost = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
-        onSuccess();
         return;
       }
       setStatus(STATUS.ERROR);

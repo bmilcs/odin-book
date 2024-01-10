@@ -1,8 +1,7 @@
-import { FeedContext } from '@/components/services/feed-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
 type ApiResponse = {
   success: boolean;
@@ -12,16 +11,13 @@ type ApiResponse = {
 const useComment = () => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
-  const { updateFeed } = useContext(FeedContext);
 
   const createComment = async ({
     postId,
     content,
-    onSuccess = updateFeed,
   }: {
     postId: string;
     content: string;
-    onSuccess?: () => void;
   }) => {
     setStatus(STATUS.LOADING);
     setError('');
@@ -47,7 +43,6 @@ const useComment = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
-        onSuccess();
         return;
       }
       setStatus(STATUS.ERROR);
@@ -63,11 +58,9 @@ const useComment = () => {
   const deleteComment = async ({
     postId,
     commentId,
-    onSuccess = updateFeed,
   }: {
     postId: string;
     commentId: string;
-    onSuccess?: () => void;
   }) => {
     setStatus(STATUS.LOADING);
     setError('');
@@ -84,7 +77,6 @@ const useComment = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
-        onSuccess();
         return;
       }
       setStatus(STATUS.ERROR);
@@ -101,12 +93,10 @@ const useComment = () => {
     postId,
     commentId,
     content,
-    onSuccess = updateFeed,
   }: {
     postId: string;
     commentId: string;
     content: string;
-    onSuccess?: () => void;
   }) => {
     setStatus(STATUS.LOADING);
     setError('');
@@ -132,7 +122,6 @@ const useComment = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
-        onSuccess();
         return;
       }
       setStatus(STATUS.ERROR);
