@@ -73,3 +73,19 @@ export const confirmNewPassword = () =>
       }
       return true;
     });
+
+//
+// profile
+//
+
+export const bio = () =>
+  body('bio')
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage('Bio cannot be longer than 500 characters');
+
+export const location = () =>
+  body('location')
+    .trim()
+    .isLength({ max: 150 })
+    .withMessage('Location cannot be longer than 150 characters');
