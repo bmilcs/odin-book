@@ -89,58 +89,138 @@ describe('USERS ROUTER', () => {
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Unauthorized');
     });
+
+    it('should return 400 if username is not found', async () => {
+      const { statusCode, body } = await request(app)
+        .get('/users/NOT_A_USER')
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(statusCode).to.equal(400);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal('User not found');
+    });
+
+    it('should return 201 w/ partial user info if username is not a friend of logged in user', async () => {
+      const { statusCode, body } = await request(app)
+        .get(`/users/${USER_TWO.username}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(statusCode).to.equal(201);
+      expect(body.success).to.be.true;
+      expect(body.message).to.equal('Partial user info fetched successfully');
+      expect(body.data.username).to.equal(USER_TWO.username);
+    });
+
+    it('should return 201 w/ user profile if username is a friend of logged in user', async () => {
+      // delete all friend requests and friendships
+      await deleteFriendsAndRequestsFromAllTestUsers();
+      await deleteNotificationsFromAllTestUsers();
+
+      // create friendship between user 1 & 2
+      await request(app)
+        .post(`/friends/send-request/${USER_TWO._id}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      const { statusCode: s, body: b } = await request(app)
+        .patch(`/friends/accept-request/${USER_ONE._id}`)
+        .set('Cookie', USER_TWO.jwtCookie);
+      expect(s).to.equal(200);
+      expect(b.success).to.be.true;
+      expect(b.message).to.equal('Friend request accepted');
+
+      // get user 2 profile from user 1
+      const { statusCode, body } = await request(app)
+        .get(`/users/${USER_TWO.username}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(statusCode).to.equal(201);
+      expect(body.success).to.be.true;
+      expect(body.data.username).to.equal(USER_TWO.username);
+    });
+
+    it('should return 201 w/ user profile if username is logged in user', async () => {
+      const { statusCode, body } = await request(app)
+        .get(`/users/${USER_ONE.username}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(statusCode).to.equal(201);
+      expect(body.success).to.be.true;
+      expect(body.data.username).to.equal(USER_ONE.username);
+    });
   });
 
-  it('should return 400 if username is not found', async () => {
-    const { statusCode, body } = await request(app)
-      .get('/users/NOT_A_USER')
-      .set('Cookie', USER_ONE.jwtCookie);
-    expect(statusCode).to.equal(400);
-    expect(body.success).to.be.false;
-    expect(body.error).to.equal('User not found');
-  });
+  describe('PATCH /profile/', () => {
+    it('should return 401 if user is not logged in', async () => {
+      const { statusCode, body } = await request(app).patch(
+        `/users/${USER_ONE.username}`,
+      );
+      expect(statusCode).to.equal(401);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal('Unauthorized');
+    });
 
-  it('should return 201 w/ partial user info if username is not a friend of logged in user', async () => {
-    const { statusCode, body } = await request(app)
-      .get(`/users/${USER_TWO.username}`)
-      .set('Cookie', USER_ONE.jwtCookie);
-    expect(statusCode).to.equal(201);
-    expect(body.success).to.be.true;
-    expect(body.message).to.equal('Partial user info fetched successfully');
-    expect(body.data.username).to.equal(USER_TWO.username);
-  });
+    it('should return 403 if user is not profile owner', async () => {
+      const { statusCode, body } = await request(app)
+        .patch(`/users/${USER_ONE.username}`)
+        .set('Cookie', USER_TWO.jwtCookie);
+      expect(statusCode).to.equal(403);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal('You are not the profile owner');
+    });
 
-  it('should return 201 w/ user profile if username is a friend of logged in user', async () => {
-    // delete all friend requests and friendships
-    await deleteFriendsAndRequestsFromAllTestUsers();
-    await deleteNotificationsFromAllTestUsers();
+    it('should return 409 if new username is already taken', async () => {
+      const userProfileUpdates = {
+        ...USER_ONE,
+        username: USER_TWO.username,
+      };
+      const { statusCode, body } = await request(app)
+        .patch(`/users/${USER_ONE.username}`)
+        .set('Cookie', USER_ONE.jwtCookie)
+        .send(userProfileUpdates);
+      expect(statusCode).to.equal(409);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal('Username already in use');
+    });
 
-    // create friendship between user 1 & 2
-    await request(app)
-      .post(`/friends/send-request/${USER_TWO._id}`)
-      .set('Cookie', USER_ONE.jwtCookie);
-    const { statusCode: s, body: b } = await request(app)
-      .patch(`/friends/accept-request/${USER_ONE._id}`)
-      .set('Cookie', USER_TWO.jwtCookie);
-    expect(s).to.equal(200);
-    expect(b.success).to.be.true;
-    expect(b.message).to.equal('Friend request accepted');
+    it('should return 409 if new email is already taken', async () => {
+      const userProfileUpdates = {
+        ...USER_ONE,
+        email: USER_TWO.email,
+      };
+      const { statusCode, body } = await request(app)
+        .patch(`/users/${USER_ONE.username}`)
+        .set('Cookie', USER_ONE.jwtCookie)
+        .send(userProfileUpdates);
+      expect(statusCode).to.equal(409);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal('Email already in use');
+    });
 
-    // get user 2 profile from user 1
-    const { statusCode, body } = await request(app)
-      .get(`/users/${USER_TWO.username}`)
-      .set('Cookie', USER_ONE.jwtCookie);
-    expect(statusCode).to.equal(201);
-    expect(body.success).to.be.true;
-    expect(body.data.username).to.equal(USER_TWO.username);
-  });
-
-  it('should return 201 w/ user profile if username is logged in user', async () => {
-    const { statusCode, body } = await request(app)
-      .get(`/users/${USER_ONE.username}`)
-      .set('Cookie', USER_ONE.jwtCookie);
-    expect(statusCode).to.equal(201);
-    expect(body.success).to.be.true;
-    expect(body.data.username).to.equal(USER_ONE.username);
+    it('should return 201 w/ updated user profile & db check', async () => {
+      const userProfileUpdates = {
+        ...USER_ONE,
+        username: 'new_username',
+        email: 'new@email.com',
+        bio: 'new bio',
+        location: 'new location',
+      };
+      const { statusCode, body } = await request(app)
+        .patch(`/users/${USER_ONE.username}`)
+        .set('Cookie', USER_ONE.jwtCookie)
+        .send(userProfileUpdates);
+      expect(statusCode).to.equal(201);
+      expect(body.success).to.be.true;
+      expect(body.data.username).to.equal(userProfileUpdates.username);
+      expect(body.data.email).to.equal(userProfileUpdates.email);
+      expect(body.data.profile.bio).to.equal('new bio');
+      expect(body.data.profile.location).to.equal('new location');
+      // check db
+      const { statusCode: userStatusCode, body: userBody } = await request(app)
+        .get(`/users/${userProfileUpdates.username}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(userStatusCode).to.equal(201);
+      expect(userBody.success).to.be.true;
+      expect(userBody.data.username).to.equal(userProfileUpdates.username);
+      expect(userBody.data.email).to.equal(userProfileUpdates.email);
+      expect(userBody.data.profile.bio).to.equal(userProfileUpdates.bio);
+      expect(userBody.data.profile.location).to.equal(
+        userProfileUpdates.location,
+      );
+    });
   });
 });
