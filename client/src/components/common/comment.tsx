@@ -5,7 +5,7 @@ import { TComment } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
 import useComment from '@/hooks/useComment';
 import { formatDate } from '@/utils/formatters';
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const Comment = ({
@@ -23,24 +23,28 @@ const Comment = ({
   const { deleteComment, status: deleteCommentStatus } = useComment();
   const { user } = useContext(AuthContext);
 
-  const likeCount = data.likes.length;
-  const isCreatedByUser = data.author._id.toString() === user?._id;
-  const isLikedByUser = data.likes.some((like) => {
-    return like.user._id.toString() === user?._id;
-  });
+  const likeCount = useMemo(() => data.likes.length, [data.likes.length]);
+  const isCreatedByUser = useMemo(
+    () => data.author._id.toString() === user?._id,
+    [data.author._id, user?._id],
+  );
+  const isLikedByUser = useMemo(
+    () => data.likes.some((like) => like.user._id.toString() === user?._id),
+    [data.likes, user?._id],
+  );
 
-  const handleDeleteComment = () => {
+  const handleDeleteComment = useCallback(() => {
     deleteComment({ postId: data.post, commentId: data._id });
-  };
+  }, [data.post, data._id, deleteComment]);
 
-  const handleEditComment = () => {
+  const handleEditComment = useCallback(() => {
     setEditCommentMode((prev) => !prev);
-  };
+  }, []);
 
-  const handleSuccessfulEditComment = () => {
+  const handleSuccessfulEditComment = useCallback(() => {
     setEditCommentMode(false);
     onSuccessfulEditComment();
-  };
+  }, [onSuccessfulEditComment]);
 
   if (deleteCommentStatus === 'success') {
     onSuccessfulDeleteComment();
