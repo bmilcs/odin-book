@@ -15,7 +15,7 @@ import {
 import { Icons } from '@/components/ui/icons';
 import usePost from '@/hooks/usePost';
 import { formatDate } from '@/utils/formatters';
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const Post = ({
@@ -34,36 +34,44 @@ const Post = ({
   const { deletePost, status: deletePostStatus } = usePost();
   const { user } = useContext(AuthContext);
 
-  const isCreatedByUser = data.author._id.toString() === user?._id.toString();
-  const likeCount = data.likes.length;
-  const isLikedByUser = data.likes.some(
-    (like) => like.user._id.toString() === user?._id.toString(),
+  // Memoized derived state data
+  const likeCount = useMemo(() => data.likes.length, [data]);
+  const isCreatedByUser = useMemo(
+    () => data.author._id.toString() === user?._id.toString(),
+    [data, user],
+  );
+  const isLikedByUser = useMemo(
+    () =>
+      data.likes.some(
+        (like) => like.user._id.toString() === user?._id.toString(),
+      ),
+    [data, user],
   );
 
-  const handleEditPostButtonClick = () => {
+  const handleEditPostButtonClick = useCallback(() => {
     setEditPostMode((prev) => !prev);
-  };
+  }, []);
 
-  const handleDeletePost = () => {
+  const handleDeletePost = useCallback(() => {
     deletePost({ postId: data._id });
-  };
+  }, [data._id, deletePost]);
 
-  const handleSuccessfulEditPost = () => {
+  const handleSuccessfulEditPost = useCallback(() => {
     setEditPostMode(false);
     onSuccessfulEditPost();
-  };
+  }, [onSuccessfulEditPost]);
 
-  const handleSuccessfulNewComment = () => {
+  const handleSuccessfulNewComment = useCallback(() => {
     onSuccessfulEditPost();
-  };
+  }, [onSuccessfulEditPost]);
 
-  const handleSuccessfulEditComment = () => {
+  const handleSuccessfulEditComment = useCallback(() => {
     onSuccessfulEditPost();
-  };
+  }, [onSuccessfulEditPost]);
 
-  const handleSuccessfulDeleteComment = () => {
+  const handleSuccessfulDeleteComment = useCallback(() => {
     onSuccessfulEditPost();
-  };
+  }, [onSuccessfulEditPost]);
 
   if (deletePostStatus === 'success') {
     onSuccessfulDeletePost();
