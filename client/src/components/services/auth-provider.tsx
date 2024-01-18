@@ -2,7 +2,14 @@ import LoadingPage from '@/components/pages/loading-page';
 import { TNotification } from '@/components/services/notification-provider';
 import api from '@/utils/api';
 import { getErrorMsg } from '@/utils/errors';
-import { FC, ReactNode, createContext, useEffect, useState } from 'react';
+import {
+  FC,
+  ReactNode,
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type TApiResponse = {
@@ -69,24 +76,30 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const [showSpinner, setShowSpinner] = useState(true);
   const navigate = useNavigate();
 
-  const redirectUnauthenticatedUser = (path: string) => {
-    if (isLoading) return;
-    if (!isAuthenticated()) {
-      navigate(path);
-    }
-  };
-
-  const redirectAuthenticatedUser = (path: string) => {
-    if (isLoading) return;
-    if (isAuthenticated()) {
-      navigate(path);
-    }
-  };
-
-  const isAuthenticated = () => {
+  const isAuthenticated = useCallback(() => {
     if (isLoading) return false;
     return !!user;
-  };
+  }, [isLoading, user]);
+
+  const redirectUnauthenticatedUser = useCallback(
+    (path: string) => {
+      if (isLoading) return;
+      if (!isAuthenticated()) {
+        navigate(path);
+      }
+    },
+    [isLoading, isAuthenticated, navigate],
+  );
+
+  const redirectAuthenticatedUser = useCallback(
+    (path: string) => {
+      if (isLoading) return;
+      if (isAuthenticated()) {
+        navigate(path);
+      }
+    },
+    [isLoading, isAuthenticated, navigate],
+  );
 
   const logout = async () => {
     try {
@@ -103,7 +116,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const updateUserData = async () => {
+  const updateUserData = useCallback(async () => {
     setIsLoading(true);
     try {
       const { success, data } = await api.get<TApiResponse>('/auth/status');
@@ -119,11 +132,11 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     updateUserData();
-  }, []);
+  }, [updateUserData]);
 
   // Show spinner while waiting for user data to load for at least 250ms
   // This prevents the spinner from flashing on the screen for a split second
