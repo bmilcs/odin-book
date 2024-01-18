@@ -1,18 +1,18 @@
 import LoadingSpinner from '@/components/common/loading-spinner';
 import Post from '@/components/common/post';
 import { FeedContext } from '@/components/services/feed-provider';
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 
 const Feed = () => {
   const { feed, updateFeed, status, error } = useContext(FeedContext);
 
-  const handleSuccessfulEditPost = () => {
+  const handleSuccessfulEditPost = useCallback(() => {
     updateFeed();
-  };
+  }, [updateFeed]);
 
-  const handleSuccessfulDeletePost = () => {
+  const handleSuccessfulDeletePost = useCallback(() => {
     updateFeed();
-  };
+  }, [updateFeed]);
 
   if (status === 'loading') {
     return (
