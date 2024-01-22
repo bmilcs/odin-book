@@ -154,16 +154,20 @@ describe('USERS ROUTER', () => {
       expect(body.error).to.equal('Unauthorized');
     });
 
-    it('should return 403 if user is not profile owner', async () => {
+    it('should return 400 if user is not profile owner', async () => {
       const { statusCode, body } = await request(app)
         .patch(`/users/${USER_ONE.username}`)
-        .set('Cookie', USER_TWO.jwtCookie);
-      expect(statusCode).to.equal(403);
+        .set('Cookie', USER_TWO.jwtCookie)
+        .send(USER_ONE);
+      expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
-      expect(body.error).to.equal('You are not the profile owner');
+      const errorMessages = body.error.map((e: any) => e.msg);
+      expect(errorMessages).to.deep.include(
+        'You are not the owner of this profile',
+      );
     });
 
-    it('should return 409 if new username is already taken', async () => {
+    it('should return 400 if new username is already taken', async () => {
       const userProfileUpdates = {
         ...USER_ONE,
         username: USER_TWO.username,
@@ -172,12 +176,13 @@ describe('USERS ROUTER', () => {
         .patch(`/users/${USER_ONE.username}`)
         .set('Cookie', USER_ONE.jwtCookie)
         .send(userProfileUpdates);
-      expect(statusCode).to.equal(409);
+      expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
-      expect(body.error).to.equal('Username already in use');
+      const errorMessages = body.error.map((e: any) => e.msg);
+      expect(errorMessages).to.deep.include('Username already in use');
     });
 
-    it('should return 409 if new email is already taken', async () => {
+    it('should return 400 if new email is already taken', async () => {
       const userProfileUpdates = {
         ...USER_ONE,
         email: USER_TWO.email,
@@ -186,9 +191,10 @@ describe('USERS ROUTER', () => {
         .patch(`/users/${USER_ONE.username}`)
         .set('Cookie', USER_ONE.jwtCookie)
         .send(userProfileUpdates);
-      expect(statusCode).to.equal(409);
+      expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
-      expect(body.error).to.equal('Email already in use');
+      const errorMessages = body.error.map((e: any) => e.msg);
+      expect(errorMessages).to.deep.include('Email already in use');
     });
 
     it('should return 201 w/ updated user profile & db check', async () => {
