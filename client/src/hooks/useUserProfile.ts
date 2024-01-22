@@ -44,7 +44,55 @@ const useUserProfile = () => {
     }
   }, []);
 
-  return { status, error, getUserProfile, userProfile };
+  const updateUserProfile = useCallback(
+    async ({
+      username,
+      email,
+      location,
+      bio,
+    }: {
+      username: string;
+      email: string;
+      location: string;
+      bio: string;
+    }) => {
+      setStatus(STATUS.LOADING);
+      setError('');
+
+      if (!username) {
+        setStatus(STATUS.ERROR);
+        setError('Username is required');
+        return;
+      }
+
+      try {
+        const { success, data, error } = await api.patch<ApiResponse>(
+          `/users/${username}`,
+          {
+            username,
+            email,
+            location,
+            bio,
+          },
+        );
+        if (success) {
+          setStatus(STATUS.SUCCESS);
+          setUserProfile(data);
+          return;
+        }
+        setStatus(STATUS.ERROR);
+        setError(error);
+      } catch (error) {
+        setStatus(STATUS.ERROR);
+        const errorMsg = getErrorMsg(error);
+        setError(errorMsg);
+        console.log(error);
+      }
+    },
+    [],
+  );
+
+  return { status, error, getUserProfile, updateUserProfile, userProfile };
 };
 
 export default useUserProfile;
