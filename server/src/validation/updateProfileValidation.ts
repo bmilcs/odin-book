@@ -1,8 +1,8 @@
 import { validateField } from '@/validation';
 
 const validateUpdateProfile = [
-  validateField.username(),
-  validateField.email(),
+  validateField.usernameChange(),
+  validateField.emailChange(),
   validateField.bio(),
   validateField.location(),
 ];

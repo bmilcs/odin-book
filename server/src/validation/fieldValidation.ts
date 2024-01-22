@@ -22,6 +22,41 @@ export const usernameAndNotExists = () =>
       return true;
     });
 
+export const usernameChange = () =>
+  username()
+    .bail()
+    .custom(async (value, { req }) => {
+      const { username: usernameOriginal } = req.params || {};
+      const { userId } = req;
+      const usernameNewValue = value;
+
+      const { username: requestingUsername } = await userModel.findById(
+        userId,
+        { username: 1 },
+      );
+      const isProfileOwner = requestingUsername === usernameOriginal;
+      const usernameChangeRequested = requestingUsername !== usernameNewValue;
+
+      if (!isProfileOwner) {
+        throw new Error('You are not the owner of this profile');
+      }
+      if (!usernameChangeRequested) {
+        // username has not changed
+        return true;
+      }
+
+      // make sure new username is not taken
+      const isDuplicate = await userModel.exists({
+        username: usernameNewValue,
+      });
+      if (isDuplicate) {
+        throw new Error('Username already in use');
+      }
+
+      // username has changed & is not taken
+      return true;
+    });
+
 //
 // email
 //
@@ -41,6 +76,33 @@ export const emailAndNotExists = () =>
       if (isDuplicate) {
         throw new Error('Email already in use');
       }
+      return true;
+    });
+
+export const emailChange = () =>
+  email()
+    .bail()
+    .custom(async (value, { req }) => {
+      const { userId } = req;
+      const emailNewValue = value;
+
+      const { email: requestingUsersEmail } = await userModel.findById(userId, {
+        email: 1,
+      });
+
+      const emailChangeRequested = requestingUsersEmail !== emailNewValue;
+      if (!emailChangeRequested) {
+        // email has not changed
+        return true;
+      }
+
+      // check if new email is already in use
+      const isDuplicate = await userModel.exists({ email: emailNewValue });
+      if (isDuplicate) {
+        throw new Error('Email already in use');
+      }
+
+      // email has changed & is not taken
       return true;
     });
 
@@ -75,7 +137,7 @@ export const confirmNewPassword = () =>
     });
 
 //
-// profile
+// profile update
 //
 
 export const bio = () =>

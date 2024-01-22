@@ -51,8 +51,9 @@ const getProfile = tryCatch(
 
 const updateProfile = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
+    // username & email duplicate checks are handled by the validation middleware
+    // so we don't need to check for duplicates here
     const { userId } = req;
-    const { username } = req.params;
     // get info for requesting user
     const requestingUser = await userModel.findById(userId, {
       password: 0,
@@ -60,32 +61,13 @@ const updateProfile = tryCatch(
     if (!requestingUser) {
       return next(new AppError('Your user information was not found', 400));
     }
-    // make sure requesting user is the profile owner
-    if (requestingUser.username !== username) {
-      return next(new AppError('You are not the profile owner', 403));
-    }
-    // make sure new username is not taken
-    const { username: newUsername } = req.body;
-    if (newUsername !== username) {
-      const isDuplicate = await userModel.exists({ username: newUsername });
-      if (isDuplicate) {
-        return next(new AppError('Username already in use', 409));
-      }
-    }
-    // make sure new email is not taken
-    const { email: newEmail } = req.body;
-    if (newEmail !== requestingUser.email) {
-      const isDuplicate = await userModel.exists({ email: newEmail });
-      if (isDuplicate) {
-        return next(new AppError('Email already in use', 409));
-      }
-    }
     // update user profile
-    const { bio, location } = req.body;
+    const { bio, location, username: newUserName, email: newEmail } = req.body;
     requestingUser.profile.bio = bio;
     requestingUser.profile.location = location;
     requestingUser.email = newEmail;
-    requestingUser.username = newUsername;
+    requestingUser.username = newUserName;
+    // requestingUser.username = username;
     requestingUser.markModified('profile');
     await requestingUser.save();
     res.success('User profile updated successfully', requestingUser, 201);
