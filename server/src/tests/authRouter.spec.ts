@@ -11,6 +11,12 @@ const AUTH_USER = {
   confirmPassword: 'Password1!',
 };
 
+const AUTH_USER_UPPERCASE = {
+  ...AUTH_USER,
+  username: AUTH_USER.username.toUpperCase(),
+  email: AUTH_USER.email.toUpperCase(),
+};
+
 describe('AUTH ROUTER', () => {
   //
   // signup
@@ -18,7 +24,9 @@ describe('AUTH ROUTER', () => {
 
   describe('POST /auth/signup', () => {
     afterEach(async () => {
-      await userModel.deleteOne({ username: 'adam' });
+      await userModel.deleteMany({
+        username: new RegExp(AUTH_USER.username, 'i'),
+      });
     });
 
     it('should validate signup data (empty inputs)', async () => {
@@ -67,6 +75,26 @@ describe('AUTH ROUTER', () => {
           .expect('Content-Type', /json/);
       await signupUser();
       const { body, statusCode } = await signupUser();
+      expect(statusCode).equal(400);
+      expect(body.success).to.be.false;
+      const errorMsgs = body.error.map((error: any) => error.msg);
+      const expectedErrorMsgs = [
+        'Username already in use',
+        'Email already in use',
+      ];
+      expect(errorMsgs).to.deep.equal(expectedErrorMsgs);
+    });
+
+    it('should validate duplicate email / username (case-insensitive)', async () => {
+      const { body: initialSignupBody } = await request(app)
+        .post('/auth/signup')
+        .send(AUTH_USER)
+        .expect('Content-Type', /json/);
+      expect(initialSignupBody.success).to.be.true;
+      const { body, statusCode } = await request(app)
+        .post('/auth/signup')
+        .send(AUTH_USER_UPPERCASE)
+        .expect('Content-Type', /json/);
       expect(statusCode).equal(400);
       expect(body.success).to.be.false;
       const errorMsgs = body.error.map((error: any) => error.msg);
