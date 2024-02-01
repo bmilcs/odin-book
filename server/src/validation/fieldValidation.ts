@@ -9,7 +9,9 @@ export const username = () =>
   body('username')
     .trim()
     .isLength({ min: 3, max: 50 })
-    .withMessage('Username must be between 3 and 50 characters');
+    .withMessage('Username must be between 3 and 50 characters')
+    .matches(/^[a-zA-Z0-9\s]+$/)
+    .withMessage('Username can only contain letters, numbers, and spaces');
 
 export const usernameAndNotExists = () =>
   username()
