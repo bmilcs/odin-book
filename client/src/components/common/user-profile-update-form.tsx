@@ -34,7 +34,7 @@ type TProfile = {
   };
 };
 
-type ProfileFormProps = HTMLAttributes<HTMLDivElement> & {
+type UserProfileUpdateFormProps = HTMLAttributes<HTMLDivElement> & {
   data: TProfile;
 };
 
@@ -53,7 +53,10 @@ const formSchema = z.object({
   }),
 });
 
-const ProfileForm: FC<ProfileFormProps> = ({ data, ...props }) => {
+const UserProfileUpdateForm: FC<UserProfileUpdateFormProps> = ({
+  data,
+  ...props
+}) => {
   const { updateUserProfile, validationErrors, status, error } =
     useUserProfile();
 
@@ -186,4 +189,4 @@ const ProfileForm: FC<ProfileFormProps> = ({ data, ...props }) => {
   );
 };
 
-export default ProfileForm;
+export default UserProfileUpdateForm;

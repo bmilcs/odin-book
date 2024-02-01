@@ -1,52 +1,78 @@
 import { AuthContext } from '@/components/services/auth-provider';
 import useUserProfile from '@/hooks/useUserProfile';
-import { useContext, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { formatDate } from '@/utils/formatters';
+import { HTMLAttributes, useContext, useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
-const UserProfile = () => {
-  const { username } = useParams();
-  const { redirectUnauthenticatedUser } = useContext(AuthContext);
+import UserProfileUpdateForm from '@/components/common/user-profile-update-form';
+import { FC } from 'react';
+
+type UserProfileProps = HTMLAttributes<HTMLDivElement>;
+
+const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
+  const { username: targetUsername } = useParams();
+  const { user: activeUser } = useContext(AuthContext);
   const { userProfile, getUserProfile, status, error } = useUserProfile();
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const navigate = useNavigate();
 
+  // Fetch user profile on targetUsername change and
+  // check if it's the active user's profile
   useEffect(() => {
-    redirectUnauthenticatedUser('/login');
-  }, [redirectUnauthenticatedUser]);
+    console.log(targetUsername);
+    if (!targetUsername || !activeUser) return;
+    if (activeUser.username === targetUsername) {
+      setIsOwnProfile(true);
+    } else {
+      setIsOwnProfile(false);
+    }
+    getUserProfile(targetUsername);
+  }, [targetUsername, getUserProfile, activeUser]);
 
-  useEffect(
-    function fetchUserDataOnInitialLoad() {
-      if (!username) {
-        return;
-      }
-      const fetchUserProfile = async () => {
-        await getUserProfile(username);
-      };
-      fetchUserProfile();
-    },
-    [username],
-  );
-
-  if (status === 'error') {
-    return <div>{error}</div>;
-  }
+  // Redirect user to their own profile after updating their username
+  useEffect(() => {
+    if (activeUser?.username && activeUser.username === targetUsername) {
+      navigate(`/users/${activeUser.username}`);
+    }
+  }, [activeUser?.username, targetUsername, navigate]);
 
   if (status === 'loading') {
     return <div>Loading...</div>;
   }
 
-  if (!userProfile) {
-    return <div>&quot;{username}&quot; not found</div>;
+  if (status === 'error') {
+    return <div>{error}</div>;
   }
 
-  return (
-    <div>
-      <p>{userProfile._id}</p>
-      <p>{userProfile.username}</p>
-      <p>{userProfile.email}</p>
-      <p>{userProfile.createdAt}</p>
-      {userProfile.profile.bio && <p>{userProfile.profile.bio}</p>}
-      {userProfile.profile.location && <p>{userProfile.profile.location}</p>}
-    </div>
-  );
+  if (userProfile) {
+    return (
+      <div {...props}>
+        <h2 className="text-3xl font-extrabold">{userProfile.username}</h2>
+        {userProfile.email && <p>{userProfile.email}</p>}
+        {userProfile.createdAt && (
+          <p>Joined {formatDate(userProfile.createdAt)}</p>
+        )}
+        {userProfile.profile?.bio && <p>{userProfile.profile.bio}</p>}
+        {userProfile.profile?.location && <p>{userProfile.profile.location}</p>}
+        {userProfile.friends && (
+          <div>
+            <p>Friends:</p>
+            <ul>
+              {userProfile.friends.map((friend) => (
+                <li key={friend._id}>
+                  <Link to={`/users/${friend.username}`}>
+                    {friend.username}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {isOwnProfile && <UserProfileUpdateForm data={userProfile} />}
+      </div>
+    );
+  }
 };
 
 export default UserProfile;
