@@ -3,6 +3,7 @@ import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { ExpressValidatorError, getErrorMsg } from '@/utils/errors';
 import { useCallback, useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 type GetUserProfileApiResponse = {
   success: boolean;
@@ -22,6 +23,7 @@ const useUserProfile = () => {
   >([]);
   const [userProfile, setUserProfile] = useState<TUser | null>(null);
   const { user, updateUserData } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const getUserProfile = useCallback(async (username: string) => {
     setStatus(STATUS.LOADING);
@@ -87,8 +89,8 @@ const useUserProfile = () => {
         console.log({ success, data, error });
         if (success) {
           setStatus(STATUS.SUCCESS);
-          setUserProfile(data);
-          updateUserData();
+          await updateUserData();
+          navigate(`/users/${username}`);
           return;
         }
         setStatus(STATUS.ERROR);
