@@ -167,10 +167,10 @@ describe('USERS ROUTER', () => {
       );
     });
 
-    it('should return 400 if new username is already taken', async () => {
+    it('should return 400 if new username is already taken (case insensitive)', async () => {
       const userProfileUpdates = {
         ...USER_ONE,
-        username: USER_TWO.username,
+        username: USER_TWO.username.toUpperCase(),
       };
       const { statusCode, body } = await request(app)
         .patch(`/users/${USER_ONE.username}`)
@@ -182,10 +182,10 @@ describe('USERS ROUTER', () => {
       expect(errorMessages).to.deep.include('Username already in use');
     });
 
-    it('should return 400 if new email is already taken', async () => {
+    it('should return 400 if new email is already taken (case insensitive)', async () => {
       const userProfileUpdates = {
         ...USER_ONE,
-        email: USER_TWO.email,
+        email: USER_TWO.email.toUpperCase(),
       };
       const { statusCode, body } = await request(app)
         .patch(`/users/${USER_ONE.username}`)
@@ -200,7 +200,7 @@ describe('USERS ROUTER', () => {
     it('should return 201 w/ updated user profile & db check', async () => {
       const userProfileUpdates = {
         ...USER_ONE,
-        username: 'new_username',
+        username: 'new username',
         email: 'new@email.com',
         bio: 'new bio',
         location: 'new location',
