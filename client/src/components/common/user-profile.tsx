@@ -2,7 +2,7 @@ import { AuthContext } from '@/components/services/auth-provider';
 import useUserProfile from '@/hooks/useUserProfile';
 import { formatDate } from '@/utils/formatters';
 import { HTMLAttributes, useContext, useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import UserProfileUpdateForm from '@/components/common/user-profile-update-form';
 import { FC } from 'react';
@@ -14,12 +14,10 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
   const { user: activeUser } = useContext(AuthContext);
   const { userProfile, getUserProfile, status, error } = useUserProfile();
   const [isOwnProfile, setIsOwnProfile] = useState(false);
-  const navigate = useNavigate();
 
   // Fetch user profile on targetUsername change and
   // check if it's the active user's profile
   useEffect(() => {
-    console.log(targetUsername);
     if (!targetUsername || !activeUser) return;
     if (activeUser.username === targetUsername) {
       setIsOwnProfile(true);
@@ -28,13 +26,6 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
     }
     getUserProfile(targetUsername);
   }, [targetUsername, getUserProfile, activeUser]);
-
-  // Redirect user to their own profile after updating their username
-  useEffect(() => {
-    if (activeUser?.username && activeUser.username === targetUsername) {
-      navigate(`/users/${activeUser.username}`);
-    }
-  }, [activeUser?.username, targetUsername, navigate]);
 
   if (status === 'loading') {
     return <div>Loading...</div>;
@@ -57,15 +48,19 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
         {userProfile.friends && (
           <div>
             <p>Friends:</p>
-            <ul>
-              {userProfile.friends.map((friend) => (
-                <li key={friend._id}>
-                  <Link to={`/users/${friend.username}`}>
-                    {friend.username}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {userProfile.friends.length === 0 ? (
+              <p>No friends yet</p>
+            ) : (
+              <ul>
+                {userProfile.friends.map((friend) => (
+                  <li key={friend._id}>
+                    <Link to={`/users/${friend.username}`}>
+                      {friend.username}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
 
