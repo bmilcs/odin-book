@@ -10,6 +10,7 @@ export const username = () =>
     .trim()
     .isLength({ min: 3, max: 50 })
     .withMessage('Username must be between 3 and 50 characters')
+    .bail()
     .matches(/^[a-zA-Z0-9\s]+$/)
     .withMessage('Username can only contain letters, numbers, and spaces');
 
@@ -17,10 +18,14 @@ export const usernameAndNotExists = () =>
   username()
     .bail()
     .custom(async (value) => {
-      const isDuplicate = await userModel.exists({ username: value });
-      if (isDuplicate) {
+      const isDuplicateUsername = await userModel.exists({
+        username: { $regex: new RegExp(`^${value}$`, 'i') },
+      });
+
+      if (isDuplicateUsername) {
         throw new Error('Username already in use');
       }
+
       return true;
     });
 
@@ -28,30 +33,32 @@ export const usernameChange = () =>
   username()
     .bail()
     .custom(async (value, { req }) => {
-      const { username: usernameOriginal } = req.params || {};
       const { userId } = req;
+      const { username: originalUsername } = req.params || {};
       const usernameNewValue = value;
 
       const { username: requestingUsername } = await userModel.findById(
         userId,
         { username: 1 },
       );
-      const isProfileOwner = requestingUsername === usernameOriginal;
-      const usernameChangeRequested = requestingUsername !== usernameNewValue;
 
+      const isProfileOwner = requestingUsername === originalUsername;
       if (!isProfileOwner) {
         throw new Error('You are not the owner of this profile');
       }
+
+      const usernameChangeRequested = requestingUsername !== usernameNewValue;
       if (!usernameChangeRequested) {
-        // username has not changed
         return true;
       }
 
-      // make sure new username is not taken
-      const isDuplicate = await userModel.exists({
-        username: usernameNewValue,
-      });
-      if (isDuplicate) {
+      const isDuplicateUsername = await userModel
+        .exists({
+          username: usernameNewValue,
+        })
+        .collation({ locale: 'en', strength: 2 });
+
+      if (isDuplicateUsername) {
         throw new Error('Username already in use');
       }
 
@@ -74,10 +81,17 @@ export const emailAndNotExists = () =>
   email()
     .bail()
     .custom(async (value) => {
-      const isDuplicate = await userModel.exists({ email: value });
-      if (isDuplicate) {
+      const isDuplicateEmail = await userModel
+        .exists({ email: value })
+        .collation({
+          locale: 'en',
+          strength: 2,
+        });
+
+      if (isDuplicateEmail) {
         throw new Error('Email already in use');
       }
+
       return true;
     });
 
@@ -94,13 +108,14 @@ export const emailChange = () =>
 
       const emailChangeRequested = requestingUsersEmail !== emailNewValue;
       if (!emailChangeRequested) {
-        // email has not changed
         return true;
       }
 
-      // check if new email is already in use
-      const isDuplicate = await userModel.exists({ email: emailNewValue });
-      if (isDuplicate) {
+      const isDuplicateEmail = await userModel
+        .exists({ email: emailNewValue })
+        .collation({ locale: 'en', strength: 2 });
+
+      if (isDuplicateEmail) {
         throw new Error('Email already in use');
       }
 
