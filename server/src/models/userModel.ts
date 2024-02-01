@@ -25,8 +25,20 @@ export interface IUser extends Document {
 
 const userSchema = new Schema<IUser>(
   {
-    username: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      // case-insensitive search
+      collation: { locale: 'en', strength: 2 },
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      // case-insensitive search
+      collation: { locale: 'en', strength: 2 },
+    },
     password: { type: String, required: true },
     photo: { type: String },
     profile: { type: Object, default: { bio: '', location: '' } },
@@ -36,6 +48,12 @@ const userSchema = new Schema<IUser>(
     notifications: [{ type: Schema.Types.ObjectId, ref: 'Notification' }],
   },
   { timestamps: true }, // auto create 'createdAt' and 'updatedAt' fields
+);
+
+// case-insensitive search
+userSchema.index(
+  { username: 1, email: 1 },
+  { unique: true, collation: { locale: 'en', strength: 2 } },
 );
 
 // hash password before saving to database
