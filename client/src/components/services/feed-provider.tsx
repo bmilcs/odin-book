@@ -51,6 +51,7 @@ type FeedContextProps = {
   error: string;
   feed: TPost[];
   updateFeed: () => Promise<void>;
+  addPostToFeed: (post: TPost) => void;
 };
 
 export const FeedContext = createContext<FeedContextProps>({
@@ -58,6 +59,7 @@ export const FeedContext = createContext<FeedContextProps>({
   error: '',
   feed: [],
   updateFeed: async () => {},
+  addPostToFeed: () => {},
 });
 
 type FeedProviderProps = {
@@ -69,6 +71,10 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const [feed, setFeed] = useState<TPost[]>([]);
+
+  const addPostToFeed = (post: TPost) => {
+    setFeed((prev) => [post, ...prev]);
+  };
 
   const updateFeed = useCallback(async () => {
     setStatus(STATUS.LOADING);
@@ -98,7 +104,9 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
   }, [isAuthenticated, updateFeed, user]);
 
   return (
-    <FeedContext.Provider value={{ status, error, feed, updateFeed }}>
+    <FeedContext.Provider
+      value={{ status, error, feed, updateFeed, addPostToFeed }}
+    >
       {children}
     </FeedContext.Provider>
   );
