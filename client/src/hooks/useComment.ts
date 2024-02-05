@@ -1,3 +1,4 @@
+import { TComment } from '@/components/services/feed-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
@@ -8,9 +9,18 @@ type ApiResponse = {
   error: string;
 };
 
+type CreateCommentApiResponse = ApiResponse & {
+  data: TComment;
+};
+
+type UpdateCommentApiResponse = ApiResponse & {
+  data: TComment;
+};
+
 const useComment = () => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
+  const [commentData, setCommentData] = useState<TComment | null>(null);
 
   const createComment = async ({
     postId,
@@ -35,7 +45,7 @@ const useComment = () => {
     }
 
     try {
-      const { success, error } = await api.post<ApiResponse>(
+      const { success, error, data } = await api.post<CreateCommentApiResponse>(
         `/posts/${postId}/comments`,
         {
           content,
@@ -43,6 +53,7 @@ const useComment = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
+        setCommentData(data);
         return;
       }
       setStatus(STATUS.ERROR);
@@ -114,14 +125,16 @@ const useComment = () => {
     }
 
     try {
-      const { success, error } = await api.patch<ApiResponse>(
-        `/posts/${postId}/comments/${commentId}`,
-        {
-          content,
-        },
-      );
+      const { data, success, error } =
+        await api.patch<UpdateCommentApiResponse>(
+          `/posts/${postId}/comments/${commentId}`,
+          {
+            content,
+          },
+        );
       if (success) {
         setStatus(STATUS.SUCCESS);
+        setCommentData(data);
         return;
       }
       setStatus(STATUS.ERROR);
@@ -134,10 +147,18 @@ const useComment = () => {
     }
   };
 
+  const reset = () => {
+    setStatus(STATUS.IDLE);
+    setError('');
+    setCommentData(null);
+  };
+
   return {
     createComment,
     updateComment,
     deleteComment,
+    reset,
+    commentData,
     status,
     error,
   };
