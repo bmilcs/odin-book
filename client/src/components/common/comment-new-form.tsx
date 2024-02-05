@@ -1,9 +1,10 @@
+import { TComment } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import useComment from '@/hooks/useComment';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { ComponentPropsWithoutRef, FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -18,16 +19,23 @@ const formSchema = z.object({
     }),
 });
 
-const CommentForm = ({
+type CommentNewFormProps = ComponentPropsWithoutRef<'form'> & {
+  postId: string;
+  onSuccessfulNewComment: (commentData: TComment) => void;
+};
+
+const CommentNewForm: FC<CommentNewFormProps> = ({
   postId,
   onSuccessfulNewComment,
-  className,
-}: {
-  postId: string;
-  onSuccessfulNewComment: () => void;
-  className?: string;
+  ...props
 }) => {
-  const { createComment, status, error } = useComment();
+  const {
+    createComment,
+    commentData,
+    reset: resetCommentHook,
+    status,
+    error,
+  } = useComment();
 
   const {
     handleSubmit,
@@ -47,10 +55,11 @@ const CommentForm = ({
 
   useEffect(() => {
     if (status === 'success') {
-      onSuccessfulNewComment();
       reset();
+      onSuccessfulNewComment(commentData!);
+      resetCommentHook();
     }
-  }, [onSuccessfulNewComment, status, reset]);
+  }, [onSuccessfulNewComment, resetCommentHook, commentData, status, reset]);
 
   if (error) {
     return <p>{error}</p>;
@@ -59,7 +68,8 @@ const CommentForm = ({
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className={`flex w-full items-center gap-1  ${className}`}
+      className={`flex w-full items-center gap-1`}
+      {...props}
     >
       <Input
         type="post"
@@ -79,4 +89,4 @@ const CommentForm = ({
   );
 };
 
-export default CommentForm;
+export default CommentNewForm;
