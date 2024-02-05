@@ -67,8 +67,7 @@ const getPost = tryCatch(
       .findById(postId)
       .populate({
         path: 'author',
-        select:
-          '-password -friends -friendRequestsReceived -friendRequestsSent',
+        select: '_id username email',
       })
       .populate({
         path: 'comments',
@@ -76,8 +75,7 @@ const getPost = tryCatch(
           path: 'likes',
           populate: {
             path: 'user',
-            select:
-              '-password -friends -friendRequestsReceived -friendRequestsSent',
+            select: '_id username email',
           },
         },
       })
@@ -85,16 +83,14 @@ const getPost = tryCatch(
         path: 'comments',
         populate: {
           path: 'author',
-          select:
-            '-password -friends -friendRequestsReceived -friendRequestsSent',
+          select: '_id username email',
         },
       })
       .populate({
         path: 'likes',
         populate: {
           path: 'user',
-          select:
-            '-password -friends -friendRequestsReceived -friendRequestsSent',
+          select: '_id username email',
         },
       });
     if (!post) {
@@ -117,12 +113,41 @@ const updatePost = tryCatch(
       return next(new AppError('Please provide content for your post', 400));
     }
     // check if post exists
-    const post = await postModel.findById(postId);
+    const post = await postModel
+      .findById(postId)
+      .populate({
+        path: 'author',
+        select: '_id username email',
+      })
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'likes',
+          populate: {
+            path: 'user',
+            select: '_id username email',
+          },
+        },
+      })
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'author',
+          select: '_id username email',
+        },
+      })
+      .populate({
+        path: 'likes',
+        populate: {
+          path: 'user',
+          select: '_id username email',
+        },
+      });
     if (!post) {
       return next(new AppError('Post not found', 404));
     }
     // check if user is authorized to edit post
-    if (post.author.toString() !== req.userId) {
+    if (post.author._id.toString() !== req.userId) {
       return next(new AppError('Unauthorized', 401));
     }
     // update post
@@ -242,10 +267,13 @@ const addComment = tryCatch(
     const comment = await commentModel.create({
       author: req.userId,
       post: postId,
+      likes: [],
       content,
     });
     post.comments.push(comment._id);
     await post.save();
+    // populate comment with author info
+    await comment.populate('author', '_id username email');
     // create notification for post author
     const isCommentingOnOwnPost = userId === post.author.toString();
     if (!isCommentingOnOwnPost) {
@@ -283,17 +311,27 @@ const editComment = tryCatch(
       return next(new AppError('Post not found', 404));
     }
     // check if comment exists
-    const comment = await commentModel.findById(commentId);
+    const comment = await commentModel
+      .findById(commentId)
+      .populate('author', { _id: 1, username: 1, email: 1 })
+      .populate({
+        path: 'likes',
+        populate: {
+          path: 'user',
+          select: '_id username email',
+        },
+      });
     if (!comment) {
       return next(new AppError('Comment not found', 404));
     }
     // check if user is authorized to edit comment
-    if (comment.author.toString() !== req.userId) {
+    if (comment.author._id.toString() !== req.userId) {
       return next(new AppError('Unauthorized', 401));
     }
     // update comment
     comment.content = content;
     comment.save();
+    console.log(comment);
     res.success('Comment updated', comment, 201);
   },
 );
