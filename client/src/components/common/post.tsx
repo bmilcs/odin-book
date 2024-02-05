@@ -126,7 +126,6 @@ const Post: FC<PostProps> = ({ data, ...props }) => {
         ))}
         <CommentNewForm
           postId={post._id}
-          className=""
           onSuccessfulNewComment={handleSuccessfulNewComment}
         />
       </CardContent>

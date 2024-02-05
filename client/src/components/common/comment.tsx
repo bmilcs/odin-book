@@ -69,7 +69,6 @@ const Comment: FC<CommentProps> = ({ data, ...props }) => {
               postId={comment.post}
               commentContent={comment.content}
               onSuccessfulEditComment={handleSuccessfulEditComment}
-              className="mt-2 w-full"
             />
           ) : (
             <span>{comment.content}</span>

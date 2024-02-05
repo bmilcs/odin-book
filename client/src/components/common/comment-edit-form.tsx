@@ -56,10 +56,10 @@ const CommentEditForm: FC<CommentEditFormProps> = ({
   }, [status, reset, onSuccessfulEditComment, commentData]);
 
   return (
-    <>
+    <div>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className={`flex w-full items-center gap-2`}
+        className={`mt-2 flex w-full items-center gap-2`}
         {...props}
       >
         <Input
@@ -83,7 +83,7 @@ const CommentEditForm: FC<CommentEditFormProps> = ({
           {errors.content.message}
         </p>
       )}
-    </>
+    </div>
   );
 };
 
