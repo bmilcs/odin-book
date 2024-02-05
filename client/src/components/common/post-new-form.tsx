@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import usePost from '@/hooks/usePost';
 import { CLIENT_MODE } from '@/utils/env';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useContext, useEffect } from 'react';
+import { ComponentPropsWithoutRef, FC, useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -20,9 +20,11 @@ const formSchema = z.object({
     }),
 });
 
-const PostNewForm = ({ className }: { className?: string }) => {
-  const { createPost, status } = usePost();
-  const { updateFeed } = useContext(FeedContext);
+type PostNewFormProps = ComponentPropsWithoutRef<'form'>;
+
+const PostNewForm: FC<PostNewFormProps> = ({ ...props }) => {
+  const { createPost, postData, status, reset: resetPostHook } = usePost();
+  const { addPostToFeed } = useContext(FeedContext);
 
   const {
     handleSubmit,
@@ -47,15 +49,17 @@ const PostNewForm = ({ className }: { className?: string }) => {
 
   useEffect(() => {
     if (status === 'success') {
+      addPostToFeed(postData!);
+      resetPostHook();
       reset();
-      updateFeed();
     }
-  }, [status, reset, updateFeed]);
+  }, [status, reset, resetPostHook, postData, addPostToFeed]);
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className={`mx-auto flex w-full max-w-3xl items-center gap-2 ${className}`}
+      className={`mx-auto flex w-full max-w-3xl items-center gap-2`}
+      {...props}
     >
       <Input
         type="post"
