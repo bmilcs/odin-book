@@ -1,9 +1,9 @@
 import Comment from '@/components/common/comment';
-import CommentForm from '@/components/common/comment-form';
+import CommentNewForm from '@/components/common/comment-new-form';
 import LikeButton from '@/components/common/like-button';
 import PostEditForm from '@/components/common/post-edit-form';
 import { AuthContext } from '@/components/services/auth-provider';
-import { TPost } from '@/components/services/feed-provider';
+import { TComment, TPost } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -15,82 +15,63 @@ import {
 import { Icons } from '@/components/ui/icons';
 import usePost from '@/hooks/usePost';
 import { formatDate } from '@/utils/formatters';
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { ComponentPropsWithoutRef, FC, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const Post = ({
-  data,
-  className,
-  onSuccessfulEditPost,
-  onSuccessfulDeletePost,
-  ...props
-}: {
-  onSuccessfulEditPost: () => void;
-  onSuccessfulDeletePost: () => void;
+type PostProps = ComponentPropsWithoutRef<'div'> & {
   data: TPost;
-  className?: string;
-}) => {
+};
+
+const Post: FC<PostProps> = ({ data, ...props }) => {
+  const [post, setPost] = useState<TPost>(data);
   const [editPostMode, setEditPostMode] = useState(false);
-  const { deletePost, status: deletePostStatus } = usePost();
   const { user } = useContext(AuthContext);
+  const { deletePost, status: deletePostStatus } = usePost();
 
-  // Memoized derived state data
-  const likeCount = useMemo(() => data.likes.length, [data]);
-  const isCreatedByUser = useMemo(
-    () => data.author._id.toString() === user?._id.toString(),
-    [data, user],
-  );
-  const isLikedByUser = useMemo(
-    () =>
-      data.likes.some(
-        (like) => like.user._id.toString() === user?._id.toString(),
-      ),
-    [data, user],
+  const likeCount = post.likes.length;
+  const isCreatedByUser = post.author._id.toString() === user!._id.toString();
+  const isLikedByUser = post.likes.some(
+    (like) => like.user._id.toString() === user!._id.toString(),
   );
 
-  const handleEditPostButtonClick = useCallback(() => {
+  const handleEditPostButtonClick = () => {
     setEditPostMode((prev) => !prev);
-  }, []);
+  };
 
-  const handleDeletePost = useCallback(() => {
-    deletePost({ postId: data._id });
-  }, [data._id, deletePost]);
-
-  const handleSuccessfulEditPost = useCallback(() => {
+  const handleSuccessfulEditPost = (newPost: TPost) => {
     setEditPostMode(false);
-    onSuccessfulEditPost();
-  }, [onSuccessfulEditPost]);
+    setPost(newPost);
+  };
 
-  const handleSuccessfulNewComment = useCallback(() => {
-    onSuccessfulEditPost();
-  }, [onSuccessfulEditPost]);
+  const handleSuccessfulNewComment = (commentData: TComment) => {
+    setPost((prev) => ({
+      ...prev,
+      comments: [...prev.comments, commentData],
+    }));
+  };
 
-  const handleSuccessfulEditComment = useCallback(() => {
-    onSuccessfulEditPost();
-  }, [onSuccessfulEditPost]);
-
-  const handleSuccessfulDeleteComment = useCallback(() => {
-    onSuccessfulEditPost();
-  }, [onSuccessfulEditPost]);
+  const handleDeletePost = () => {
+    deletePost({ postId: post._id });
+  };
 
   if (deletePostStatus === 'success') {
-    onSuccessfulDeletePost();
+    return null;
   }
 
   return (
-    <Card className={`${className}`} {...props}>
+    <Card {...props}>
       {/* Post Author & Date Posted */}
       <CardHeader className="flex items-start">
         <div>
           <CardTitle>
-            <Link to={`/users/${data.author.username}`}>
-              {data.author.username}
+            <Link to={`/users/${post.author.username}`}>
+              {post.author.username}
             </Link>
           </CardTitle>
           <CardDescription className="ml-auto font-normal">
-            {data.updatedAt !== data.createdAt
-              ? `edited ${formatDate(data.updatedAt)}`
-              : `posted ${formatDate(data.createdAt)}`}
+            {post.updatedAt !== post.createdAt
+              ? `edited ${formatDate(post.updatedAt)}`
+              : `posted ${formatDate(post.createdAt)}`}
           </CardDescription>
         </div>
       </CardHeader>
@@ -99,12 +80,12 @@ const Post = ({
       <CardContent>
         {editPostMode ? (
           <PostEditForm
-            postId={data._id}
-            postContent={data.content}
+            postId={post._id}
+            postContent={post.content}
             onSuccessfulEditPost={handleSuccessfulEditPost}
           />
         ) : (
-          <p>{data.content}</p>
+          <p>{post.content}</p>
         )}
       </CardContent>
 
@@ -114,7 +95,7 @@ const Post = ({
           {/* Like Button */}
           <LikeButton
             isLiked={isLikedByUser}
-            postId={data._id}
+            postId={post._id}
             contentType="post"
             likeCount={likeCount}
           />
@@ -140,17 +121,11 @@ const Post = ({
 
       {/* Comments */}
       <CardContent className="grid gap-4 p-5">
-        {data.comments.map((comment) => (
-          <Comment
-            key={comment._id}
-            data={comment}
-            className=""
-            onSuccessfulDeleteComment={handleSuccessfulDeleteComment}
-            onSuccessfulEditComment={handleSuccessfulEditComment}
-          />
+        {post.comments.map((comment) => (
+          <Comment key={comment._id} data={comment} />
         ))}
-        <CommentForm
-          postId={data._id}
+        <CommentNewForm
+          postId={post._id}
           className=""
           onSuccessfulNewComment={handleSuccessfulNewComment}
         />
