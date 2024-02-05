@@ -5,80 +5,74 @@ import { TComment } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
 import useComment from '@/hooks/useComment';
 import { formatDate } from '@/utils/formatters';
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { ComponentPropsWithoutRef, FC, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-const Comment = ({
-  data,
-  className,
-  onSuccessfulEditComment,
-  onSuccessfulDeleteComment,
-}: {
+type CommentProps = ComponentPropsWithoutRef<'div'> & {
   data: TComment;
-  className?: string;
-  onSuccessfulEditComment: () => void;
-  onSuccessfulDeleteComment: () => void;
-}) => {
+};
+
+const Comment: FC<CommentProps> = ({ data, ...props }) => {
+  const [comment, setComment] = useState<TComment>(data);
   const [editCommentMode, setEditCommentMode] = useState(false);
   const { deleteComment, status: deleteCommentStatus } = useComment();
   const { user } = useContext(AuthContext);
 
-  const likeCount = useMemo(() => data.likes.length, [data.likes.length]);
-  const isCreatedByUser = useMemo(
-    () => data.author._id.toString() === user?._id,
-    [data.author._id, user?._id],
-  );
-  const isLikedByUser = useMemo(
-    () => data.likes.some((like) => like.user._id.toString() === user?._id),
-    [data.likes, user?._id],
+  const likeCount = comment.likes.length;
+  const isCreatedByUser = comment.author._id.toString() === user!._id;
+  const isLikedByUser = comment.likes.some(
+    (like) => like.user._id.toString() === user!._id,
   );
 
-  const handleDeleteComment = useCallback(() => {
-    deleteComment({ postId: data.post, commentId: data._id });
-  }, [data.post, data._id, deleteComment]);
-
-  const handleEditComment = useCallback(() => {
+  const handleEditCommentButtonClick = () => {
     setEditCommentMode((prev) => !prev);
-  }, []);
+  };
 
-  const handleSuccessfulEditComment = useCallback(() => {
+  const handleSuccessfulEditComment = (commentData: TComment) => {
     setEditCommentMode(false);
-    onSuccessfulEditComment();
-  }, [onSuccessfulEditComment]);
+    setComment(commentData);
+  };
+
+  const handleDeleteComment = () => {
+    deleteComment({ postId: comment.post, commentId: comment._id });
+  };
 
   if (deleteCommentStatus === 'success') {
-    onSuccessfulDeleteComment();
+    return null;
   }
 
   return (
-    <div key={data._id}>
+    <div {...props}>
       <div
-        className={`${className} ${
+        className={`${
           editCommentMode ? 'w-full' : 'w-max'
         } rounded-xl bg-accent p-3`}
       >
         {/* Comment Author & Date Posted */}
         <div className="w-full">
           <div className="text-xs text-foreground">
-            <Link to={`/users/${data.author.username}`} className="font-bold">
-              {data.author.username}
+            <Link
+              to={`/users/${comment.author.username}`}
+              className="font-bold"
+            >
+              {comment.author.username}
             </Link>{' '}
-            {data.updatedAt !== data.createdAt
-              ? `edited ${formatDate(data.updatedAt)}`
-              : `posted ${formatDate(data.createdAt)}`}
+            {comment.updatedAt !== comment.createdAt
+              ? `edited ${formatDate(comment.updatedAt)}`
+              : `posted ${formatDate(comment.createdAt)}`}
           </div>
 
           {/* Comment Content */}
           {editCommentMode ? (
             <CommentEditForm
-              commentId={data._id}
-              postId={data.post}
-              commentContent={data.content}
+              commentId={comment._id}
+              postId={comment.post}
+              commentContent={comment.content}
               onSuccessfulEditComment={handleSuccessfulEditComment}
               className="mt-2 w-full"
             />
           ) : (
-            <span>{data.content}</span>
+            <span>{comment.content}</span>
           )}
         </div>
       </div>
@@ -86,16 +80,20 @@ const Comment = ({
       <div className="flex">
         {/* Like Button */}
         <LikeButton
-          isLiked={isLikedByUser}
-          likeCount={likeCount}
-          postId={data.post}
-          commentId={data._id}
+          isLiked={isLikedByUser!}
+          likeCount={likeCount!}
+          postId={comment.post}
+          commentId={comment._id}
           contentType="comment"
         />
         {/* OP Actions: Edit/Delete */}
         {isCreatedByUser && (
           <div className="ml-2 flex gap-2">
-            <Button variant="link" onClick={handleEditComment} size="icon">
+            <Button
+              variant="link"
+              onClick={handleEditCommentButtonClick}
+              size="icon"
+            >
               Edit
             </Button>
             <Button variant="link" onClick={handleDeleteComment} size="icon">
