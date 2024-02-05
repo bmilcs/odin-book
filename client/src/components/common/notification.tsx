@@ -14,11 +14,11 @@ import useFriends from '@/hooks/useFriends';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const NotificationIcon = () => {
+const NotificationIcon = ({ ...props }) => {
   const { notifications } = useContext(NotificationContext);
 
   return (
-    <DropdownMenu>
+    <DropdownMenu {...props}>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon">
           {notifications.length === 0 ? (

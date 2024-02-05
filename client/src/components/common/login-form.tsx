@@ -18,9 +18,12 @@ import { Input } from '@/components/ui/input';
 import useLogin from '@/hooks/useLogin';
 import { CLIENT_MODE } from '@/utils/env';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ComponentPropsWithoutRef, FC } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
+
+type LoginFormProps = ComponentPropsWithoutRef<'div'>;
 
 const formSchema = z.object({
   email: z.string().email({
@@ -31,7 +34,7 @@ const formSchema = z.object({
   }),
 });
 
-const LoginForm = ({ className }: { className?: string }) => {
+const LoginForm: FC<LoginFormProps> = ({ ...props }) => {
   const { error, login, status } = useLogin();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -53,7 +56,7 @@ const LoginForm = ({ className }: { className?: string }) => {
   }
 
   return (
-    <Card className={className}>
+    <Card {...props}>
       <CardHeader>
         <CardTitle>Login</CardTitle>
         <CardDescription>

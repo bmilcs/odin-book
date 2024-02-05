@@ -23,6 +23,10 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
+import { ComponentPropsWithoutRef, FC } from 'react';
+
+type SignupFormProps = ComponentPropsWithoutRef<'div'>;
+
 const formSchema = z.object({
   username: z.string().min(3, {
     message: 'Username must be at least 3 characters.',
@@ -38,7 +42,7 @@ const formSchema = z.object({
   }),
 });
 
-const SignupForm = ({ className }: { className?: string }) => {
+const SignupForm: FC<SignupFormProps> = ({ ...props }) => {
   const { error, validationErrors, signup, status } = useSignup();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -64,7 +68,7 @@ const SignupForm = ({ className }: { className?: string }) => {
   }
 
   return (
-    <Card className={className}>
+    <Card {...props}>
       <CardHeader>
         <CardTitle>Signup</CardTitle>
         <CardDescription>

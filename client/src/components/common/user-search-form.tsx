@@ -15,7 +15,13 @@ import { Input } from '@/components/ui/input';
 import useFriends from '@/hooks/useFriends';
 import useUserSearch from '@/hooks/useUserSearch';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useContext, useEffect, useState } from 'react';
+import {
+  ComponentPropsWithoutRef,
+  FC,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -31,7 +37,9 @@ const formSchema = z.object({
     }),
 });
 
-const UserSearchForm = ({ className }: { className?: string }) => {
+type UserSearchFormProps = ComponentPropsWithoutRef<'form'>;
+
+const UserSearchForm: FC<UserSearchFormProps> = ({ ...props }) => {
   const {
     search,
     results,
@@ -64,7 +72,8 @@ const UserSearchForm = ({ className }: { className?: string }) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className={`relative flex w-full items-center ${className}`}
+      className={`relative flex w-full items-center`}
+      {...props}
     >
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <Input

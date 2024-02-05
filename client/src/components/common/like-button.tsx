@@ -1,9 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import useLike from '@/hooks/useLike';
-import { FC } from 'react';
+import { ComponentPropsWithoutRef, FC } from 'react';
 
-type LikeButtonProps = {
+type LikeButtonProps = ComponentPropsWithoutRef<'div'> & {
   isLiked: boolean;
   postId: string;
   commentId?: string;
@@ -17,6 +17,7 @@ const LikeButton: FC<LikeButtonProps> = ({
   contentType,
   likeCount,
   commentId,
+  ...props
 }) => {
   const { status, error, likeStatus, toggleLike, totalLikes } = useLike({
     commentId,
@@ -27,7 +28,7 @@ const LikeButton: FC<LikeButtonProps> = ({
   });
 
   return (
-    <div className="flex items-center text-sm">
+    <div className="flex items-center text-sm" {...props}>
       <Button
         variant={'ghost'}
         size={'icon'}
