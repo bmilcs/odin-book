@@ -1,18 +1,12 @@
 import LoadingSpinner from '@/components/common/loading-spinner';
 import Post from '@/components/common/post';
 import { FeedContext } from '@/components/services/feed-provider';
-import { useCallback, useContext } from 'react';
+import { ComponentPropsWithoutRef, FC, useContext } from 'react';
 
-const Feed = () => {
-  const { feed, updateFeed, status, error } = useContext(FeedContext);
+type FeedProps = ComponentPropsWithoutRef<'div'>;
 
-  const handleSuccessfulEditPost = useCallback(() => {
-    updateFeed();
-  }, [updateFeed]);
-
-  const handleSuccessfulDeletePost = useCallback(() => {
-    updateFeed();
-  }, [updateFeed]);
+const Feed: FC<FeedProps> = ({ ...props }) => {
+  const { feed, status, error } = useContext(FeedContext);
 
   if (status === 'loading') {
     return (
@@ -27,15 +21,9 @@ const Feed = () => {
   }
 
   return (
-    <div className="mx-auto my-4 max-w-3xl">
+    <div className="mx-auto my-4 max-w-3xl" {...props}>
       {feed.map((post) => (
-        <Post
-          key={post._id}
-          data={post}
-          className="my-8"
-          onSuccessfulEditPost={handleSuccessfulEditPost}
-          onSuccessfulDeletePost={handleSuccessfulDeletePost}
-        />
+        <Post key={post._id} data={post} className="my-8" />
       ))}
     </div>
   );
