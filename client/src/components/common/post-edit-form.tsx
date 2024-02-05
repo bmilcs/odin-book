@@ -1,9 +1,10 @@
+import { TPost } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import usePost from '@/hooks/usePost';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { ComponentPropsWithoutRef, FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -18,18 +19,19 @@ const formSchema = z.object({
     }),
 });
 
-const PostEditForm = ({
+type PostEditFormProps = ComponentPropsWithoutRef<'form'> & {
+  postId: string;
+  postContent: string;
+  onSuccessfulEditPost: (post: TPost) => void;
+};
+
+const PostEditForm: FC<PostEditFormProps> = ({
   postId,
   postContent,
   onSuccessfulEditPost,
-  className,
-}: {
-  postId: string;
-  postContent: string;
-  onSuccessfulEditPost: () => void;
-  className?: string;
+  ...props
 }) => {
-  const { updatePost, status, error } = usePost();
+  const { updatePost, postData, status, error } = usePost();
 
   const {
     handleSubmit,
@@ -47,15 +49,16 @@ const PostEditForm = ({
 
   useEffect(() => {
     if (status === 'success') {
-      onSuccessfulEditPost();
+      onSuccessfulEditPost(postData!);
     }
-  }, [error, status, reset, onSuccessfulEditPost]);
+  }, [status, onSuccessfulEditPost, postData]);
 
   return (
     <>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className={`flex w-full items-center gap-2 ${className}`}
+        className={`flex w-full items-center gap-2`}
+        {...props}
       >
         <Input
           type="text"
