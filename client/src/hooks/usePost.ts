@@ -15,6 +15,14 @@ type GetPostApiResponse = {
   error: string;
 };
 
+type CreatePostApiResponse = {
+  success: boolean;
+  data: TPost;
+  error: string;
+};
+
+type UpdatePostApiResponse = GetPostApiResponse;
+
 const usePost = () => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
@@ -60,11 +68,15 @@ const usePost = () => {
     }
 
     try {
-      const { success, error } = await api.post<ApiResponse>('/posts', {
-        content,
-      });
+      const { success, error, data } = await api.post<CreatePostApiResponse>(
+        '/posts',
+        {
+          content,
+        },
+      );
       if (success) {
         setStatus(STATUS.SUCCESS);
+        setPostData(data);
         return;
       }
       setStatus(STATUS.ERROR);
@@ -120,7 +132,7 @@ const usePost = () => {
     }
 
     try {
-      const { success, error } = await api.patch<ApiResponse>(
+      const { data, success, error } = await api.patch<UpdatePostApiResponse>(
         `/posts/${postId}`,
         {
           content,
@@ -128,6 +140,7 @@ const usePost = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
+        setPostData(data);
         return;
       }
       setStatus(STATUS.ERROR);
@@ -140,11 +153,18 @@ const usePost = () => {
     }
   };
 
+  const reset = () => {
+    setStatus(STATUS.IDLE);
+    setError('');
+    setPostData(null);
+  };
+
   return {
     createPost,
     deletePost,
     updatePost,
     getPost,
+    reset,
     postData,
     status,
     error,
