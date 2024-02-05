@@ -31,6 +31,8 @@ const createPost = tryCatch(
         new AppError('Unable to create a post at this time', 500, 'AppError'),
       );
     }
+    // populate post with author info
+    await post.populate('author', '_id username email');
     // create notification for each friend
     const postId = post._id;
     await Promise.all(
