@@ -20,8 +20,7 @@ const getFeed = tryCatch(
       })
       .populate({
         path: 'author',
-        select:
-          '-password -friends -friendRequestsReceived -friendRequestsSent',
+        select: '_id username email',
       })
       .populate({
         path: 'comments',
@@ -29,8 +28,7 @@ const getFeed = tryCatch(
           path: 'likes',
           populate: {
             path: 'user',
-            select:
-              '-password -friends -friendRequestsReceived -friendRequestsSent',
+            select: '_id username email',
           },
         },
       })
@@ -38,16 +36,14 @@ const getFeed = tryCatch(
         path: 'comments',
         populate: {
           path: 'author',
-          select:
-            '-password -friends -friendRequestsReceived -friendRequestsSent',
+          select: '_id username email',
         },
       })
       .populate({
         path: 'likes',
         populate: {
           path: 'user',
-          select:
-            '-password -friends -friendRequestsReceived -friendRequestsSent',
+          select: '_id username email',
         },
       })
       .sort({ createdAt: -1 });
