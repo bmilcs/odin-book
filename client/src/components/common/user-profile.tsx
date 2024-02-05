@@ -1,13 +1,18 @@
 import { AuthContext } from '@/components/services/auth-provider';
 import useUserProfile from '@/hooks/useUserProfile';
 import { formatDate } from '@/utils/formatters';
-import { HTMLAttributes, useContext, useEffect, useState } from 'react';
+import {
+  ComponentPropsWithoutRef,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import UserProfileUpdateForm from '@/components/common/user-profile-update-form';
 import { FC } from 'react';
 
-type UserProfileProps = HTMLAttributes<HTMLDivElement>;
+type UserProfileProps = ComponentPropsWithoutRef<'div'>;
 
 const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
   const { username: targetUsername } = useParams();

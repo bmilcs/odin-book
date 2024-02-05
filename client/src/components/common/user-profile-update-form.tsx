@@ -18,11 +18,9 @@ import { Input } from '@/components/ui/input';
 import useUserProfile from '@/hooks/useUserProfile';
 import { getFieldErrorMsg } from '@/utils/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { ComponentPropsWithoutRef, FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-
-import { FC, HTMLAttributes } from 'react';
 
 type TProfile = {
   username: string;
@@ -34,7 +32,7 @@ type TProfile = {
   };
 };
 
-type UserProfileUpdateFormProps = HTMLAttributes<HTMLDivElement> & {
+type UserProfileUpdateFormProps = ComponentPropsWithoutRef<'div'> & {
   data: TProfile;
 };
 
