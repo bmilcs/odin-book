@@ -1,9 +1,10 @@
+import { TComment } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import useComment from '@/hooks/useComment';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useEffect } from 'react';
+import { ComponentPropsWithoutRef, FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -18,20 +19,21 @@ const formSchema = z.object({
     }),
 });
 
-const CommentEditForm = ({
+type CommentEditFormProps = ComponentPropsWithoutRef<'form'> & {
+  postId: string;
+  commentId: string;
+  commentContent: string;
+  onSuccessfulEditComment: (comment: TComment) => void;
+};
+
+const CommentEditForm: FC<CommentEditFormProps> = ({
   postId,
   commentId,
   commentContent,
   onSuccessfulEditComment,
-  className,
-}: {
-  postId: string;
-  commentId: string;
-  commentContent: string;
-  onSuccessfulEditComment: () => void;
-  className?: string;
+  ...props
 }) => {
-  const { updateComment, status } = useComment();
+  const { updateComment, commentData, status } = useComment();
 
   const {
     handleSubmit,
@@ -49,15 +51,16 @@ const CommentEditForm = ({
 
   useEffect(() => {
     if (status === 'success') {
-      onSuccessfulEditComment();
+      onSuccessfulEditComment(commentData!);
     }
-  }, [status, reset, onSuccessfulEditComment]);
+  }, [status, reset, onSuccessfulEditComment, commentData]);
 
   return (
     <>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className={`flex w-full items-center gap-2 ${className}`}
+        className={`flex w-full items-center gap-2`}
+        {...props}
       >
         <Input
           type="text"
