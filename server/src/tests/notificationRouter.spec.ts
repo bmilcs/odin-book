@@ -430,4 +430,46 @@ describe('NOTIFICATION ROUTER', () => {
       expect(user.notifications.length).to.equal(0);
     });
   });
+
+  //
+  // DELETE /notifications
+  //
+
+  describe('DELETE /notifications', () => {
+    before(async () => {
+      await deleteFriendsAndRequestsFromAllTestUsers();
+      await deleteNotificationsFromAllTestUsers();
+      // send friend request from user one to user two
+      await request(app)
+        .post(`/friends/send-request/${USER_ONE._id}`)
+        .set('Cookie', USER_TWO.jwtCookie);
+    });
+
+    it('should return 401 if user is not logged in', async () => {
+      const { statusCode, body } = await request(app).delete('/notifications');
+      expect(statusCode).to.equal(401);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal('Unauthorized');
+    });
+
+    it('should return 200 if all notifications are deleted successfully', async () => {
+      const { statusCode, body } = await request(app)
+        .delete('/notifications')
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(statusCode).to.equal(200);
+      expect(body.success).to.be.true;
+      expect(body.message).to.equal('Deleted all notifications successfully');
+      expect(body.data).to.be.null;
+      // check db to make sure notifications were deleted
+      const notifications = await notificationModel.find({
+        toUser: USER_ONE._id,
+      });
+      expect(notifications.length).to.equal(0);
+      // check db to make sure user's notifications [] was updated
+      const user = await userModel
+        .findById(USER_ONE._id)
+        .populate('notifications');
+      expect(user.notifications.length).to.equal(0);
+    });
+  });
 });

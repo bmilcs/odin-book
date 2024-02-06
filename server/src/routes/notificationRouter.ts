@@ -34,4 +34,10 @@ notificationRouter.delete(
   notificationController.deleteNotification,
 );
 
+notificationRouter.delete(
+  '/',
+  ensureAuthenticated,
+  notificationController.deleteAllNotifications,
+);
+
 export default notificationRouter;

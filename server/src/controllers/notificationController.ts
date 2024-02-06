@@ -116,10 +116,19 @@ const deleteNotification = tryCatch(
   },
 );
 
+const deleteAllNotifications = tryCatch(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId } = req;
+    await notificationModel.deleteMany({ toUser: userId });
+    res.success('Deleted all notifications successfully', null, 200);
+  },
+);
+
 export default {
   getNotifications,
   getUnreadNotifications,
   markNotificationAsRead,
   markAllNotificationsAsRead,
   deleteNotification,
+  deleteAllNotifications,
 };
