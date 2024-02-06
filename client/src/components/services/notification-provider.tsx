@@ -33,7 +33,9 @@ type NotificationContextProps = {
   getAllNotifications: () => Promise<void>;
   getUnreadNotifications: () => Promise<void>;
   deleteNotification: (notificationId: string) => Promise<void>;
+  deleteAllNotifications: () => Promise<void>;
   markNotificationAsRead: (notificationId: string) => Promise<void>;
+  markAllNotificationsAsRead: () => Promise<void>;
 };
 
 export const NotificationContext = createContext<NotificationContextProps>({
@@ -43,7 +45,9 @@ export const NotificationContext = createContext<NotificationContextProps>({
   getAllNotifications: async () => {},
   getUnreadNotifications: async () => {},
   deleteNotification: async () => {},
+  deleteAllNotifications: async () => {},
   markNotificationAsRead: async () => {},
+  markAllNotificationsAsRead: async () => {},
 });
 
 type TNotificationProviderPros = {
@@ -110,6 +114,31 @@ const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
     }
   }, []);
 
+  const markAllNotificationsAsRead = useCallback(async () => {
+    setStatus(STATUS.LOADING);
+    setError('');
+
+    try {
+      const { success, error } = await api.put<ApiResponse>(
+        '/notifications/read-all',
+        {},
+      );
+      console.log({ success, error });
+      if (success) {
+        setStatus(STATUS.SUCCESS);
+        await getUnreadNotifications();
+        return;
+      }
+      setStatus(STATUS.ERROR);
+      setError(error);
+    } catch (error) {
+      setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
+      console.log(error);
+    }
+  }, [getUnreadNotifications]);
+
   const markNotificationAsRead = useCallback(
     async (notificationId: string) => {
       setStatus(STATUS.LOADING);
@@ -163,6 +192,28 @@ const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
     [getUnreadNotifications],
   );
 
+  const deleteAllNotifications = useCallback(async () => {
+    setStatus(STATUS.LOADING);
+    setError('');
+
+    try {
+      const { success, error } = await api.del<ApiResponse>('/notifications');
+      console.log(success, error);
+      if (success) {
+        setStatus(STATUS.SUCCESS);
+        await getAllNotifications();
+        return;
+      }
+      setStatus(STATUS.ERROR);
+      setError(error);
+    } catch (error) {
+      setStatus(STATUS.ERROR);
+      const errorMsg = getErrorMsg(error);
+      setError(errorMsg);
+      console.log(error);
+    }
+  }, [getAllNotifications]);
+
   return (
     <NotificationContext.Provider
       value={{
@@ -170,7 +221,9 @@ const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
         getAllNotifications,
         getUnreadNotifications,
         deleteNotification,
+        deleteAllNotifications,
         markNotificationAsRead,
+        markAllNotificationsAsRead,
         status,
         error,
       }}
