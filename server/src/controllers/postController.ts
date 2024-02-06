@@ -5,7 +5,6 @@ import {
   postModel,
   userModel,
 } from '@/models'; // Importing the commentModel, likeModel, and postModel from the '@/models' module
-import { IComment } from '@/models/commentModel';
 import { ILike } from '@/models/likeModel';
 import { AppError, tryCatch } from '@/utils';
 import { NextFunction, Request, Response } from 'express';
@@ -171,13 +170,8 @@ const deletePost = tryCatch(
     if (!post) {
       return next(new AppError('Post not found', 404));
     }
-    // delete all comments associated with the post
-    const comments = await commentModel.find({ post: postId });
-    await Promise.all(comments.map((comment) => comment.deleteOne()));
-    // delete all likes associated with the post
-    const likes = await likeModel.find({ post: postId });
-    await Promise.all(likes.map((like) => like.deleteOne()));
-    // delete the post
+    // delete the post, triggering the pre('deleteOne') middleware
+    // in the post schema to delete all associated comments and likes
     await post.deleteOne();
     res.success('Post deleted', null, 200);
   },
@@ -333,7 +327,6 @@ const editComment = tryCatch(
     // update comment
     comment.content = content;
     comment.save();
-    console.log(comment);
     res.success('Comment updated', comment, 201);
   },
 );
@@ -440,7 +433,7 @@ const deleteComment = tryCatch(
       return next(new AppError('Invalid post id', 400));
     }
     // check if post exists
-    const post = await postModel.findById(postId);
+    const post = await postModel.exists({ _id: postId });
     if (!post) {
       return next(new AppError('Post not found', 404));
     }
@@ -453,15 +446,8 @@ const deleteComment = tryCatch(
     if (comment.author.toString() !== req.userId) {
       return next(new AppError('Unauthorized', 401));
     }
-    // delete comment from post
-    post.comments = post.comments.filter(
-      (comment: IComment['_id']) => comment.toString() !== comment._id,
-    );
-    await post.save();
-    // delete all likes associated with the comment
-    const likes = await likeModel.find({ comment: commentId });
-    await Promise.all(likes.map((like) => like.deleteOne()));
-    // delete comment
+    // delete comment, triggering the pre('deleteOne') middleware
+    // in the comment schema to delete all associated post refs, likes, notifications
     await comment.deleteOne();
     res.success('Comment deleted', null, 200);
   },
