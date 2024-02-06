@@ -14,8 +14,27 @@ import useFriends from '@/hooks/useFriends';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const NUMBER_OF_NOTIFICATIONS_TO_SHOW = 5;
+
 const NotificationIcon = ({ ...props }) => {
-  const { notifications } = useContext(NotificationContext);
+  const {
+    notifications,
+    markAllNotificationsAsRead,
+    getAllNotifications,
+    deleteAllNotifications,
+  } = useContext(NotificationContext);
+
+  const handleMarkAllNotificationsAsRead = async () => {
+    await markAllNotificationsAsRead();
+  };
+
+  const handleGetAllNotifications = async () => {
+    await getAllNotifications();
+  };
+
+  const handleDeleteAllNotifications = async () => {
+    await deleteAllNotifications();
+  };
 
   return (
     <DropdownMenu {...props}>
@@ -33,15 +52,50 @@ const NotificationIcon = ({ ...props }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {notifications.length > 0 ? (
-          notifications.map((notification) => (
-            <DropdownMenuItem key={notification._id}>
-              <NotificationItem data={notification} />
+          <>
+            {notifications
+              .filter(
+                (_, index) => index <= NUMBER_OF_NOTIFICATIONS_TO_SHOW - 1,
+              )
+              .map((notification) => (
+                <DropdownMenuItem key={notification._id}>
+                  <NotificationItem data={notification} />
+                </DropdownMenuItem>
+              ))}
+            <DropdownMenuItem>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleMarkAllNotificationsAsRead}
+              >
+                Mark All Notifications As Read
+              </Button>
             </DropdownMenuItem>
-          ))
+            <DropdownMenuItem>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleDeleteAllNotifications}
+              >
+                Delete All Notifications
+              </Button>
+            </DropdownMenuItem>
+          </>
         ) : (
-          <DropdownMenuItem>
-            <p>No new notifications</p>
-          </DropdownMenuItem>
+          <>
+            <DropdownMenuItem>
+              <p>No new notifications</p>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={handleGetAllNotifications}
+              >
+                Get Old Notifications
+              </Button>
+            </DropdownMenuItem>
+          </>
         )}
       </DropdownMenuContent>
     </DropdownMenu>
@@ -96,7 +150,7 @@ const NotificationItem = ({ data }: { data: TNotification }) => {
   if (notificationType === 'incoming_friend_request') {
     return (
       <div
-        className="flex items-center"
+        className="flex items-center "
         onClick={() => handleMarkNotificationAsRead(data._id)}
       >
         <p>
