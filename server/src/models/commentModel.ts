@@ -1,4 +1,6 @@
-import { IPost } from '@/models/postModel';
+import likeModel from '@/models/likeModel';
+import notificationModel from '@/models/notificationModel';
+import postModel, { IPost } from '@/models/postModel';
 import { IUser } from '@/models/userModel';
 import { Document, Schema, model, models } from 'mongoose';
 
@@ -16,6 +18,31 @@ const CommentSchema: Schema = new Schema(
     likes: [{ type: Schema.Types.ObjectId, ref: 'Like' }],
   },
   { timestamps: true }, // auto create 'createdAt' and 'updatedAt' fields
+);
+
+// delete all post refs, notifications and likes associated with the comment
+CommentSchema.pre<IComment>(
+  'deleteOne',
+  { document: true },
+  async function (next) {
+    const { author: commentAuthor, _id: commentId, post: postId } = this;
+    // delete comment ref from post
+    const post = await postModel.findById(postId, 'comments');
+    post.comments = post.comments.filter(
+      (comment: IComment['_id']) => comment.toString() !== comment._id,
+    );
+    await post.save();
+    // delete notifications
+    await notificationModel.deleteOne({
+      post: postId,
+      comment: commentId,
+      fromUser: commentAuthor,
+      type: 'new_comment',
+    });
+    // delete likes
+    await likeModel.deleteMany({ comment: commentId });
+    next();
+  },
 );
 
 export default models['Comment'] || model<IComment>('Comment', CommentSchema);
