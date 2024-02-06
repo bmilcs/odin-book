@@ -31,7 +31,7 @@ const PostEditForm: FC<PostEditFormProps> = ({
   onSuccessfulEditPost,
   ...props
 }) => {
-  const { updatePost, postData, status, error } = usePost();
+  const { updatePost, postData, status } = usePost();
 
   const {
     handleSubmit,
@@ -50,8 +50,9 @@ const PostEditForm: FC<PostEditFormProps> = ({
   useEffect(() => {
     if (status === 'success') {
       onSuccessfulEditPost(postData!);
+      reset();
     }
-  }, [status, onSuccessfulEditPost, postData]);
+  }, [status, onSuccessfulEditPost, postData, reset]);
 
   return (
     <>

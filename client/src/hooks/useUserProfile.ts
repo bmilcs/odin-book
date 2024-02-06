@@ -76,17 +76,15 @@ const useUserProfile = () => {
       const currentUsername = user?.username;
 
       try {
-        const { success, data, error } =
-          await api.patch<UpdateProfileApiResponse>(
-            `/users/${currentUsername}`,
-            {
-              username,
-              email,
-              location,
-              bio,
-            },
-          );
-        console.log({ success, data, error });
+        const { success, error } = await api.patch<UpdateProfileApiResponse>(
+          `/users/${currentUsername}`,
+          {
+            username,
+            email,
+            location,
+            bio,
+          },
+        );
         if (success) {
           setStatus(STATUS.SUCCESS);
           await updateUserData();
@@ -102,7 +100,7 @@ const useUserProfile = () => {
         console.log(error);
       }
     },
-    [updateUserData, user?.username],
+    [updateUserData, user?.username, navigate],
   );
 
   return {
