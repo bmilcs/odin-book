@@ -18,16 +18,6 @@ const PostPage = () => {
     getPost({ postId });
   }, [postId, getPost]);
 
-  const handleSuccessfulEditPost = () => {
-    if (!postId) return;
-    getPost({ postId });
-  };
-
-  const handleSuccessfulDeletePost = () => {
-    if (!postId) return;
-    getPost({ postId });
-  };
-
   if (status === 'loading') {
     return <div>Loading...</div>;
   }
@@ -39,12 +29,7 @@ const PostPage = () => {
   if (postData) {
     return (
       <>
-        <Post
-          data={postData}
-          onSuccessfulEditPost={handleSuccessfulEditPost}
-          onSuccessfulDeletePost={handleSuccessfulDeletePost}
-          className="my-8"
-        />
+        <Post data={postData} className="my-8" />
       </>
     );
   }
