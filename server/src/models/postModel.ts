@@ -1,5 +1,6 @@
-import { IComment } from '@/models/commentModel';
-import { ILike } from '@/models/likeModel';
+import commentModel, { IComment } from '@/models/commentModel';
+import likeModel, { ILike } from '@/models/likeModel';
+import notificationModel from '@/models/notificationModel';
 import { IUser } from '@/models/userModel';
 import mongoose, { Document, Schema, model, models } from 'mongoose';
 
@@ -19,5 +20,14 @@ const postSchema: Schema = new Schema(
   },
   { timestamps: true }, // auto create 'createdAt' and 'updatedAt' fields
 );
+
+// delete all notifications, likes, and comments associated with the post
+postSchema.pre<IPost>('deleteOne', { document: true }, async function (next) {
+  const postId = this._id;
+  await notificationModel.deleteMany({ post: postId });
+  await likeModel.deleteMany({ post: postId });
+  await commentModel.deleteMany({ post: postId });
+  next();
+});
 
 export default models['Post'] || model<IPost>('Post', postSchema);
