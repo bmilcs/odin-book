@@ -22,9 +22,12 @@ type PostProps = ComponentPropsWithoutRef<'div'> & {
   data: TPost;
 };
 
+const NUMBER_OF_COMMENTS_TO_SHOW = 3;
+
 const Post: FC<PostProps> = ({ data, ...props }) => {
   const [post, setPost] = useState<TPost>(data);
   const [editPostMode, setEditPostMode] = useState(false);
+  const [showAllComments, setShowAllComments] = useState(false);
   const { user } = useContext(AuthContext);
   const { deletePost, status: deletePostStatus } = usePost();
 
@@ -48,6 +51,10 @@ const Post: FC<PostProps> = ({ data, ...props }) => {
       ...prev,
       comments: [...prev.comments, commentData],
     }));
+  };
+
+  const handleToggleShowAllComments = () => {
+    setShowAllComments((prev) => !prev);
   };
 
   const handleDeletePost = () => {
@@ -89,7 +96,7 @@ const Post: FC<PostProps> = ({ data, ...props }) => {
         )}
       </CardContent>
 
-      {/* Buttons */}
+      {/* Post Buttons */}
       <CardContent className="border-b-2">
         <div className="flex justify-between">
           {/* Like Button */}
@@ -99,7 +106,8 @@ const Post: FC<PostProps> = ({ data, ...props }) => {
             contentType="post"
             likeCount={likeCount}
           />
-          {/* OP Action Buttons: Edit/Delete */}
+
+          {/* Post OP Action Buttons: Edit/Delete */}
           {isCreatedByUser && (
             <div className="flex">
               <Button
@@ -121,9 +129,27 @@ const Post: FC<PostProps> = ({ data, ...props }) => {
 
       {/* Comments */}
       <CardContent className="grid gap-4 p-5">
-        {post.comments.map((comment) => (
-          <Comment key={comment._id} data={comment} />
-        ))}
+        {/* List of comments */}
+        {post.comments.map((comment, i) => {
+          if (showAllComments) {
+            return <Comment key={comment._id} data={comment} />;
+          }
+
+          if (i < NUMBER_OF_COMMENTS_TO_SHOW) {
+            return <Comment key={comment._id} data={comment} />;
+          }
+        })}
+
+        {/* Show all comments toggle button */}
+        {post.comments.length > NUMBER_OF_COMMENTS_TO_SHOW && (
+          <Button variant="link" onClick={handleToggleShowAllComments}>
+            {showAllComments
+              ? 'Hide extra comments'
+              : `Show all ${post.comments.length} comments`}
+          </Button>
+        )}
+
+        {/* Add new comment */}
         <CommentNewForm
           postId={post._id}
           onSuccessfulNewComment={handleSuccessfulNewComment}
