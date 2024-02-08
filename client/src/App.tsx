@@ -1,4 +1,5 @@
 import Layout from '@/components/layout';
+import EditProfilePage from '@/components/pages/edit-profile';
 import FeedPage from '@/components/pages/feed-page';
 import HomePage from '@/components/pages/home-page';
 import LoginPage from '@/components/pages/login-page';
@@ -29,6 +30,7 @@ function App() {
                   <Route path="/feed" Component={FeedPage} />
                   <Route path="/posts/:postId" Component={PostPage} />
                   <Route path="/users/:username" Component={UserProfilePage} />
+                  <Route path="/edit-profile" Component={EditProfilePage} />
                   <Route path="*" Component={FeedPage} />
                 </Routes>
               </Layout>
