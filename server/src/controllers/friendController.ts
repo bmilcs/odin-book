@@ -214,6 +214,21 @@ const deleteFriend = tryCatch(
     await deletingUser.save();
     await friendUser.save();
 
+    // delete notifications all existing notifications between the two users
+    await notificationModel.deleteMany({
+      $or: [
+        {
+          fromUser: deletingUser._id,
+          toUser: friendUser._id,
+        },
+        {
+          fromUser: friendUser._id,
+          toUser: deletingUser._id,
+        },
+      ],
+    });
+    console.log('deleting notifications');
+
     res.success('Friend deleted', null, 200);
   },
 );
