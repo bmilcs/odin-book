@@ -15,6 +15,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import useUserProfile from '@/hooks/useUserProfile';
 import { getFieldErrorMsg } from '@/utils/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -91,6 +92,7 @@ const UserProfileUpdateForm: FC<UserProfileUpdateFormProps> = ({
           Change your username, email, bio or location.
         </CardDescription>
       </CardHeader>
+
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -114,6 +116,7 @@ const UserProfileUpdateForm: FC<UserProfileUpdateFormProps> = ({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="email"
@@ -133,25 +136,7 @@ const UserProfileUpdateForm: FC<UserProfileUpdateFormProps> = ({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="bio"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Biography</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="textarea"
-                        placeholder="Tell us about yourself!"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage>
-                      {getFieldErrorMsg(validationErrors, 'bio')}
-                    </FormMessage>
-                  </FormItem>
-                )}
-              />
+
               <FormField
                 control={form.control}
                 name="location"
@@ -171,8 +156,30 @@ const UserProfileUpdateForm: FC<UserProfileUpdateFormProps> = ({
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="bio"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Biography</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        rows={5}
+                        placeholder="Tell us about yourself!"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage>
+                      {getFieldErrorMsg(validationErrors, 'bio')}
+                    </FormMessage>
+                  </FormItem>
+                )}
+              />
             </FormItem>
+
             <FormMessage>{error}</FormMessage>
+
             <Button
               className="w-full"
               type="submit"
