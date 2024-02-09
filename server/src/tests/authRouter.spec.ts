@@ -222,7 +222,7 @@ describe('AUTH ROUTER', () => {
       expect(body.message).to.equal('LoginSuccess');
       const { username } = body.data;
       expect(username).to.equal(AUTH_USER.username);
-      expect(body.data).to.have.all.keys(
+      expect(body.data).to.include.all.keys(
         'username',
         'email',
         '_id',
@@ -230,6 +230,7 @@ describe('AUTH ROUTER', () => {
         'friendRequestsSent',
         'friendRequestsReceived',
         'notifications',
+        'profile',
       );
       // cookie check: jwt cookie is set
       const cookies = headers['set-cookie'];

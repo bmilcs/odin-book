@@ -11,17 +11,16 @@ const status = tryCatch(
         .findById(req.userId, {
           password: 0,
         })
-        .populate('friends', 'username email')
-        .populate('friendRequestsSent', 'username email')
-        .populate('friendRequestsReceived', 'username email')
+        .populate('friends', '_id username email')
+        .populate('friendRequestsSent', '_id username email')
+        .populate('friendRequestsReceived', '_id username email')
         .populate('notifications')
         .populate({
           path: 'notifications',
           match: { read: false },
           populate: {
             path: 'fromUser',
-            select:
-              '-password -friends -friendRequestsReceived -friendRequestsSent',
+            select: '_id username email',
           },
         });
       return res.success('Authenticated', user, 201);
@@ -45,17 +44,10 @@ const signup = tryCatch(
         new AppError('Unable to create a user at this time', 500, 'AppError'),
       );
     }
-    const data = {
-      username: user.username,
-      email: user.email,
-      _id: user.id,
-      friends: user.friends,
-      friendRequestsSent: user.friendRequestsSent,
-      friendRequestsReceived: user.friendRequestsReceived,
-      notifications: user.notifications,
-    };
+    const userData = user.toObject();
+    delete userData.password;
     res.addJwtCookies(user.id);
-    res.success('User created successfully', data, 201);
+    res.success('User created successfully', userData, 201);
   },
 );
 
@@ -64,17 +56,15 @@ const login = tryCatch(
     const { email, password } = req.body;
     const user = await userModel
       .findOne({ email })
-      .populate('friends', 'username email')
-      .populate('friendRequestsSent', 'username email')
-      .populate('friendRequestsReceived', 'username email')
-      .populate('notifications')
+      .populate('friends', '_id username email')
+      .populate('friendRequestsSent', '_id username email')
+      .populate('friendRequestsReceived', '_id username email')
       .populate({
         path: 'notifications',
         match: { read: false },
         populate: {
           path: 'fromUser',
-          select:
-            '-password -friends -friendRequestsReceived -friendRequestsSent',
+          select: '_id username email',
         },
       });
     if (!user) {
@@ -89,17 +79,10 @@ const login = tryCatch(
         if (!isValid) {
           next(new AppError('Invalid email or password', 401, 'LoginError'));
         }
-        const data = {
-          username: user.username,
-          email: user.email,
-          _id: user.id,
-          friends: user.friends,
-          friendRequestsSent: user.friendRequestsSent,
-          friendRequestsReceived: user.friendRequestsReceived,
-          notifications: user.notifications,
-        };
+        const userData = user.toObject();
+        delete userData.password;
         res.addJwtCookies(user.id);
-        res.success('LoginSuccess', data, 201);
+        res.success('LoginSuccess', userData, 201);
       },
     );
   },
