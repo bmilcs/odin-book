@@ -1,12 +1,7 @@
 import { AuthContext } from '@/components/services/auth-provider';
 import useUserProfile from '@/hooks/useUserProfile';
 import { formatDate } from '@/utils/formatters';
-import {
-  ComponentPropsWithoutRef,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { ComponentPropsWithoutRef, useContext, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import NewLineText from '@/components/common/new-line-text';
@@ -27,42 +22,50 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
   const navigate = useNavigate();
   const { username: targetUsername } = useParams();
   const { user: activeUser } = useContext(AuthContext);
-  const { userProfile, getUserProfile, status, error } = useUserProfile();
-  const { sendFriendRequest, deleteFriend } = useFriends();
-  const [isOwnProfile, setIsOwnProfile] = useState(false);
-  const [isFriend, setIsFriend] = useState(false);
+  const {
+    getUserProfile,
+    userProfile,
+    status,
+    error,
+    isFriend,
+    isInIncomingFriendRequests,
+    isInOutgoingFriendRequests,
+    isProfileOwner,
+  } = useUserProfile();
+  const {
+    sendFriendRequest,
+    acceptFriendRequest,
+    rejectFriendRequest,
+    cancelFriendRequest,
+    deleteFriend,
+  } = useFriends();
 
-  // TODO: Handle existing friend requests - incoming or outgoing
-
-  // Fetch user profile on targetUsername change and
-  // check if it's the active user's profile
-  useEffect(() => {
-    if (!targetUsername || !activeUser) return;
-    if (activeUser.username === targetUsername) {
-      setIsOwnProfile(true);
-    } else {
-      setIsOwnProfile(false);
-    }
-    getUserProfile(targetUsername);
-  }, [targetUsername, getUserProfile, activeUser]);
-
-  // Determine if user is a friend of the active user
-  useEffect(() => {
-    if (activeUser && userProfile) {
-      const isFriend = userProfile.friends.some(
-        (friend) => friend._id === activeUser._id,
-      );
-      setIsFriend(isFriend);
-    }
-  }, [activeUser, userProfile]);
+  useEffect(
+    function fetchUserProfileOnParamChange() {
+      if (!targetUsername || !activeUser) return;
+      getUserProfile(targetUsername);
+    },
+    [targetUsername, getUserProfile, activeUser],
+  );
 
   const handleFriendStatusToggle = () => {
     if (isFriend) {
       deleteFriend(userProfile!._id);
       return;
     }
-
     sendFriendRequest(userProfile!._id);
+  };
+
+  const handleCancelFriendRequest = () => {
+    cancelFriendRequest(userProfile!._id);
+  };
+
+  const handleAcceptFriendRequest = () => {
+    acceptFriendRequest(userProfile!._id);
+  };
+
+  const handleRejectFriendRequest = () => {
+    rejectFriendRequest(userProfile!._id);
   };
 
   const handleEditProfile = () => {
@@ -146,14 +149,29 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
           </CardContent>
         </Card>
 
-        {/* Actions: Add / remove friend or Edit Profile */}
+        {/* Actions: Friend request handling */}
         <div className="flex items-center justify-center p-2">
-          {isOwnProfile ? (
+          {isProfileOwner ? (
             <Button onClick={handleEditProfile}>Edit Profile</Button>
-          ) : (
+          ) : isFriend ? (
             <Button onClick={handleFriendStatusToggle}>
               {isFriend ? 'Remove Friend' : 'Add Friend'}
             </Button>
+          ) : isInOutgoingFriendRequests ? (
+            <Button onClick={handleCancelFriendRequest}>
+              Cancel Request Sent
+            </Button>
+          ) : isInIncomingFriendRequests ? (
+            <>
+              <Button onClick={handleAcceptFriendRequest}>
+                Accept Friend Request
+              </Button>
+              <Button onClick={handleRejectFriendRequest}>
+                Reject Friend Request
+              </Button>
+            </>
+          ) : (
+            <Button onClick={handleFriendStatusToggle}>Add Friend</Button>
           )}
         </div>
       </div>
