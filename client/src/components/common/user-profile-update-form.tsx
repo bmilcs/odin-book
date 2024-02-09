@@ -1,3 +1,4 @@
+import { AuthContext } from '@/components/services/auth-provider';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -19,23 +20,11 @@ import { Textarea } from '@/components/ui/textarea';
 import useUserProfile from '@/hooks/useUserProfile';
 import { getFieldErrorMsg } from '@/utils/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ComponentPropsWithoutRef, FC, useEffect } from 'react';
+import { ComponentPropsWithoutRef, FC, useContext, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-type TProfile = {
-  username: string;
-  email: string;
-  _id: string;
-  profile: {
-    bio: string;
-    location: string;
-  };
-};
-
-type UserProfileUpdateFormProps = ComponentPropsWithoutRef<'div'> & {
-  data: TProfile;
-};
+type UserProfileUpdateFormProps = ComponentPropsWithoutRef<'div'>;
 
 const formSchema = z.object({
   username: z.string().min(3, {
@@ -53,19 +42,19 @@ const formSchema = z.object({
 });
 
 const UserProfileUpdateForm: FC<UserProfileUpdateFormProps> = ({
-  data,
   ...props
 }) => {
+  const { user } = useContext(AuthContext);
   const { updateUserProfile, validationErrors, status, error } =
     useUserProfile();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: data.username,
-      email: data.email,
-      bio: data.profile.bio,
-      location: data.profile.location,
+      username: user!.username,
+      email: user!.email,
+      bio: user!.profile.bio,
+      location: user!.profile.location,
     },
   });
 
