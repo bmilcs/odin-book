@@ -10,6 +10,12 @@ friendRouter.post(
   friendController.sendRequest,
 );
 
+friendRouter.delete(
+  '/cancel-request/:userId',
+  ensureAuthenticated,
+  friendController.cancelRequest,
+);
+
 friendRouter.patch(
   '/accept-request/:userId',
   ensureAuthenticated,

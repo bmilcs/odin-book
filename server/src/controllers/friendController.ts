@@ -67,6 +67,57 @@ const sendRequest = tryCatch(
   },
 );
 
+const cancelRequest = tryCatch(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const cancellingUserId = req.userId;
+    const { userId: friendUserId } = req.params;
+
+    if (!isValidObjectId(friendUserId)) {
+      return next(new AppError('Friend user ID is invalid', 400));
+    }
+
+    const cancellingUser = await userModel.findById(cancellingUserId);
+    if (!cancellingUser) {
+      return next(new AppError('Your user information was not found', 400));
+    }
+
+    const friendUser = await userModel.findById(friendUserId);
+    if (!friendUser) {
+      return next(new AppError('User not found', 400));
+    }
+
+    if (
+      !cancellingUser.friendRequestsSent.includes(friendUser._id) ||
+      !friendUser.friendRequestsReceived.includes(cancellingUser._id)
+    ) {
+      return next(new AppError('Friend request not found', 400));
+    }
+
+    // remove friend request from both users
+    cancellingUser.friendRequestsSent =
+      cancellingUser.friendRequestsSent.filter(
+        (friendRequestId: string) =>
+          friendRequestId.toString() !== friendUser._id.toString(),
+      );
+    friendUser.friendRequestsReceived =
+      friendUser.friendRequestsReceived.filter(
+        (friendRequestId: string) =>
+          friendRequestId.toString() !== cancellingUser._id.toString(),
+      );
+    await cancellingUser.save();
+    await friendUser.save();
+
+    // delete old friend request notification
+    await notificationModel.deleteOne({
+      type: 'incoming_friend_request',
+      fromUser: cancellingUser._id,
+      toUser: friendUser._id,
+    });
+
+    res.success('Friend request cancelled', null, 200);
+  },
+);
+
 const acceptRequest = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const acceptingUserId = req.userId;
@@ -235,6 +286,7 @@ const deleteFriend = tryCatch(
 
 export default {
   sendRequest,
+  cancelRequest,
   acceptRequest,
   rejectRequest,
   deleteFriend,

@@ -1,5 +1,6 @@
 import { userModel } from '@/models';
 import {
+  NONEXISTENT_MONGODB_ID,
   USER_ONE,
   USER_TWO,
   app,
@@ -119,6 +120,67 @@ describe('FRIEND ROUTER', () => {
   });
 
   //
+  // CANCEL FRIEND REQUEST
+  //
+
+  describe('DELETE /cancel-request/:userId', () => {
+    it('should return 401 if user is not logged in', async () => {
+      const { statusCode, body } = await request(app).delete(
+        '/friends/cancel-request/1',
+      );
+      expect(statusCode).to.equal(401);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal('Unauthorized');
+    });
+
+    it('should return 400 if friend id is invalid', async () => {
+      const { statusCode, body } = await request(app)
+        .delete('/friends/cancel-request/1')
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(statusCode).to.equal(400);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal('Friend user ID is invalid');
+    });
+
+    it('should return 400 if friend id is not found', async () => {
+      const { statusCode, body } = await request(app)
+        .delete(`/friends/cancel-request/${NONEXISTENT_MONGODB_ID}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(statusCode).to.equal(400);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal('User not found');
+    });
+
+    it('should return 400 if friend request is not found', async () => {
+      const { statusCode, body } = await request(app)
+        .delete(`/friends/cancel-request/${USER_ONE._id}`)
+        .set('Cookie', USER_TWO.jwtCookie)
+        .send({});
+      expect(statusCode).to.equal(400);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal('Friend request not found');
+    });
+
+    it('should cancel a friend request w/ database checks', async () => {
+      // send a friend request from USER_ONE to USER_TWO
+      await request(app)
+        .post(`/friends/send-request/${USER_TWO._id}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      const { statusCode, body } = await request(app)
+        .delete(`/friends/cancel-request/${USER_TWO._id}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(statusCode).to.equal(200);
+      expect(body.success).to.be.true;
+      expect(body.message).to.equal('Friend request cancelled');
+      // check that both user models
+      const userOne = await userModel.findById(USER_ONE._id);
+      const userTwo = await userModel.findById(USER_TWO._id);
+      expect(userOne?.friendRequestsSent).to.have.lengthOf(0);
+      expect(userTwo?.friendRequestsReceived).to.have.lengthOf(0);
+    });
+  });
+
+  //
   // ACCEPT FRIEND REQUEST
   //
 
@@ -143,12 +205,10 @@ describe('FRIEND ROUTER', () => {
     });
 
     it('should return 400 if friend id is not found', async () => {
-      const nonexistentMongoID = '111111111111111111111111';
       const { statusCode, body } = await request(app)
-        .patch(`/friends/accept-request/${nonexistentMongoID}`)
+        .patch(`/friends/accept-request/${NONEXISTENT_MONGODB_ID}`)
         .set('Cookie', USER_ONE.jwtCookie)
         .send({});
-
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('User not found');
@@ -169,7 +229,7 @@ describe('FRIEND ROUTER', () => {
       await request(app)
         .post(`/friends/send-request/${USER_TWO._id}`)
         .set('Cookie', USER_ONE.jwtCookie);
-
+      // accept the friend request
       const { statusCode, body } = await request(app)
         .patch(`/friends/accept-request/${USER_ONE._id}`)
         .set('Cookie', USER_TWO.jwtCookie);
@@ -194,9 +254,9 @@ describe('FRIEND ROUTER', () => {
 
   describe('PATCH /reject-request/:userId', () => {
     it('should return 401 if user is not logged in', async () => {
-      const { statusCode, body } = await request(app)
-        .patch('/friends/reject-request/1')
-        .send({});
+      const { statusCode, body } = await request(app).patch(
+        '/friends/reject-request/1',
+      );
       expect(statusCode).to.equal(401);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Unauthorized');
@@ -205,20 +265,16 @@ describe('FRIEND ROUTER', () => {
     it('should return 400 if friend id is invalid', async () => {
       const { statusCode, body } = await request(app)
         .patch('/friends/reject-request/1')
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Friend user ID is invalid');
     });
 
     it('should return 400 if friend id is not found', async () => {
-      const nonexistentMongoID = '111111111111111111111111';
       const { statusCode, body } = await request(app)
-        .patch(`/friends/reject-request/${nonexistentMongoID}`)
-        .set('Cookie', USER_ONE.jwtCookie)
-        .send({});
-
+        .patch(`/friends/reject-request/${NONEXISTENT_MONGODB_ID}`)
+        .set('Cookie', USER_ONE.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('User not found');
@@ -227,8 +283,7 @@ describe('FRIEND ROUTER', () => {
     it('should return 400 if friend request is not found', async () => {
       const { statusCode, body } = await request(app)
         .patch(`/friends/reject-request/${USER_ONE._id}`)
-        .set('Cookie', USER_TWO.jwtCookie)
-        .send({});
+        .set('Cookie', USER_TWO.jwtCookie);
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Friend request not found');
@@ -239,7 +294,7 @@ describe('FRIEND ROUTER', () => {
       await request(app)
         .post(`/friends/send-request/${USER_TWO._id}`)
         .set('Cookie', USER_ONE.jwtCookie);
-
+      // reject the friend request
       const { statusCode, body } = await request(app)
         .patch(`/friends/reject-request/${USER_ONE._id}`)
         .set('Cookie', USER_TWO.jwtCookie);
@@ -280,7 +335,6 @@ describe('FRIEND ROUTER', () => {
       const { statusCode, body } = await request(app)
         .delete(`/friends/${nonexistentMongoID}`)
         .set('Cookie', USER_ONE.jwtCookie);
-
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('User not found');
@@ -290,7 +344,6 @@ describe('FRIEND ROUTER', () => {
       const { statusCode, body } = await request(app)
         .delete(`/friends/${USER_ONE._id}`)
         .set('Cookie', USER_TWO.jwtCookie);
-
       expect(statusCode).to.equal(400);
       expect(body.success).to.be.false;
       expect(body.error).to.equal('Friend not found');
@@ -305,7 +358,7 @@ describe('FRIEND ROUTER', () => {
       await request(app)
         .patch(`/friends/accept-request/${USER_ONE._id}`)
         .set('Cookie', USER_TWO.jwtCookie);
-
+      // delete the friend
       const { statusCode, body } = await request(app)
         .delete(`/friends/${USER_ONE._id}`)
         .set('Cookie', USER_TWO.jwtCookie);
