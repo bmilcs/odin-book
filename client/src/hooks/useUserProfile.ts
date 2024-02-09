@@ -1,4 +1,5 @@
 import { AuthContext, TUser } from '@/components/services/auth-provider';
+import useFriends from '@/hooks/useFriends';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { ExpressValidatorError, getErrorMsg } from '@/utils/errors';
@@ -18,41 +19,72 @@ type UpdateProfileApiResponse = GetUserProfileApiResponse & {
 const useUserProfile = () => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
+  const { user, updateUserData } = useContext(AuthContext);
+  const [userProfile, setUserProfile] = useState<TUser | null>(null);
   const [validationErrors, setValidationErrors] = useState<
     ExpressValidatorError[]
   >([]);
-  const [userProfile, setUserProfile] = useState<TUser | null>(null);
-  const { user, updateUserData } = useContext(AuthContext);
+  const {
+    isUserAFriend,
+    isUserInIncomingFriendRequests,
+    isUserInOutgoingFriendRequests,
+    isUserTheActiveUser,
+  } = useFriends();
+  const [isFriend, setIsFriend] = useState(false);
+  const [isInOutgoingFriendRequests, setIsInOutgoingFriendRequests] =
+    useState(false);
+  const [isInIncomingFriendRequests, setIsInIncomingFriendRequests] =
+    useState(false);
+  const [isProfileOwner, setIsProfileOwner] = useState(false);
   const navigate = useNavigate();
 
-  const getUserProfile = useCallback(async (username: string) => {
-    setStatus(STATUS.LOADING);
-    setError('');
+  const getUserProfile = useCallback(
+    async (username: string) => {
+      setStatus(STATUS.LOADING);
+      setIsFriend(false);
+      setIsInOutgoingFriendRequests(false);
+      setIsInIncomingFriendRequests(false);
+      setIsProfileOwner(false);
+      setError('');
 
-    if (!username) {
-      setStatus(STATUS.ERROR);
-      setError('Username is required');
-      return;
-    }
-
-    try {
-      const { success, data, error } = await api.get<GetUserProfileApiResponse>(
-        `/users/${username}`,
-      );
-      if (success) {
-        setStatus(STATUS.SUCCESS);
-        setUserProfile(data);
+      if (!username) {
+        setStatus(STATUS.ERROR);
+        setError('Username is required');
         return;
       }
-      setStatus(STATUS.ERROR);
-      setError(error);
-    } catch (error) {
-      setStatus(STATUS.ERROR);
-      const errorMsg = getErrorMsg(error);
-      setError(errorMsg);
-      console.log(error);
-    }
-  }, []);
+
+      try {
+        const { success, data, error } =
+          await api.get<GetUserProfileApiResponse>(`/users/${username}`);
+        if (success) {
+          setStatus(STATUS.SUCCESS);
+          setUserProfile(data);
+          setIsProfileOwner(isUserTheActiveUser(data!.username));
+          setIsFriend(isUserAFriend(data!.username));
+          setIsInOutgoingFriendRequests(
+            isUserInOutgoingFriendRequests(data!.username),
+          );
+          setIsInIncomingFriendRequests(
+            isUserInIncomingFriendRequests(data!.username),
+          );
+          return;
+        }
+        setStatus(STATUS.ERROR);
+        setError(error);
+      } catch (error) {
+        setStatus(STATUS.ERROR);
+        const errorMsg = getErrorMsg(error);
+        setError(errorMsg);
+        console.log(error);
+      }
+    },
+    [
+      isUserAFriend,
+      isUserInIncomingFriendRequests,
+      isUserInOutgoingFriendRequests,
+      isUserTheActiveUser,
+    ],
+  );
 
   type UpdateUserProfileProps = {
     username: string;
@@ -109,6 +141,10 @@ const useUserProfile = () => {
     validationErrors,
     getUserProfile,
     updateUserProfile,
+    isFriend,
+    isInOutgoingFriendRequests,
+    isInIncomingFriendRequests,
+    isProfileOwner,
     userProfile,
   };
 };
