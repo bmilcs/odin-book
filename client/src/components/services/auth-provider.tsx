@@ -26,8 +26,8 @@ export type TFriend = {
 
 export type TFriendRequest = {
   _id: string;
-  username: TFriend;
-  email: TFriend;
+  username: string;
+  email: string;
 };
 
 export type TUser = {
