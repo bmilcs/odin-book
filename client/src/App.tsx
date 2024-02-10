@@ -1,3 +1,4 @@
+import ProtectedRoute from '@/components/common/protected-route';
 import Layout from '@/components/layout';
 import EditProfilePage from '@/components/pages/edit-profile';
 import FeedPage from '@/components/pages/feed-page';
@@ -26,12 +27,46 @@ function App() {
                   <Route path="/" Component={HomePage} />
                   <Route path="/login" Component={LoginPage} />
                   <Route path="/signup" Component={SignupPage} />
-                  <Route path="/feed" Component={FeedPage} />
-                  <Route path="/feed" Component={FeedPage} />
-                  <Route path="/posts/:postId" Component={PostPage} />
-                  <Route path="/users/:username" Component={UserProfilePage} />
-                  <Route path="/edit-profile" Component={EditProfilePage} />
-                  <Route path="*" Component={FeedPage} />
+                  <Route
+                    path="/feed"
+                    element={
+                      <ProtectedRoute>
+                        <FeedPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/posts/:postId"
+                    element={
+                      <ProtectedRoute>
+                        <PostPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/users/:username"
+                    element={
+                      <ProtectedRoute>
+                        <UserProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/edit-profile"
+                    element={
+                      <ProtectedRoute>
+                        <EditProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="*"
+                    element={
+                      <ProtectedRoute>
+                        <FeedPage />
+                      </ProtectedRoute>
+                    }
+                  />
                 </Routes>
               </Layout>
             </ThemeProvider>
