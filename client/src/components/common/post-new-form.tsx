@@ -58,7 +58,7 @@ const PostNewForm: FC<PostNewFormProps> = ({ ...props }) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className={`mx-auto flex w-full max-w-3xl items-center gap-2`}
+      className={`flex w-full items-center gap-2`}
       {...props}
     >
       <Input

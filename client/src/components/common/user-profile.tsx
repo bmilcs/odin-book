@@ -82,7 +82,7 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
 
   if (userProfile) {
     return (
-      <div className="mx-auto flex max-w-3xl flex-col gap-2">
+      <div className="mx-auto flex flex-col gap-2">
         <Card {...props}>
           <CardHeader className="flex items-start">
             <div>

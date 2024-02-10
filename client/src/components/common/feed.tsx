@@ -21,7 +21,7 @@ const Feed: FC<FeedProps> = ({ ...props }) => {
   }
 
   return (
-    <div className="mx-auto my-4 max-w-3xl" {...props}>
+    <div {...props}>
       {feed.map((post) => (
         <Post key={post._id} data={post} className="my-8" />
       ))}
