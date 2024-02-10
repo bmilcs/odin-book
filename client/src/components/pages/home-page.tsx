@@ -1,3 +1,4 @@
+import CenterScreenContainer from '@/components/layout/center-screen-container';
 import { AuthContext } from '@/components/services/auth-provider';
 import { useContext, useEffect } from 'react';
 
@@ -9,10 +10,14 @@ const HomePage = () => {
   }, [redirectAuthenticatedUser]);
 
   return (
-    <div className="flex h-full flex-col items-center justify-center">
-      <h1 className="text-4xl font-black">FriendLink</h1>
-      <p className="text-lg font-normal">A social media platform for friends</p>
-    </div>
+    <CenterScreenContainer>
+      <div className="text-center">
+        <h1 className="text-4xl font-black">FriendLink</h1>
+        <p className="text-lg font-normal">
+          A social media platform for friends
+        </p>
+      </div>
+    </CenterScreenContainer>
   );
 };
 

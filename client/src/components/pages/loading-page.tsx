@@ -1,10 +1,11 @@
 import LoadingSpinner from '@/components/common/loading-spinner';
+import CenterScreenContainer from '@/components/layout/center-screen-container';
 
 const LoadingPage = () => {
   return (
-    <main className="grid min-h-screen w-screen place-items-center bg-primary">
+    <CenterScreenContainer className="min-h-screen w-screen bg-primary">
       <LoadingSpinner />
-    </main>
+    </CenterScreenContainer>
   );
 };
 

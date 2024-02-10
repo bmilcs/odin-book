@@ -1,18 +1,11 @@
 import UserProfile from '@/components/common/user-profile';
-import { AuthContext } from '@/components/services/auth-provider';
-import { useContext, useEffect } from 'react';
+import CenterColumnContainer from '@/components/layout/center-column-container';
 
 const UserProfilePage = () => {
-  const { redirectUnauthenticatedUser } = useContext(AuthContext);
-
-  useEffect(() => {
-    redirectUnauthenticatedUser('/login');
-  }, [redirectUnauthenticatedUser]);
-
   return (
-    <>
+    <CenterColumnContainer>
       <UserProfile />
-    </>
+    </CenterColumnContainer>
   );
 };
 
