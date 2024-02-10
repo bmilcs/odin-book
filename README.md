@@ -1,6 +1,12 @@
-# FriendLink: A Facebook Clone
+# FriendLink: A Social Media App
 
-The final project of the Odin Project tasks you with creating a social media clone. I used the following technology to develop this app:
+The final assignment in the Odin Project tasks you with creating a social media clone, aptly named Odin-Book.
+
+## Preview
+
+- [Live Preview](https://odinbook.bmilcs.com)
+
+## Technology Used
 
 **Frontend**:
 
