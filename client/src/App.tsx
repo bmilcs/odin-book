@@ -5,13 +5,14 @@ import AuthProvider from '@/context/auth-provider';
 import FeedProvider from '@/context/feed-provider';
 import NotificationProvider from '@/context/notification-provider';
 import ThemeProvider from '@/context/theme-provider';
-import EditProfilePage from '@/pages/edit-profile';
+import EditProfilePage from '@/pages/edit-profile-page';
 import FeedPage from '@/pages/feed-page';
+import FriendsPage from '@/pages/friends-page';
 import HomePage from '@/pages/home-page';
 import LoginPage from '@/pages/login-page';
 import PostPage from '@/pages/post-page';
 import SignupPage from '@/pages/signup-page';
-import UserProfilePage from '@/pages/user-profile';
+import UserProfilePage from '@/pages/user-profile-page';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 function App() {
@@ -56,6 +57,14 @@ function App() {
                     element={
                       <ProtectedRoute>
                         <EditProfilePage />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route
+                    path="/friends"
+                    element={
+                      <ProtectedRoute>
+                        <FriendsPage />
                       </ProtectedRoute>
                     }
                   />
