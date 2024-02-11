@@ -3,7 +3,7 @@ import CenterScreenContainer from '@/components/layout/center-screen-container';
 
 const LoadingPage = () => {
   return (
-    <CenterScreenContainer className="min-h-screen w-screen bg-primary">
+    <CenterScreenContainer className="h-screen place-items-center">
       <LoadingSpinner />
     </CenterScreenContainer>
   );
