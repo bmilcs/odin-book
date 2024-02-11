@@ -97,7 +97,7 @@ const Post: FC<PostProps> = ({ data, ...props }) => {
       </CardContent>
 
       {/* Post Buttons */}
-      <CardContent className="border-b-2">
+      <CardContent className="border-b-2 pb-5">
         <div className="flex justify-between">
           {/* Like Button */}
           <LikeButton
@@ -128,7 +128,7 @@ const Post: FC<PostProps> = ({ data, ...props }) => {
       </CardContent>
 
       {/* Comments */}
-      <CardContent className="grid gap-4 p-5">
+      <CardContent className="grid gap-4">
         {/* List of comments */}
         {post.comments.map((comment, i) => {
           if (showAllComments) {

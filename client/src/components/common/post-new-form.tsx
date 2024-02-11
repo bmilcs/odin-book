@@ -20,7 +20,7 @@ const formSchema = z.object({
     }),
 });
 
-type PostNewFormProps = ComponentPropsWithoutRef<'form'>;
+type PostNewFormProps = ComponentPropsWithoutRef<'div'>;
 
 const PostNewForm: FC<PostNewFormProps> = ({ ...props }) => {
   const { createPost, postData, status, reset: resetPostHook } = usePost();
@@ -56,26 +56,27 @@ const PostNewForm: FC<PostNewFormProps> = ({ ...props }) => {
   }, [status, reset, resetPostHook, postData, addPostToFeed]);
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className={`flex w-full items-center gap-2`}
-      {...props}
-    >
-      <Input
-        type="post"
-        placeholder="I love this app!"
-        {...register('content')}
-      />
-      <Button
-        type="submit"
-        variant="ghost"
-        disabled={isSubmitting}
-        className="h-full"
+    <div {...props}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className={`flex w-full items-center gap-2`}
       >
-        <Icons.submit />
-        <span className="sr-only">Submit Post</span>
-      </Button>
-    </form>
+        <Input
+          type="post"
+          placeholder="I love this app!"
+          {...register('content')}
+        />
+        <Button
+          type="submit"
+          variant="ghost"
+          disabled={isSubmitting}
+          className="h-full"
+        >
+          <Icons.submit />
+          <span className="sr-only">Submit Post</span>
+        </Button>
+      </form>
+    </div>
   );
 };
 

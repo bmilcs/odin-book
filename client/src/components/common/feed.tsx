@@ -23,7 +23,7 @@ const Feed: FC<FeedProps> = ({ ...props }) => {
   return (
     <div {...props}>
       {feed.map((post) => (
-        <Post key={post._id} data={post} className="my-8" />
+        <Post key={post._id} data={post} />
       ))}
     </div>
   );
