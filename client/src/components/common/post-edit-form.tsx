@@ -1,7 +1,7 @@
-import { TPost } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
+import { TPost } from '@/context/feed-provider';
 import usePost from '@/hooks/usePost';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ComponentPropsWithoutRef, FC, useEffect } from 'react';

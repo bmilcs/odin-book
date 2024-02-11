@@ -1,6 +1,5 @@
 import NotificationIcon from '@/components/common/notification';
 import UserSearchForm from '@/components/common/user-search-form';
-import { AuthContext } from '@/components/services/auth-provider';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,6 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Icons } from '@/components/ui/icons';
 import { ModeToggle } from '@/components/ui/mode-toggle';
+import { AuthContext } from '@/context/auth-provider';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 

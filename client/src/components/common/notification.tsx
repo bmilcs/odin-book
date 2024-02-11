@@ -1,7 +1,3 @@
-import {
-  NotificationContext,
-  TNotification,
-} from '@/components/services/notification-provider';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,6 +6,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Icons } from '@/components/ui/icons';
+import {
+  NotificationContext,
+  TNotification,
+} from '@/context/notification-provider';
 import useFriends from '@/hooks/useFriends';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';

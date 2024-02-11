@@ -1,4 +1,4 @@
-import { AuthContext, TUser } from '@/components/services/auth-provider';
+import { AuthContext, TUser } from '@/context/auth-provider';
 import useFriends from '@/hooks/useFriends';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';

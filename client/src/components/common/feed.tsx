@@ -1,6 +1,6 @@
 import LoadingSpinner from '@/components/common/loading-spinner';
 import Post from '@/components/common/post';
-import { FeedContext } from '@/components/services/feed-provider';
+import { FeedContext } from '@/context/feed-provider';
 import { ComponentPropsWithoutRef, FC, useContext } from 'react';
 
 type FeedProps = ComponentPropsWithoutRef<'div'>;

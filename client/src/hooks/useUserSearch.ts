@@ -1,8 +1,4 @@
-import {
-  AuthContext,
-  TFriend,
-  TFriendRequest,
-} from '@/components/services/auth-provider';
+import { AuthContext, TFriend, TFriendRequest } from '@/context/auth-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';

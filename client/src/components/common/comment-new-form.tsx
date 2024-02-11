@@ -1,7 +1,7 @@
-import { TComment } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
+import { TComment } from '@/context/feed-provider';
 import useComment from '@/hooks/useComment';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ComponentPropsWithoutRef, FC, useEffect } from 'react';

@@ -1,4 +1,4 @@
-import { TComment } from '@/components/services/feed-provider';
+import { TComment } from '@/context/feed-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';

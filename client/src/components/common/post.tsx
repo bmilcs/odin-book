@@ -2,8 +2,6 @@ import Comment from '@/components/common/comment';
 import CommentNewForm from '@/components/common/comment-new-form';
 import LikeButton from '@/components/common/like-button';
 import PostEditForm from '@/components/common/post-edit-form';
-import { AuthContext } from '@/components/services/auth-provider';
-import { TComment, TPost } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -13,6 +11,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Icons } from '@/components/ui/icons';
+import { AuthContext } from '@/context/auth-provider';
+import { TComment, TPost } from '@/context/feed-provider';
 import usePost from '@/hooks/usePost';
 import { formatDate } from '@/utils/formatters';
 import { ComponentPropsWithoutRef, FC, useContext, useState } from 'react';

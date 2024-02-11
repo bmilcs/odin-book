@@ -1,4 +1,4 @@
-import { TPost } from '@/components/services/feed-provider';
+import { TPost } from '@/context/feed-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';

@@ -1,4 +1,3 @@
-import { AuthContext } from '@/components/services/auth-provider';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -7,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { AuthContext } from '@/context/auth-provider';
 import { ComponentPropsWithoutRef, FC, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 

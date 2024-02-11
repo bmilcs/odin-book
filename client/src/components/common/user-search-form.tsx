@@ -1,8 +1,3 @@
-import {
-  AuthContext,
-  TFriend,
-  TFriendRequest,
-} from '@/components/services/auth-provider';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -12,6 +7,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
+import { AuthContext, TFriend, TFriendRequest } from '@/context/auth-provider';
 import useFriends from '@/hooks/useFriends';
 import useUserSearch from '@/hooks/useUserSearch';
 import { zodResolver } from '@hookform/resolvers/zod';

@@ -1,4 +1,4 @@
-import { AuthContext } from '@/components/services/auth-provider';
+import { AuthContext } from '@/context/auth-provider';
 import { FC, useContext, useEffect } from 'react';
 
 type ProtectedRouteProps = {

@@ -1,4 +1,3 @@
-import { AuthContext } from '@/components/services/auth-provider';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -17,6 +16,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { AuthContext } from '@/context/auth-provider';
 import useUserProfile from '@/hooks/useUserProfile';
 import { getFieldErrorMsg } from '@/utils/errors';
 import { zodResolver } from '@hookform/resolvers/zod';

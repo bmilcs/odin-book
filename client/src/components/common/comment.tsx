@@ -1,8 +1,8 @@
 import CommentEditForm from '@/components/common/comment-edit-form';
 import LikeButton from '@/components/common/like-button';
-import { AuthContext } from '@/components/services/auth-provider';
-import { TComment } from '@/components/services/feed-provider';
 import { Button } from '@/components/ui/button';
+import { AuthContext } from '@/context/auth-provider';
+import { TComment } from '@/context/feed-provider';
 import useComment from '@/hooks/useComment';
 import { formatDate } from '@/utils/formatters';
 import { ComponentPropsWithoutRef, FC, useContext, useState } from 'react';

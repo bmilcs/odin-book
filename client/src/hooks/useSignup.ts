@@ -1,4 +1,4 @@
-import { AuthContext, TUser } from '@/components/services/auth-provider';
+import { AuthContext, TUser } from '@/context/auth-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { ExpressValidatorError, getErrorMsg } from '@/utils/errors';

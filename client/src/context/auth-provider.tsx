@@ -1,5 +1,5 @@
-import LoadingPage from '@/components/pages/loading-page';
-import { TNotification } from '@/components/services/notification-provider';
+import { TNotification } from '@/context/notification-provider';
+import LoadingPage from '@/pages/loading-page';
 import api from '@/utils/api';
 import { getErrorMsg } from '@/utils/errors';
 import {

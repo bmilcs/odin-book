@@ -1,5 +1,5 @@
-import { AuthContext } from '@/components/services/auth-provider';
-import { FeedContext } from '@/components/services/feed-provider';
+import { AuthContext } from '@/context/auth-provider';
+import { FeedContext } from '@/context/feed-provider';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';

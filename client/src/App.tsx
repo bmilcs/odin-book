@@ -1,17 +1,17 @@
 import ProtectedRoute from '@/components/common/protected-route';
+import { ScrollToTop } from '@/components/common/scroll-to-top';
 import Layout from '@/components/layout';
-import EditProfilePage from '@/components/pages/edit-profile';
-import FeedPage from '@/components/pages/feed-page';
-import HomePage from '@/components/pages/home-page';
-import LoginPage from '@/components/pages/login-page';
-import PostPage from '@/components/pages/post-page';
-import SignupPage from '@/components/pages/signup-page';
-import UserProfilePage from '@/components/pages/user-profile';
-import AuthProvider from '@/components/services/auth-provider';
-import FeedProvider from '@/components/services/feed-provider';
-import NotificationProvider from '@/components/services/notification-provider';
-import { ScrollToTop } from '@/components/services/scroll-to-top';
-import { ThemeProvider } from '@/components/services/theme-provider';
+import AuthProvider from '@/context/auth-provider';
+import FeedProvider from '@/context/feed-provider';
+import NotificationProvider from '@/context/notification-provider';
+import ThemeProvider from '@/context/theme-provider';
+import EditProfilePage from '@/pages/edit-profile';
+import FeedPage from '@/pages/feed-page';
+import HomePage from '@/pages/home-page';
+import LoginPage from '@/pages/login-page';
+import PostPage from '@/pages/post-page';
+import SignupPage from '@/pages/signup-page';
+import UserProfilePage from '@/pages/user-profile';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 function App() {

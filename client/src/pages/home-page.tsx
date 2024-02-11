@@ -1,5 +1,5 @@
 import CenterScreenContainer from '@/components/layout/center-screen-container';
-import { AuthContext } from '@/components/services/auth-provider';
+import { AuthContext } from '@/context/auth-provider';
 import { useContext, useEffect } from 'react';
 
 const HomePage = () => {

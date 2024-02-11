@@ -1,4 +1,4 @@
-import { AuthContext } from '@/components/services/auth-provider';
+import { AuthContext } from '@/context/auth-provider';
 import useUserProfile from '@/hooks/useUserProfile';
 import { formatDate } from '@/utils/formatters';
 import { ComponentPropsWithoutRef, useContext, useEffect } from 'react';
