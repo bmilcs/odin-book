@@ -91,9 +91,7 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
               </CardTitle>
 
               <CardDescription>
-                {userProfile.createdAt && (
-                  <p>Joined {formatDate(userProfile.createdAt)}</p>
-                )}
+                Joined {formatDate(userProfile.createdAt)}
               </CardDescription>
             </div>
           </CardHeader>

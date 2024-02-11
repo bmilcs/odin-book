@@ -25,12 +25,8 @@ const UserSummary: FC<UserSummaryProps> = ({ ...props }) => {
   return (
     <Card {...props}>
       <CardHeader>
-        <CardTitle>
-          <h2 className="text-2xl font-semibold">{user?.username}</h2>
-        </CardTitle>
-        <CardDescription>
-          <p>{user?.email}</p>
-        </CardDescription>
+        <CardTitle className="text-2xl">{user?.username}</CardTitle>
+        <CardDescription>{user?.email}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
         {user?.friends.length === 0 ? (
