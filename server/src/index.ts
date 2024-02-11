@@ -23,6 +23,7 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import http from 'http';
+import path from 'path';
 
 //
 // setup server
@@ -48,6 +49,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // parse cookies: authentication jwt tokens are stored in cookies
 app.use(cookieParser());
+
+// allow access to uploaded files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // helmet: set security headers & protect well-known web vulnerabilities
 app.use(helmet());
