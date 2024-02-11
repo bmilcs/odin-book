@@ -6,11 +6,14 @@ type CenterScreenContainerProps = ComponentPropsWithoutRef<'div'> & {
 
 const CenterScreenContainer: FC<CenterScreenContainerProps> = ({
   children,
-  className,
+  className = '',
   ...props
 }) => {
   return (
-    <div className={`grid h-full place-items-center ${className}`} {...props}>
+    <div
+      className={`flex h-full w-full flex-col items-center justify-center ${className}`}
+      {...props}
+    >
       {children}
     </div>
   );

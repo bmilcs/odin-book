@@ -4,11 +4,11 @@ import Main from '@/components/layout/main';
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <>
+    <div className="flex h-screen flex-col">
       <Header />
       <Main>{children}</Main>
       <Footer />
-    </>
+    </div>
   );
 };
 

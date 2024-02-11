@@ -78,7 +78,3 @@
       'calt' 1;
   }
 }
-
-#root {
-  @apply flex min-h-screen flex-col;
-}
