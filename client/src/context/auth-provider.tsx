@@ -34,6 +34,7 @@ export type TUser = {
   _id: string;
   username: string;
   email: string;
+  photo: string;
   profile: {
     bio: string;
     location: string;

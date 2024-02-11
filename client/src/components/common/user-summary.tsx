@@ -1,9 +1,9 @@
+import UserProfileImage from '@/components/common/user-profile-image';
 import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { AuthContext } from '@/context/auth-provider';
@@ -24,24 +24,30 @@ const UserSummary: FC<UserSummaryProps> = ({ ...props }) => {
 
   return (
     <Card {...props}>
-      <CardHeader>
-        <CardTitle className="text-2xl">{user?.username}</CardTitle>
-        <CardDescription>{user?.email}</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-5">
-        {user?.friends.length === 0 ? (
-          <p>No Friends</p>
-        ) : (
-          <p>{user?.friends.length} Friends</p>
-        )}
+      <CardContent>
+        <div className="items-center justify-between gap-4 space-y-2 sm:flex lg:block">
+          <UserProfileImage className="w-full object-cover sm:max-w-xs" />
+          <div className="flex-grow">
+            <CardTitle className="text-2xl">{user?.username}</CardTitle>
+            <CardDescription>{user?.email}</CardDescription>
 
-        <Button
-          onClick={handleFindFriends}
-          variant="default"
-          className="w-full"
-        >
-          Find Friends
-        </Button>
+            <div className="py-5">
+              {user?.friends.length === 0 ? (
+                <p>No Friends</p>
+              ) : (
+                <p>{user?.friends.length} Friends</p>
+              )}
+            </div>
+
+            <Button
+              onClick={handleFindFriends}
+              variant="default"
+              className="md:mx-center w-full md:max-w-md"
+            >
+              Find More Friends
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
   );
