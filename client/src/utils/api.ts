@@ -16,17 +16,22 @@ type Method = 'GET' | 'POST' | 'DELETE' | 'PATCH' | 'PUT';
 async function callApi<T>(
   method: Method,
   path: string,
-  data?: Record<string, unknown>,
+  data?: FormData | Record<string, unknown> | undefined,
 ): Promise<T> {
   const url = `${API_BASE_URL}${path}`;
+
   const options: RequestInit = {
     method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
     credentials: 'include',
-    body: data ? JSON.stringify(data) : undefined,
+    body:
+      data instanceof FormData ? data : data ? JSON.stringify(data) : undefined,
   };
+
+  if (!(data instanceof FormData)) {
+    options.headers = {
+      'Content-Type': 'application/json',
+    };
+  }
 
   try {
     const response = await fetch(url, options);
@@ -55,8 +60,10 @@ const api = {
    * @param data The data to send with the request.
    * @returns A Promise that resolves to the response data.
    */
-  post: <T>(path: string, data: Record<string, unknown>): Promise<T> =>
-    callApi<T>('POST', path, data),
+  post: <T>(
+    path: string,
+    data: FormData | Record<string, unknown> | undefined,
+  ): Promise<T> => callApi<T>('POST', path, data),
 
   /**
    * Sends a DELETE request to the specified API endpoint.
