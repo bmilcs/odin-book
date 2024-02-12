@@ -7,6 +7,7 @@ import {
 } from '@/tests/setup';
 import { expect } from 'chai';
 import { describe } from 'mocha';
+import path from 'path';
 import request from 'supertest';
 
 describe('USERS ROUTER', () => {
@@ -227,6 +228,50 @@ describe('USERS ROUTER', () => {
       expect(userBody.data.profile.location).to.equal(
         userProfileUpdates.location,
       );
+    });
+  });
+
+  //
+  // UPLOAD PROFILE IMAGE
+  //
+
+  describe('PUT /profile/upload-image', () => {
+    it('should return 401 if user is not logged in', async () => {
+      const { statusCode, body } = await request(app).put(
+        `/users/${USER_ONE.username}/upload-profile-image/`,
+      );
+      expect(statusCode).to.equal(401);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal('Unauthorized');
+    });
+
+    it('should return 400 if no image is provided', async () => {
+      const { statusCode, body } = await request(app)
+        .put(`/users/${USER_ONE.username}/upload-profile-image/`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(statusCode).to.equal(400);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal('Please provide an image');
+    });
+
+    it('should return 201 w/ updated user profile & db check', async () => {
+      const filePath = path.join(__dirname, 'test-image.png');
+
+      const { statusCode, body } = await request(app)
+        .put(`/users/${USER_ONE.username}/upload-profile-image`)
+        .set('Cookie', USER_ONE.jwtCookie)
+        .attach('file', filePath);
+
+      expect(statusCode).to.equal(201);
+      expect(body.success).to.be.true;
+      expect(body.data.profile.photo).to.be.a('string');
+      // check db
+      const { statusCode: userStatusCode, body: userBody } = await request(app)
+        .get(`/users/${USER_ONE.username}`)
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(userStatusCode).to.equal(201);
+      expect(userBody.success).to.be.true;
+      expect(userBody.data.profile.photo).to.be.a('string');
     });
   });
 });
