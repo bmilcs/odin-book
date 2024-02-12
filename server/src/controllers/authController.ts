@@ -11,16 +11,16 @@ const status = tryCatch(
         .findById(req.userId, {
           password: 0,
         })
-        .populate('friends', '_id username email')
-        .populate('friendRequestsSent', '_id username email')
-        .populate('friendRequestsReceived', '_id username email')
+        .populate('friends', '_id username email photo')
+        .populate('friendRequestsSent', '_id username email photo')
+        .populate('friendRequestsReceived', '_id username email photo')
         .populate('notifications')
         .populate({
           path: 'notifications',
           match: { read: false },
           populate: {
             path: 'fromUser',
-            select: '_id username email',
+            select: '_id username email photo',
           },
         });
       return res.success('Authenticated', user, 201);
@@ -56,15 +56,15 @@ const login = tryCatch(
     const { email, password } = req.body;
     const user = await userModel
       .findOne({ email })
-      .populate('friends', '_id username email')
-      .populate('friendRequestsSent', '_id username email')
-      .populate('friendRequestsReceived', '_id username email')
+      .populate('friends', '_id username email photo')
+      .populate('friendRequestsSent', '_id username email photo')
+      .populate('friendRequestsReceived', '_id username email photo')
       .populate({
         path: 'notifications',
         match: { read: false },
         populate: {
           path: 'fromUser',
-          select: '_id username email',
+          select: '_id username email photo',
         },
       });
     if (!user) {

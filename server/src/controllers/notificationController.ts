@@ -11,7 +11,7 @@ const getNotifications = tryCatch(
       .find({
         toUser: userId,
       })
-      .populate('fromUser', 'username email _id');
+      .populate('fromUser', 'username email _id photo');
 
     if (!notifications) {
       return next(new AppError('Notifications not found', 400));
@@ -30,7 +30,7 @@ const getUnreadNotifications = tryCatch(
         toUser: userId,
         read: false,
       })
-      .populate('fromUser', 'username email _id');
+      .populate('fromUser', 'username email _id photo');
 
     if (!notifications) {
       return next(new AppError('Notifications not found', 400));

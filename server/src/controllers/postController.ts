@@ -31,7 +31,7 @@ const createPost = tryCatch(
       );
     }
     // populate post with author info
-    await post.populate('author', '_id username email');
+    await post.populate('author', '_id username email photo');
     // create notification for each friend
     const postId = post._id;
     await Promise.all(
@@ -68,7 +68,7 @@ const getPost = tryCatch(
       .findById(postId)
       .populate({
         path: 'author',
-        select: '_id username email',
+        select: '_id username email photo',
       })
       .populate({
         path: 'comments',
@@ -76,7 +76,7 @@ const getPost = tryCatch(
           path: 'likes',
           populate: {
             path: 'user',
-            select: '_id username email',
+            select: '_id username email photo',
           },
         },
       })
@@ -84,14 +84,14 @@ const getPost = tryCatch(
         path: 'comments',
         populate: {
           path: 'author',
-          select: '_id username email',
+          select: '_id username email photo',
         },
       })
       .populate({
         path: 'likes',
         populate: {
           path: 'user',
-          select: '_id username email',
+          select: '_id username email photo',
         },
       });
     if (!post) {
@@ -118,7 +118,7 @@ const updatePost = tryCatch(
       .findById(postId)
       .populate({
         path: 'author',
-        select: '_id username email',
+        select: '_id username email photo',
       })
       .populate({
         path: 'comments',
@@ -126,7 +126,7 @@ const updatePost = tryCatch(
           path: 'likes',
           populate: {
             path: 'user',
-            select: '_id username email',
+            select: '_id username email photo',
           },
         },
       })
@@ -134,14 +134,14 @@ const updatePost = tryCatch(
         path: 'comments',
         populate: {
           path: 'author',
-          select: '_id username email',
+          select: '_id username email photo',
         },
       })
       .populate({
         path: 'likes',
         populate: {
           path: 'user',
-          select: '_id username email',
+          select: '_id username email photo',
         },
       });
     if (!post) {
@@ -269,7 +269,7 @@ const addComment = tryCatch(
     post.comments.push(comment._id);
     await post.save();
     // populate comment with author info
-    await comment.populate('author', '_id username email');
+    await comment.populate('author', '_id username email photo');
     // create notification for post author
     const isCommentingOnOwnPost = userId === post.author.toString();
     if (!isCommentingOnOwnPost) {
@@ -314,7 +314,7 @@ const editComment = tryCatch(
         path: 'likes',
         populate: {
           path: 'user',
-          select: '_id username email',
+          select: '_id username email photo',
         },
       });
     if (!comment) {
