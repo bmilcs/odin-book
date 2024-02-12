@@ -99,8 +99,30 @@ const search = tryCatch(
   },
 );
 
+const uploadProfileImage = tryCatch(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userId, file } = req;
+
+    if (!file) {
+      return next(new AppError('Please provide an image', 400));
+    }
+
+    // save image url to user profile
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return next(new AppError('Your user information was not found', 400));
+    }
+
+    user.photo = `/uploads/profile-images/${file.filename}`;
+    await user.save();
+
+    res.success('Profile image uploaded successfully', user.photo, 201);
+  },
+);
+
 export default {
   getProfile,
   updateProfile,
+  uploadProfileImage,
   search,
 };

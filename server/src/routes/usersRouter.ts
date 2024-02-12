@@ -1,3 +1,4 @@
+import { profileImageUpload } from '@/config/fileUploads';
 import { usersController } from '@/controllers';
 import { ensureAuthenticated, handleValidationErrors } from '@/middleware';
 import { validateUpdateProfile } from '@/validation';
@@ -19,6 +20,13 @@ usersRouter.patch(
   validateUpdateProfile,
   handleValidationErrors,
   usersController.updateProfile,
+);
+
+usersRouter.put(
+  '/:username/upload-profile-image',
+  ensureAuthenticated,
+  profileImageUpload.single('file'),
+  usersController.uploadProfileImage,
 );
 
 export default usersRouter;
