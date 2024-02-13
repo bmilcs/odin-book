@@ -78,8 +78,10 @@ const api = {
    * @param data The data to send with the request.
    * @returns A Promise that resolves to the response data.
    */
-  patch: <T>(path: string, data: Record<string, unknown>): Promise<T> =>
-    callApi<T>('PATCH', path, data),
+  patch: <T>(
+    path: string,
+    data: FormData | Record<string, unknown> | undefined,
+  ): Promise<T> => callApi<T>('PATCH', path, data),
 
   /**
    * Sends a PUT request to the specified API endpoint with the specified data.
@@ -88,8 +90,10 @@ const api = {
    * @returns A Promise that resolves to the response data.
    * @throws An error if the API request fails.
    **/
-  put: <T>(path: string, data: Record<string, unknown>): Promise<T> =>
-    callApi<T>('PUT', path, data),
+  put: <T>(
+    path: string,
+    data: FormData | Record<string, unknown> | undefined,
+  ): Promise<T> => callApi<T>('PUT', path, data),
 };
 
 export default api;
