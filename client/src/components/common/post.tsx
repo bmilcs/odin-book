@@ -2,6 +2,7 @@ import Comment from '@/components/common/comment';
 import CommentNewForm from '@/components/common/comment-new-form';
 import LikeButton from '@/components/common/like-button';
 import PostEditForm from '@/components/common/post-edit-form';
+import UserProfileImage from '@/components/common/user-profile-image';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -68,18 +69,24 @@ const Post: FC<PostProps> = ({ data, ...props }) => {
   return (
     <Card {...props}>
       {/* Post Author & Date Posted */}
-      <CardHeader className="flex items-start">
-        <div>
-          <CardTitle>
-            <Link to={`/users/${post.author.username}`}>
-              {post.author.username}
-            </Link>
-          </CardTitle>
-          <CardDescription className="ml-auto font-normal">
-            {post.updatedAt !== post.createdAt
-              ? `edited ${formatDate(post.updatedAt)}`
-              : `posted ${formatDate(post.createdAt)}`}
-          </CardDescription>
+      <CardHeader>
+        <div className="flex items-center gap-2 rounded-lg">
+          <UserProfileImage
+            user={data.author}
+            className="h-14 w-14 rounded-full"
+          />
+          <div>
+            <CardTitle>
+              <Link to={`/users/${post.author.username}`}>
+                {post.author.username}
+              </Link>
+            </CardTitle>
+            <CardDescription className="ml-auto font-normal">
+              {post.updatedAt !== post.createdAt
+                ? `edited ${formatDate(post.updatedAt)}`
+                : `posted ${formatDate(post.createdAt)}`}
+            </CardDescription>
+          </div>
         </div>
       </CardHeader>
 
