@@ -25,7 +25,7 @@ const UserSummary: FC<UserSummaryProps> = ({ ...props }) => {
   return (
     <Card {...props}>
       <CardContent>
-        <div className="items-center justify-between gap-4 space-y-2 sm:flex lg:block">
+        <div className="items-center justify-between gap-4 space-y-2 sm:flex md:gap-10 lg:block">
           <UserProfileImage className="w-full object-cover sm:max-w-xs" />
           <div className="flex-grow">
             <CardTitle className="text-2xl">{user?.username}</CardTitle>
