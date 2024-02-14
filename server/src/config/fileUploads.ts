@@ -1,29 +1,40 @@
 import { Request } from 'express';
-import multer from 'multer';
+import multer, { Options } from 'multer';
 import path from 'path';
 
-const profileImageStorage = multer.diskStorage({
-  destination: (req: Request, image, cb) => {
-    cb(null, path.join(__dirname, '../uploads/profile-images'));
-  },
-  filename: (req: Request, image, cb) => {
-    const fileExt = image.originalname.split('.').pop();
-    const fileName = req.userId! + '.' + fileExt;
-    cb(null, fileName);
-  },
-});
+const store = (destination: string) =>
+  multer.diskStorage({
+    destination: (req: Request, file, cb) => {
+      cb(null, path.join(__dirname, destination));
+    },
+    filename: (req: Request, file, cb) => {
+      const fileExt = file.originalname.split('.').pop();
+      const fileName = req.userId! + '.' + fileExt;
+      cb(null, fileName);
+    },
+  });
 
-export const profileImageUpload = multer({ storage: profileImageStorage });
-
-const postImageStorage = multer.diskStorage({
-  destination: (req: Request, image, cb) => {
-    cb(null, path.join(__dirname, '../uploads/post-images'));
+const profileImageUploadOptions: Options = {
+  storage: store('../uploads/profile-images'),
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
   },
-  filename: (req: Request, image, cb) => {
-    const fileExt = image.originalname.split('.').pop();
-    const fileName = req.userId! + '.' + fileExt;
-    cb(null, fileName);
-  },
-});
+};
 
-export const postImageUpload = multer({ storage: postImageStorage });
+const postImageUploadOptions: Options = {
+  storage: store(path.join(__dirname, '../uploads/post-images')),
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+  },
+};
+
+export const profileImageUpload = multer(profileImageUploadOptions);
+export const postImageUpload = multer(postImageUploadOptions);
