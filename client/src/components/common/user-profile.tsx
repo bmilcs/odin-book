@@ -1,10 +1,16 @@
 import { AuthContext } from '@/context/auth-provider';
 import useUserProfile from '@/hooks/useUserProfile';
 import { formatDate } from '@/utils/formatters';
-import { ComponentPropsWithoutRef, useContext, useEffect } from 'react';
+import {
+  ComponentPropsWithoutRef,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import NewLineText from '@/components/common/new-line-text';
+import UserProfileImageUploadForm from '@/components/common/user-profile-image-upload-form';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -21,6 +27,7 @@ type UserProfileProps = ComponentPropsWithoutRef<'div'>;
 const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
   const navigate = useNavigate();
   const { username: targetUsername } = useParams();
+  const [uploadProfileImageMode, setUploadProfileImageMode] = useState(false);
   const { user: activeUser } = useContext(AuthContext);
   const {
     getUserProfile,
@@ -66,6 +73,10 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
 
   const handleRejectFriendRequest = () => {
     rejectFriendRequest(userProfile!._id);
+  };
+
+  const handleUpdateProfileImage = () => {
+    setUploadProfileImageMode((prev) => !prev);
   };
 
   const handleEditProfile = () => {
@@ -148,9 +159,14 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
         </Card>
 
         {/* Actions: Friend request handling */}
-        <div className="flex items-center justify-center p-2">
+        <div className="flex items-center justify-center gap-4 p-2">
           {isProfileOwner ? (
-            <Button onClick={handleEditProfile}>Edit Profile</Button>
+            <>
+              <Button onClick={handleUpdateProfileImage}>
+                Update Profile Image
+              </Button>
+              <Button onClick={handleEditProfile}>Edit Profile</Button>
+            </>
           ) : isFriend ? (
             <Button onClick={handleFriendStatusToggle}>
               {isFriend ? 'Remove Friend' : 'Add Friend'}
@@ -172,6 +188,10 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
             <Button onClick={handleFriendStatusToggle}>Add Friend</Button>
           )}
         </div>
+
+        {uploadProfileImageMode && (
+          <UserProfileImageUploadForm onClose={handleUpdateProfileImage} />
+        )}
       </div>
     );
   }
