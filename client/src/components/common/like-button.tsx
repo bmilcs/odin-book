@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
-import useLike from '@/hooks/useLike';
+import useLikeToggle from '@/hooks/useLike';
 import { ComponentPropsWithoutRef, FC } from 'react';
 
 type LikeButtonProps = ComponentPropsWithoutRef<'div'> & {
@@ -19,7 +19,7 @@ const LikeButton: FC<LikeButtonProps> = ({
   commentId,
   ...props
 }) => {
-  const { status, error, likeStatus, toggleLike, totalLikes } = useLike({
+  const { status, error, likeStatus, toggleLike, totalLikes } = useLikeToggle({
     commentId,
     postId,
     contentType,

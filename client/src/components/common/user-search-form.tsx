@@ -8,7 +8,10 @@ import {
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import { AuthContext, TFriend, TFriendRequest } from '@/context/auth-provider';
-import useFriends from '@/hooks/useFriends';
+import useAcceptFriendRequest from '@/hooks/useAcceptFriendRequest';
+import useDeleteFriend from '@/hooks/useDeleteFriend';
+import useRejectFriendRequest from '@/hooks/useRejectFriendRequest';
+import useSendFriendRequest from '@/hooks/useSendFriendRequest';
 import useUserSearch from '@/hooks/useUserSearch';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -135,12 +138,10 @@ const UserSearchResult = ({
   currentFriendRequests: TFriendRequest[];
   closeMenu: () => void;
 }) => {
-  const {
-    sendFriendRequest,
-    acceptFriendRequest,
-    rejectFriendRequest,
-    deleteFriend,
-  } = useFriends();
+  const { acceptFriendRequest } = useAcceptFriendRequest();
+  const { sendFriendRequest } = useSendFriendRequest();
+  const { rejectFriendRequest } = useRejectFriendRequest();
+  const { deleteFriend } = useDeleteFriend();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
 

@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import { TPost } from '@/context/feed-provider';
-import usePost from '@/hooks/usePost';
+import useUpdatePost from '@/hooks/useUpdatePost';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ComponentPropsWithoutRef, FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -31,7 +31,7 @@ const PostEditForm: FC<PostEditFormProps> = ({
   onSuccessfulEditPost,
   ...props
 }) => {
-  const { updatePost, postData, status } = usePost();
+  const { updatePost, postData, status } = useUpdatePost();
 
   const {
     handleSubmit,

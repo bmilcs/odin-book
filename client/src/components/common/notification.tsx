@@ -10,7 +10,8 @@ import {
   NotificationContext,
   TNotification,
 } from '@/context/notification-provider';
-import useFriends from '@/hooks/useFriends';
+import useAcceptFriendRequest from '@/hooks/useAcceptFriendRequest';
+import useRejectFriendRequest from '@/hooks/useRejectFriendRequest';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -105,7 +106,8 @@ const NotificationIcon = ({ ...props }) => {
 const NotificationItem = ({ data }: { data: TNotification }) => {
   const { markNotificationAsRead, deleteNotification } =
     useContext(NotificationContext);
-  const { acceptFriendRequest, rejectFriendRequest } = useFriends();
+  const { rejectFriendRequest } = useRejectFriendRequest();
+  const { acceptFriendRequest } = useAcceptFriendRequest();
   const navigate = useNavigate();
   const notificationType = data.type;
 

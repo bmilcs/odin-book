@@ -4,7 +4,7 @@ import UserProfileImage from '@/components/common/user-profile-image';
 import { Button } from '@/components/ui/button';
 import { AuthContext } from '@/context/auth-provider';
 import { TComment } from '@/context/feed-provider';
-import useComment from '@/hooks/useComment';
+import useDeleteComment from '@/hooks/useDeleteComment';
 import { formatDate } from '@/utils/formatters';
 import { ComponentPropsWithoutRef, FC, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -16,7 +16,7 @@ type CommentProps = ComponentPropsWithoutRef<'div'> & {
 const Comment: FC<CommentProps> = ({ data, ...props }) => {
   const [comment, setComment] = useState<TComment>(data);
   const [editCommentMode, setEditCommentMode] = useState(false);
-  const { deleteComment, status: deleteCommentStatus } = useComment();
+  const { deleteComment, status: deleteCommentStatus } = useDeleteComment();
   const { user } = useContext(AuthContext);
 
   const likeCount = comment.likes.length;

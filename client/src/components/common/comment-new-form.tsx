@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import { TComment } from '@/context/feed-provider';
-import useComment from '@/hooks/useComment';
+import useCreateComment from '@/hooks/useCreateComment';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ComponentPropsWithoutRef, FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -32,10 +32,10 @@ const CommentNewForm: FC<CommentNewFormProps> = ({
   const {
     createComment,
     commentData,
-    reset: resetCommentHook,
+    reset: resetUseCreateCommentState,
     status,
     error,
-  } = useComment();
+  } = useCreateComment();
 
   const {
     handleSubmit,
@@ -57,9 +57,15 @@ const CommentNewForm: FC<CommentNewFormProps> = ({
     if (status === 'success') {
       reset();
       onSuccessfulNewComment(commentData!);
-      resetCommentHook();
+      resetUseCreateCommentState();
     }
-  }, [onSuccessfulNewComment, resetCommentHook, commentData, status, reset]);
+  }, [
+    onSuccessfulNewComment,
+    resetUseCreateCommentState,
+    commentData,
+    status,
+    reset,
+  ]);
 
   if (error) {
     return <p>{error}</p>;

@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import { FeedContext } from '@/context/feed-provider';
-import usePost from '@/hooks/usePost';
+import useCreatePost from '@/hooks/useCreatePost';
 import { CLIENT_MODE } from '@/utils/env';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ComponentPropsWithoutRef, FC, useContext, useEffect } from 'react';
@@ -23,7 +23,12 @@ const formSchema = z.object({
 type PostNewFormProps = ComponentPropsWithoutRef<'div'>;
 
 const PostNewForm: FC<PostNewFormProps> = ({ ...props }) => {
-  const { createPost, postData, status, reset: resetPostHook } = usePost();
+  const {
+    createPost,
+    postData,
+    status,
+    reset: resetPostHook,
+  } = useCreatePost();
   const { addPostToFeed } = useContext(FeedContext);
 
   const {

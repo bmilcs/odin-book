@@ -14,7 +14,7 @@ import {
 import { Icons } from '@/components/ui/icons';
 import { AuthContext } from '@/context/auth-provider';
 import { TComment, TPost } from '@/context/feed-provider';
-import usePost from '@/hooks/usePost';
+import useDeletePost from '@/hooks/useDeletePost';
 import { formatDate } from '@/utils/formatters';
 import { ComponentPropsWithoutRef, FC, useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -30,7 +30,7 @@ const Post: FC<PostProps> = ({ data, ...props }) => {
   const [editPostMode, setEditPostMode] = useState(false);
   const [showAllComments, setShowAllComments] = useState(false);
   const { user } = useContext(AuthContext);
-  const { deletePost, status: deletePostStatus } = usePost();
+  const { deletePost, status: deletePostStatus } = useDeletePost();
 
   const likeCount = post.likes.length;
   const isCreatedByUser = post.author._id.toString() === user!._id.toString();

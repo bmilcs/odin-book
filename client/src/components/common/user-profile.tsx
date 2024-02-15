@@ -1,14 +1,3 @@
-import { AuthContext } from '@/context/auth-provider';
-import useUserProfile from '@/hooks/useUserProfile';
-import { formatDate } from '@/utils/formatters';
-import {
-  ComponentPropsWithoutRef,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-
 import NewLineText from '@/components/common/new-line-text';
 import UserProfileImageUploadForm from '@/components/common/user-profile-image-upload-form';
 import { Button } from '@/components/ui/button';
@@ -19,18 +8,36 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import useFriends from '@/hooks/useFriends';
-import { FC } from 'react';
+import { AuthContext } from '@/context/auth-provider';
+import useAcceptFriendRequest from '@/hooks/useAcceptFriendRequest';
+import useCancelFriendRequest from '@/hooks/useCancelFriendRequest';
+import useDeleteFriend from '@/hooks/useDeleteFriend';
+import useFetchUserProfile from '@/hooks/useFetchUserProfile';
+import useRejectFriendRequest from '@/hooks/useRejectFriendRequest';
+import useSendFriendRequest from '@/hooks/useSendFriendRequest';
+import { formatDate } from '@/utils/formatters';
+import {
+  ComponentPropsWithoutRef,
+  FC,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 
 type UserProfileProps = ComponentPropsWithoutRef<'div'>;
 
 const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
-  const navigate = useNavigate();
   const { username: targetUsername } = useParams();
-  const [uploadProfileImageMode, setUploadProfileImageMode] = useState(false);
   const { user: activeUser } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { sendFriendRequest } = useSendFriendRequest();
+  const { acceptFriendRequest } = useAcceptFriendRequest();
+  const { rejectFriendRequest } = useRejectFriendRequest();
+  const { cancelFriendRequest } = useCancelFriendRequest();
+  const { deleteFriend } = useDeleteFriend();
   const {
-    getUserProfile,
+    fetchUserProfile,
     userProfile,
     status,
     error,
@@ -38,21 +45,16 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
     isInIncomingFriendRequests,
     isInOutgoingFriendRequests,
     isProfileOwner,
-  } = useUserProfile();
-  const {
-    sendFriendRequest,
-    acceptFriendRequest,
-    rejectFriendRequest,
-    cancelFriendRequest,
-    deleteFriend,
-  } = useFriends();
+  } = useFetchUserProfile();
+
+  const [uploadProfileImageMode, setUploadProfileImageMode] = useState(false);
 
   useEffect(
     function fetchUserProfileOnParamChange() {
       if (!targetUsername || !activeUser) return;
-      getUserProfile(targetUsername);
+      fetchUserProfile(targetUsername);
     },
-    [targetUsername, getUserProfile, activeUser],
+    [targetUsername, fetchUserProfile, activeUser],
   );
 
   const handleFriendStatusToggle = () => {

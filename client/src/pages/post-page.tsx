@@ -1,17 +1,17 @@
 import Post from '@/components/common/post';
 import CenterColumnContainer from '@/components/layout/center-column-container';
-import usePost from '@/hooks/usePost';
+import useFetchPost from '@/hooks/useFetchPost';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 const PostPage = () => {
   const { postId } = useParams();
-  const { getPost, postData, status, error } = usePost();
+  const { fetchPost, postData, status, error } = useFetchPost();
 
   useEffect(() => {
     if (!postId) return;
-    getPost({ postId });
-  }, [postId, getPost]);
+    fetchPost({ postId });
+  }, [postId, fetchPost]);
 
   if (status === 'loading') {
     return <div>Loading...</div>;

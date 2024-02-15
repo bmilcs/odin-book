@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import { TComment } from '@/context/feed-provider';
-import useComment from '@/hooks/useComment';
+import useUpdateComment from '@/hooks/useUpdateComment';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ComponentPropsWithoutRef, FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
@@ -33,7 +33,7 @@ const CommentEditForm: FC<CommentEditFormProps> = ({
   onSuccessfulEditComment,
   ...props
 }) => {
-  const { updateComment, commentData, status } = useComment();
+  const { updateComment, commentData, status } = useUpdateComment();
 
   const {
     handleSubmit,
