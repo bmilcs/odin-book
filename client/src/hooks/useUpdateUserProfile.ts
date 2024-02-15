@@ -1,8 +1,9 @@
-import { AuthContext, TUser } from '@/context/auth-provider';
+import { TUser } from '@/context/auth-provider';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { ExpressValidatorError, getErrorMsg } from '@/utils/errors';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type FetchUserProfileApiResponse = ApiResponse & {
@@ -14,7 +15,7 @@ type UpdateProfileApiResponse = FetchUserProfileApiResponse & {
 };
 
 const useUpdateUserProfile = () => {
-  const { user, updateUserData } = useContext(AuthContext);
+  const { user, updateUserData } = useAuthContext();
   const navigate = useNavigate();
 
   const [status, setStatus] = useState(STATUS.IDLE);

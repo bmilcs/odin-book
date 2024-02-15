@@ -2,11 +2,11 @@ import CommentEditForm from '@/components/common/comment-edit-form';
 import LikeButton from '@/components/common/like-button';
 import UserProfileImage from '@/components/common/user-profile-image';
 import { Button } from '@/components/ui/button';
-import { AuthContext } from '@/context/auth-provider';
 import { TComment } from '@/context/feed-provider';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import useDeleteComment from '@/hooks/useDeleteComment';
 import { formatDate } from '@/utils/formatters';
-import { ComponentPropsWithoutRef, FC, useContext, useState } from 'react';
+import { ComponentPropsWithoutRef, FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 type CommentProps = ComponentPropsWithoutRef<'div'> & {
@@ -14,10 +14,11 @@ type CommentProps = ComponentPropsWithoutRef<'div'> & {
 };
 
 const Comment: FC<CommentProps> = ({ data, ...props }) => {
+  const { deleteComment, status: deleteCommentStatus } = useDeleteComment();
+  const { user } = useAuthContext();
+
   const [comment, setComment] = useState<TComment>(data);
   const [editCommentMode, setEditCommentMode] = useState(false);
-  const { deleteComment, status: deleteCommentStatus } = useDeleteComment();
-  const { user } = useContext(AuthContext);
 
   const likeCount = comment.likes.length;
   const isCreatedByUser = comment.author._id.toString() === user!._id;

@@ -1,4 +1,5 @@
-import { AuthContext, TUser } from '@/context/auth-provider';
+import { TUser } from '@/context/auth-provider';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
@@ -7,7 +8,6 @@ import {
   ReactNode,
   createContext,
   useCallback,
-  useContext,
   useEffect,
   useState,
 } from 'react';
@@ -65,7 +65,8 @@ type FeedProviderProps = {
 };
 
 const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
-  const { isAuthenticated, user } = useContext(AuthContext);
+  const { isAuthenticated, user } = useAuthContext();
+
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const [feed, setFeed] = useState<TPost[]>([]);

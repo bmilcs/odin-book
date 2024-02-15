@@ -9,13 +9,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Icons } from '@/components/ui/icons';
 import { ModeToggle } from '@/components/ui/mode-toggle';
-import { AuthContext } from '@/context/auth-provider';
-import { useContext } from 'react';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import { Link } from 'react-router-dom';
 
 const Header = () => {
-  const { isAuthenticated, logout } = useContext(AuthContext);
-  const { user } = useContext(AuthContext);
+  const { user, isAuthenticated, logout } = useAuthContext();
 
   const handleSettingsClick = () => {
     alert('Settings');

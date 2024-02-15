@@ -1,5 +1,5 @@
-import { AuthContext } from '@/context/auth-provider';
-import { FC, useContext, useEffect } from 'react';
+import { useAuthContext } from '@/hooks/useAuthContext';
+import { FC, useEffect } from 'react';
 
 type ProtectedRouteProps = {
   children: React.ReactNode;
@@ -10,7 +10,7 @@ const ProtectedRoute: FC<ProtectedRouteProps> = ({
   path = '/login',
   children,
 }) => {
-  const { redirectUnauthenticatedUser } = useContext(AuthContext);
+  const { redirectUnauthenticatedUser } = useAuthContext();
 
   useEffect(() => {
     redirectUnauthenticatedUser(path);

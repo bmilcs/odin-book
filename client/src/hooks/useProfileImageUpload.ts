@@ -1,15 +1,16 @@
-import { AuthContext } from '@/context/auth-provider';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
 type UpdateProfileImageApiResponse = ApiResponse & {
   data: string;
 };
 
 const useProfileImageUpload = () => {
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser } = useAuthContext();
+
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
 

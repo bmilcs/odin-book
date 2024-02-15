@@ -1,9 +1,9 @@
 import CenterScreenContainer from '@/components/layout/center-screen-container';
-import { AuthContext } from '@/context/auth-provider';
-import { useContext, useEffect } from 'react';
+import { useAuthContext } from '@/hooks/useAuthContext';
+import { useEffect } from 'react';
 
 const HomePage = () => {
-  const { redirectAuthenticatedUser } = useContext(AuthContext);
+  const { redirectAuthenticatedUser } = useAuthContext();
 
   useEffect(() => {
     redirectAuthenticatedUser('/feed');

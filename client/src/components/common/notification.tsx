@@ -6,13 +6,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Icons } from '@/components/ui/icons';
-import {
-  NotificationContext,
-  TNotification,
-} from '@/context/notification-provider';
+import { TNotification } from '@/context/notification-provider';
 import useAcceptFriendRequest from '@/hooks/useAcceptFriendRequest';
+import { useNotificationContext } from '@/hooks/useNotificationContext';
 import useRejectFriendRequest from '@/hooks/useRejectFriendRequest';
-import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const NUMBER_OF_NOTIFICATIONS_TO_SHOW = 5;
@@ -23,7 +20,7 @@ const NotificationIcon = ({ ...props }) => {
     markAllNotificationsAsRead,
     getAllNotifications,
     deleteAllNotifications,
-  } = useContext(NotificationContext);
+  } = useNotificationContext();
 
   const handleMarkAllNotificationsAsRead = async () => {
     await markAllNotificationsAsRead();
@@ -105,10 +102,11 @@ const NotificationIcon = ({ ...props }) => {
 
 const NotificationItem = ({ data }: { data: TNotification }) => {
   const { markNotificationAsRead, deleteNotification } =
-    useContext(NotificationContext);
+    useNotificationContext();
   const { rejectFriendRequest } = useRejectFriendRequest();
   const { acceptFriendRequest } = useAcceptFriendRequest();
   const navigate = useNavigate();
+
   const notificationType = data.type;
 
   const handleAcceptFriendRequest = async (fromUserId: string) => {

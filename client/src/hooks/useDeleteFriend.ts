@@ -1,15 +1,16 @@
-import { AuthContext } from '@/context/auth-provider';
-import { FeedContext } from '@/context/feed-provider';
+import { useAuthContext } from '@/hooks/useAuthContext';
+import { useFeedContext } from '@/hooks/useFeedContext';
 import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
 const useDeleteFriend = () => {
+  const { updateFeed } = useFeedContext();
+  const { updateUserData } = useAuthContext();
+
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
-  const { updateFeed } = useContext(FeedContext);
-  const { updateUserData } = useContext(AuthContext);
 
   const deleteFriend = async (userId: string) => {
     setStatus(STATUS.LOADING);

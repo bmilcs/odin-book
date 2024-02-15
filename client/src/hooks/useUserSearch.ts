@@ -1,8 +1,9 @@
-import { AuthContext, TFriend, TFriendRequest } from '@/context/auth-provider';
+import { TFriend, TFriendRequest } from '@/context/auth-provider';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type FoundUser = {
   _id: string;
@@ -14,10 +15,11 @@ type UserSearchApiResponse = ApiResponse & {
 };
 
 const useUserSearch = () => {
+  const { user } = useAuthContext();
+
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const [results, setResults] = useState<FoundUser[]>([]);
-  const { user } = useContext(AuthContext);
   const [friends, setFriends] = useState<TFriend[]>([]);
   const [incomingFriendRequests, setIncomingFriendRequests] = useState<
     TFriendRequest[]

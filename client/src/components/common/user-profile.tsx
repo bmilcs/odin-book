@@ -8,29 +8,23 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { AuthContext } from '@/context/auth-provider';
 import useAcceptFriendRequest from '@/hooks/useAcceptFriendRequest';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import useCancelFriendRequest from '@/hooks/useCancelFriendRequest';
 import useDeleteFriend from '@/hooks/useDeleteFriend';
 import useFetchUserProfile from '@/hooks/useFetchUserProfile';
 import useRejectFriendRequest from '@/hooks/useRejectFriendRequest';
 import useSendFriendRequest from '@/hooks/useSendFriendRequest';
 import { formatDate } from '@/utils/formatters';
-import {
-  ComponentPropsWithoutRef,
-  FC,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { ComponentPropsWithoutRef, FC, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 type UserProfileProps = ComponentPropsWithoutRef<'div'>;
 
 const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
-  const { username: targetUsername } = useParams();
-  const { user: activeUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { username: targetUsername } = useParams();
+  const { user: activeUser } = useAuthContext();
   const { sendFriendRequest } = useSendFriendRequest();
   const { acceptFriendRequest } = useAcceptFriendRequest();
   const { rejectFriendRequest } = useRejectFriendRequest();

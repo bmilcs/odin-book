@@ -19,11 +19,10 @@ import useSignup from '@/hooks/useSignup';
 import { CLIENT_MODE } from '@/utils/env';
 import { getFieldErrorMsg } from '@/utils/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ComponentPropsWithoutRef, FC } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
-
-import { ComponentPropsWithoutRef, FC } from 'react';
 
 type SignupFormProps = ComponentPropsWithoutRef<'div'>;
 

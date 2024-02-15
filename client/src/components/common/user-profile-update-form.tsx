@@ -16,11 +16,11 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { AuthContext } from '@/context/auth-provider';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import useUpdateUserProfile from '@/hooks/useUpdateUserProfile';
 import { getFieldErrorMsg } from '@/utils/errors';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ComponentPropsWithoutRef, FC, useContext, useEffect } from 'react';
+import { ComponentPropsWithoutRef, FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -44,7 +44,7 @@ const formSchema = z.object({
 const UserProfileUpdateForm: FC<UserProfileUpdateFormProps> = ({
   ...props
 }) => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuthContext();
   const { updateUserProfile, validationErrors, status, error } =
     useUpdateUserProfile();
 

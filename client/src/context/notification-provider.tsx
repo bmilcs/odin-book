@@ -1,15 +1,9 @@
-import { AuthContext, TUser } from '@/context/auth-provider';
+import { TUser } from '@/context/auth-provider';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import {
-  FC,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { FC, createContext, useCallback, useEffect, useState } from 'react';
 
 type NotificationApiResponses = ApiResponse & {
   data: TNotification[];
@@ -53,7 +47,8 @@ type TNotificationProviderPros = {
 };
 
 const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuthContext();
+
   const [notifications, setNotifications] = useState<TNotification[]>([]);
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');

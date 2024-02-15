@@ -1,8 +1,9 @@
-import { AuthContext, TUser } from '@/context/auth-provider';
+import { TUser } from '@/context/auth-provider';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type LoginApiResponse = ApiResponse & {
@@ -10,10 +11,11 @@ type LoginApiResponse = ApiResponse & {
 };
 
 const useLogin = () => {
-  const { setUser } = useContext(AuthContext);
+  const { setUser } = useAuthContext();
+  const navigate = useNavigate();
+
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   const login = async ({
     email,

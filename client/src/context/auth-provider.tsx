@@ -72,10 +72,11 @@ type AuthProviderProps = {
 };
 
 const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
+  const navigate = useNavigate();
+
   const [user, setUser] = useState<TUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showSpinner, setShowSpinner] = useState(true);
-  const navigate = useNavigate();
 
   const isAuthenticated = useCallback(() => {
     if (isLoading) return false;

@@ -1,15 +1,16 @@
-import { AuthContext } from '@/context/auth-provider';
-import { FeedContext } from '@/context/feed-provider';
+import { useAuthContext } from '@/hooks/useAuthContext';
+import { useFeedContext } from '@/hooks/useFeedContext';
 import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
 const useAcceptFriendRequest = () => {
+  const { updateUserData } = useAuthContext();
+  const { updateFeed } = useFeedContext();
+
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
-  const { updateUserData } = useContext(AuthContext);
-  const { updateFeed } = useContext(FeedContext);
 
   const acceptFriendRequest = async (userId: string) => {
     setStatus(STATUS.LOADING);

@@ -6,8 +6,8 @@ import {
   CardDescription,
   CardTitle,
 } from '@/components/ui/card';
-import { AuthContext } from '@/context/auth-provider';
-import { ComponentPropsWithoutRef, FC, useContext } from 'react';
+import { useAuthContext } from '@/hooks/useAuthContext';
+import { ComponentPropsWithoutRef, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type UserSummaryProps = ComponentPropsWithoutRef<'div'> & {
@@ -15,7 +15,7 @@ type UserSummaryProps = ComponentPropsWithoutRef<'div'> & {
 };
 
 const UserSummary: FC<UserSummaryProps> = ({ ...props }) => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuthContext();
   const navigate = useNavigate();
 
   const handleFindFriends = () => {

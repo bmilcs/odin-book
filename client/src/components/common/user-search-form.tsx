@@ -7,20 +7,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
-import { AuthContext, TFriend, TFriendRequest } from '@/context/auth-provider';
+import { TFriend, TFriendRequest } from '@/context/auth-provider';
 import useAcceptFriendRequest from '@/hooks/useAcceptFriendRequest';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import useDeleteFriend from '@/hooks/useDeleteFriend';
 import useRejectFriendRequest from '@/hooks/useRejectFriendRequest';
 import useSendFriendRequest from '@/hooks/useSendFriendRequest';
 import useUserSearch from '@/hooks/useUserSearch';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  ComponentPropsWithoutRef,
-  FC,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import { ComponentPropsWithoutRef, FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
@@ -142,7 +137,7 @@ const UserSearchResult = ({
   const { sendFriendRequest } = useSendFriendRequest();
   const { rejectFriendRequest } = useRejectFriendRequest();
   const { deleteFriend } = useDeleteFriend();
-  const { user } = useContext(AuthContext);
+  const { user } = useAuthContext();
   const navigate = useNavigate();
 
   const handleAddFriend = (id: string) => {

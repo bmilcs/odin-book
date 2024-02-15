@@ -1,12 +1,12 @@
 import LoadingSpinner from '@/components/common/loading-spinner';
 import Post from '@/components/common/post';
-import { FeedContext } from '@/context/feed-provider';
-import { ComponentPropsWithoutRef, FC, useContext } from 'react';
+import { useFeedContext } from '@/hooks/useFeedContext';
+import { ComponentPropsWithoutRef, FC } from 'react';
 
 type FeedProps = ComponentPropsWithoutRef<'div'>;
 
 const Feed: FC<FeedProps> = ({ ...props }) => {
-  const { feed, status, error } = useContext(FeedContext);
+  const { feed, status, error } = useFeedContext();
 
   if (status === 'loading') {
     return (

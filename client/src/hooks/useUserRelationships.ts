@@ -1,8 +1,8 @@
-import { AuthContext } from '@/context/auth-provider';
-import { useCallback, useContext } from 'react';
+import { useAuthContext } from '@/hooks/useAuthContext';
+import { useCallback } from 'react';
 
 const useUserRelationships = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuthContext();
 
   const isUserAFriend = useCallback(
     (username: string) => {

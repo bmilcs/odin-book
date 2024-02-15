@@ -12,11 +12,11 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Icons } from '@/components/ui/icons';
-import { AuthContext } from '@/context/auth-provider';
 import { TComment, TPost } from '@/context/feed-provider';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import useDeletePost from '@/hooks/useDeletePost';
 import { formatDate } from '@/utils/formatters';
-import { ComponentPropsWithoutRef, FC, useContext, useState } from 'react';
+import { ComponentPropsWithoutRef, FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 type PostProps = ComponentPropsWithoutRef<'div'> & {
@@ -26,11 +26,12 @@ type PostProps = ComponentPropsWithoutRef<'div'> & {
 const NUMBER_OF_COMMENTS_TO_SHOW = 3;
 
 const Post: FC<PostProps> = ({ data, ...props }) => {
+  const { user } = useAuthContext();
+  const { deletePost, status: deletePostStatus } = useDeletePost();
+
   const [post, setPost] = useState<TPost>(data);
   const [editPostMode, setEditPostMode] = useState(false);
   const [showAllComments, setShowAllComments] = useState(false);
-  const { user } = useContext(AuthContext);
-  const { deletePost, status: deletePostStatus } = useDeletePost();
 
   const likeCount = post.likes.length;
   const isCreatedByUser = post.author._id.toString() === user!._id.toString();
