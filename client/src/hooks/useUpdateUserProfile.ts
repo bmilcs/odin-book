@@ -1,5 +1,6 @@
 import { TUser } from '@/context/auth-provider';
 import { useAuthContext } from '@/hooks/useAuthContext';
+import useUpdateUserData from '@/hooks/useUpdateUserData';
 import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { ExpressValidatorError, getErrorMsg } from '@/utils/errors';
@@ -15,7 +16,8 @@ type UpdateProfileApiResponse = FetchUserProfileApiResponse & {
 };
 
 const useUpdateUserProfile = () => {
-  const { user, updateUserData } = useAuthContext();
+  const { updateUserData } = useUpdateUserData();
+  const { user } = useAuthContext();
   const navigate = useNavigate();
 
   const [status, setStatus] = useState(STATUS.IDLE);

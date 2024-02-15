@@ -1,12 +1,12 @@
-import { useAuthContext } from '@/hooks/useAuthContext';
 import { useFeedContext } from '@/hooks/useFeedContext';
+import useUpdateUserData from '@/hooks/useUpdateUserData';
 import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
 import { useState } from 'react';
 
 const useAcceptFriendRequest = () => {
-  const { updateUserData } = useAuthContext();
+  const { updateUserData } = useUpdateUserData();
   const { updateFeed } = useFeedContext();
 
   const [status, setStatus] = useState(STATUS.IDLE);

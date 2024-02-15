@@ -1,5 +1,5 @@
-import { useAuthContext } from '@/hooks/useAuthContext';
 import { useFeedContext } from '@/hooks/useFeedContext';
+import useUpdateUserData from '@/hooks/useUpdateUserData';
 import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
@@ -7,7 +7,7 @@ import { useState } from 'react';
 
 const useDeleteFriend = () => {
   const { updateFeed } = useFeedContext();
-  const { updateUserData } = useAuthContext();
+  const { updateUserData } = useUpdateUserData();
 
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');

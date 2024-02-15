@@ -1,7 +1,6 @@
 import { TNotification } from '@/context/notification-provider';
+import useUpdateUserData from '@/hooks/useUpdateUserData';
 import LoadingPage from '@/pages/loading-page';
-import api, { ApiResponse } from '@/utils/api';
-import { getErrorMsg } from '@/utils/errors';
 import {
   FC,
   ReactNode,
@@ -11,10 +10,6 @@ import {
   useState,
 } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-type TApiResponse = ApiResponse & {
-  data: TUser;
-};
 
 export type TFriend = {
   _id: string;
@@ -50,7 +45,6 @@ type AuthContextProps = {
   isAuthenticated: () => boolean;
   redirectUnauthenticatedUser: (path: string) => void;
   redirectAuthenticatedUser: (path: string) => void;
-  updateUserData: () => Promise<void>;
 };
 
 export const AuthContext = createContext<AuthContextProps>({
@@ -59,7 +53,6 @@ export const AuthContext = createContext<AuthContextProps>({
   isAuthenticated: () => false,
   redirectUnauthenticatedUser: () => {},
   redirectAuthenticatedUser: () => {},
-  updateUserData: async () => {},
 });
 
 type AuthProviderProps = {
@@ -68,9 +61,9 @@ type AuthProviderProps = {
 
 const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const navigate = useNavigate();
+  const { updateUserData, isLoading } = useUpdateUserData();
 
   const [user, setUser] = useState<TUser | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
   const [showSpinner, setShowSpinner] = useState(true);
 
   const isAuthenticated = useCallback(() => {
@@ -98,24 +91,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     [isLoading, isAuthenticated, navigate],
   );
 
-  const updateUserData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const { success, data } = await api.get<TApiResponse>('/auth/status');
-      if (success) {
-        setUser(data);
-        return;
-      }
-      setUser(null);
-      console.log('Unable to update user data at this time');
-    } catch (error) {
-      const errorMsg = getErrorMsg(error);
-      console.log(errorMsg);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
+  // Update user data on initial page load
   useEffect(() => {
     updateUserData();
   }, [updateUserData]);
@@ -123,14 +99,15 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   // Show spinner while waiting for user data to load for at least 250ms
   // This prevents the spinner from flashing on the screen for a split second
   useEffect(() => {
-    if (!isLoading) {
-      const timer = setTimeout(() => {
-        setShowSpinner(false);
-      }, 250);
-      return () => {
-        clearTimeout(timer);
-      };
-    }
+    if (isLoading) return;
+
+    const timer = setTimeout(() => {
+      setShowSpinner(false);
+    }, 250);
+
+    return () => {
+      clearTimeout(timer);
+    };
   }, [isLoading]);
 
   if (showSpinner) {
@@ -145,7 +122,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         isAuthenticated,
         redirectUnauthenticatedUser,
         redirectAuthenticatedUser,
-        updateUserData,
       }}
     >
       {children}
