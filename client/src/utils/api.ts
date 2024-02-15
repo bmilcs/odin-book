@@ -1,5 +1,12 @@
 import { API_BASE_URL } from '@/utils/env';
 
+export type ApiResponse = {
+  success: boolean;
+  error: string;
+  message: string;
+  data?: unknown;
+};
+
 /**
  * HTTP methods supported by the API.
  */
@@ -39,6 +46,7 @@ async function callApi<T>(
     return responseData as T;
   } catch (error) {
     console.error(error);
+
     throw new Error('Something went wrong with the API request');
   }
 }
