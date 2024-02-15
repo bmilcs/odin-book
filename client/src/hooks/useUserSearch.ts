@@ -1,5 +1,5 @@
 import { AuthContext, TFriend, TFriendRequest } from '@/context/auth-provider';
-import api from '@/utils/api';
+import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
 import { useContext, useEffect, useState } from 'react';
@@ -9,10 +9,8 @@ type FoundUser = {
   username: string;
 };
 
-type ApiResponse = {
-  success: boolean;
+type UserSearchApiResponse = ApiResponse & {
   data: FoundUser[];
-  error: string;
 };
 
 const useUserSearch = () => {
@@ -46,7 +44,7 @@ const useUserSearch = () => {
     }
 
     try {
-      const { success, data, error } = await api.get<ApiResponse>(
+      const { success, data, error } = await api.get<UserSearchApiResponse>(
         `/users/search/${searchTerm}`,
       );
       if (success) {

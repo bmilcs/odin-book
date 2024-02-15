@@ -1,12 +1,11 @@
 import { AuthContext, TUser } from '@/context/auth-provider';
-import api from '@/utils/api';
+import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { ExpressValidatorError, getErrorMsg } from '@/utils/errors';
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type ApiResponse = {
-  success: boolean;
+type SignupApiResponse = ApiResponse & {
   error: ExpressValidatorError[];
   data: TUser;
 };
@@ -42,7 +41,7 @@ const useSignup = () => {
     }
 
     try {
-      const { success, data, error } = await api.post<ApiResponse>(
+      const { success, data, error } = await api.post<SignupApiResponse>(
         '/auth/signup',
         {
           email,

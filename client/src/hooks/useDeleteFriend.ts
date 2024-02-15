@@ -1,15 +1,9 @@
 import { AuthContext } from '@/context/auth-provider';
 import { FeedContext } from '@/context/feed-provider';
-import api from '@/utils/api';
+import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
 import { useContext, useState } from 'react';
-
-type ApiResponse = {
-  success: boolean;
-  message: string;
-  error: string;
-};
 
 const useDeleteFriend = () => {
   const [status, setStatus] = useState(STATUS.IDLE);

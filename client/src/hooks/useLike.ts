@@ -1,19 +1,16 @@
-import api from '@/utils/api';
+import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
 import { useState } from 'react';
 
-type ApiResponse = {
-  success: boolean;
-  message: string;
-  error: string;
+type ToggleLikeApiResponse = ApiResponse & {
   data: {
     likeCount: number;
     isLikedByUser: boolean;
   };
 };
 
-type useLikeProps = {
+type useToggleLikeProps = {
   contentType: 'post' | 'comment';
   postId: string;
   commentId?: string;
@@ -21,13 +18,13 @@ type useLikeProps = {
   likeCount: number;
 };
 
-const useLike = ({
+const useLikeToggle = ({
   contentType,
   postId,
   commentId,
   isLiked,
   likeCount,
-}: useLikeProps) => {
+}: useToggleLikeProps) => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const [likeStatus, setLikeStatus] = useState(isLiked);
@@ -46,8 +43,8 @@ const useLike = ({
     try {
       const { success, data, error } =
         action === 'post'
-          ? await api.post<ApiResponse>(apiUrl, {})
-          : await api.del<ApiResponse>(apiUrl);
+          ? await api.post<ToggleLikeApiResponse>(apiUrl, {})
+          : await api.del<ToggleLikeApiResponse>(apiUrl);
       if (success) {
         setStatus(STATUS.SUCCESS);
         setTotalLikes(data.likeCount);
@@ -67,4 +64,4 @@ const useLike = ({
   return { status, error, toggleLike, likeStatus, totalLikes };
 };
 
-export default useLike;
+export default useLikeToggle;

@@ -1,5 +1,5 @@
 import { AuthContext, TUser } from '@/context/auth-provider';
-import api from '@/utils/api';
+import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
 import {
@@ -11,10 +11,8 @@ import {
   useState,
 } from 'react';
 
-type ApiResponse = {
-  success: boolean;
+type NotificationApiResponses = ApiResponse & {
   data: TNotification[];
-  error: string;
 };
 
 export type TNotification = {
@@ -75,7 +73,7 @@ const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
 
     try {
       const { success, data, error } =
-        await api.get<ApiResponse>('/notifications');
+        await api.get<NotificationApiResponses>('/notifications');
       if (success) {
         setStatus(STATUS.SUCCESS);
         setNotifications(data);
@@ -96,7 +94,7 @@ const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
     setError('');
 
     try {
-      const { success, data, error } = await api.get<ApiResponse>(
+      const { success, data, error } = await api.get<NotificationApiResponses>(
         '/notifications/unread',
       );
       if (success) {
@@ -119,7 +117,7 @@ const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
     setError('');
 
     try {
-      const { success, error } = await api.put<ApiResponse>(
+      const { success, error } = await api.put<NotificationApiResponses>(
         '/notifications/read-all',
         {},
       );
@@ -145,7 +143,7 @@ const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
       setError('');
 
       try {
-        const { success, error } = await api.put<ApiResponse>(
+        const { success, error } = await api.put<NotificationApiResponses>(
           `/notifications/${notificationId}/read`,
           {},
         );
@@ -172,7 +170,7 @@ const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
       setError('');
 
       try {
-        const { success, error } = await api.del<ApiResponse>(
+        const { success, error } = await api.del<NotificationApiResponses>(
           `/notifications/${notificationId}`,
         );
         if (success) {
@@ -197,7 +195,8 @@ const NotificationProvider: FC<TNotificationProviderPros> = ({ children }) => {
     setError('');
 
     try {
-      const { success, error } = await api.del<ApiResponse>('/notifications');
+      const { success, error } =
+        await api.del<NotificationApiResponses>('/notifications');
       console.log(success, error);
       if (success) {
         setStatus(STATUS.SUCCESS);

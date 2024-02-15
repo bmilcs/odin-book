@@ -1,12 +1,10 @@
 import { AuthContext } from '@/context/auth-provider';
-import api from '@/utils/api';
+import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
 import { useContext, useState } from 'react';
 
-type ApiResponse = {
-  success: boolean;
-  error: string;
+type UpdateProfileImageApiResponse = ApiResponse & {
   data: string;
 };
 
@@ -20,10 +18,11 @@ const useProfileImageUpload = () => {
     setError('');
 
     try {
-      const { success, data, error } = await api.put<ApiResponse>(
-        `/users/${user!.username}/upload-profile-image/`,
-        formData,
-      );
+      const { success, data, error } =
+        await api.put<UpdateProfileImageApiResponse>(
+          `/users/${user!.username}/upload-profile-image/`,
+          formData,
+        );
       if (success) {
         setStatus(STATUS.SUCCESS);
         setUser({ ...user!, photo: data });

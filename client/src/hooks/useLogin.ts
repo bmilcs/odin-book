@@ -1,14 +1,12 @@
 import { AuthContext, TUser } from '@/context/auth-provider';
-import api from '@/utils/api';
+import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type ApiResponse = {
-  success: boolean;
+type LoginApiResponse = ApiResponse & {
   data: TUser;
-  error: string;
 };
 
 const useLogin = () => {
@@ -34,7 +32,7 @@ const useLogin = () => {
     }
 
     try {
-      const { success, data, error } = await api.post<ApiResponse>(
+      const { success, data, error } = await api.post<LoginApiResponse>(
         '/auth/login',
         {
           email,

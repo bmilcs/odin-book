@@ -1,5 +1,5 @@
 import { AuthContext, TUser } from '@/context/auth-provider';
-import api from '@/utils/api';
+import api, { ApiResponse } from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
 import {
@@ -12,10 +12,8 @@ import {
   useState,
 } from 'react';
 
-type ApiResponse = {
-  success: boolean;
+type UpdateFeedApiResponse = ApiResponse & {
   data: TPost[];
-  error: string;
 };
 
 export type TComment = {
@@ -81,7 +79,8 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
     setFeed([]);
 
     try {
-      const { success, error, data } = await api.get<ApiResponse>('/feed');
+      const { success, error, data } =
+        await api.get<UpdateFeedApiResponse>('/feed');
       if (success) {
         setStatus(STATUS.SUCCESS);
         setFeed(data);
