@@ -1,6 +1,6 @@
 import { TNotification } from '@/context/notification-provider';
 import LoadingPage from '@/pages/loading-page';
-import api from '@/utils/api';
+import api, { ApiResponse } from '@/utils/api';
 import { getErrorMsg } from '@/utils/errors';
 import {
   FC,
@@ -12,11 +12,8 @@ import {
 } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type TApiResponse = {
+type TApiResponse = ApiResponse & {
   data: TUser;
-  success: boolean;
-  message: string;
-  error: string;
 };
 
 export type TFriend = {
@@ -51,7 +48,6 @@ type AuthContextProps = {
   user: TUser | null;
   setUser: (user: TUser | null) => void;
   isAuthenticated: () => boolean;
-  logout: () => void;
   redirectUnauthenticatedUser: (path: string) => void;
   redirectAuthenticatedUser: (path: string) => void;
   updateUserData: () => Promise<void>;
@@ -60,7 +56,6 @@ type AuthContextProps = {
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
   setUser: () => {},
-  logout: () => {},
   isAuthenticated: () => false,
   redirectUnauthenticatedUser: () => {},
   redirectAuthenticatedUser: () => {},
@@ -102,21 +97,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     },
     [isLoading, isAuthenticated, navigate],
   );
-
-  const logout = async () => {
-    try {
-      const { success } = await api.post<TApiResponse>('/auth/logout', {});
-      if (success) {
-        setUser(null);
-        navigate('/login');
-        return;
-      }
-      console.log('Unable to logout at this time');
-    } catch (error) {
-      const errorMsg = getErrorMsg(error);
-      console.log(errorMsg);
-    }
-  };
 
   const updateUserData = useCallback(async () => {
     setIsLoading(true);
@@ -163,7 +143,6 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         user,
         setUser,
         isAuthenticated,
-        logout,
         redirectUnauthenticatedUser,
         redirectAuthenticatedUser,
         updateUserData,

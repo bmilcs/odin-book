@@ -10,10 +10,12 @@ import {
 import { Icons } from '@/components/ui/icons';
 import { ModeToggle } from '@/components/ui/mode-toggle';
 import { useAuthContext } from '@/hooks/useAuthContext';
+import useLogout from '@/hooks/useLogout';
 import { Link } from 'react-router-dom';
 
 const Header = () => {
-  const { user, isAuthenticated, logout } = useAuthContext();
+  const { user, isAuthenticated } = useAuthContext();
+  const { logout } = useLogout();
 
   const handleSettingsClick = () => {
     alert('Settings');
