@@ -26,7 +26,7 @@ const Header = () => {
   };
 
   return (
-    <header>
+    <header className="sticky top-0 bg-background">
       <div className="mx-auto flex max-w-7xl items-center justify-between border-b-2 p-2">
         <p className="text-lg font-black">
           <Link to={isAuthenticated() ? `/feed` : `/login`}>FriendLink</Link>
