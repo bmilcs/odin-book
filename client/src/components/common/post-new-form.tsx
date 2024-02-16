@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import useCreatePost from '@/hooks/useCreatePost';
@@ -63,27 +62,25 @@ const PostNewForm: FC<PostNewFormProps> = ({ ...props }) => {
 
   return (
     <div {...props}>
-      <Form>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className={`flex w-full items-center gap-2`}
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className={`flex w-full items-center gap-2`}
+      >
+        <Input
+          type="post"
+          placeholder="I love this app!"
+          {...register('content')}
+        />
+        <Button
+          type="submit"
+          variant="ghost"
+          disabled={isSubmitting}
+          className="h-full"
         >
-          <Input
-            type="post"
-            placeholder="I love this app!"
-            {...register('content')}
-          />
-          <Button
-            type="submit"
-            variant="ghost"
-            disabled={isSubmitting}
-            className="h-full"
-          >
-            <Icons.submit />
-            <span className="sr-only">Submit Post</span>
-          </Button>
-        </form>
-      </Form>
+          <Icons.submit />
+          <span className="sr-only">Submit Post</span>
+        </Button>
+      </form>
     </div>
   );
 };
