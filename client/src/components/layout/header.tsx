@@ -26,7 +26,7 @@ const Header = () => {
   };
 
   return (
-    <header className="sticky top-0 bg-background">
+    <header className="sticky inset-x-0 top-0 bg-background">
       <div className="mx-auto flex max-w-7xl items-center justify-between border-b-2 p-2">
         <p className="text-lg font-black">
           <Link to={isAuthenticated() ? `/feed` : `/login`}>FriendLink</Link>
@@ -36,7 +36,7 @@ const Header = () => {
             {isAuthenticated() ? (
               // User is Logged In
               <>
-                <UserSearchForm />
+                <UserSearchForm className="hidden sm:flex" />
                 <li className="px-2">
                   <Link to={'/feed'}>Feed</Link>
                 </li>
