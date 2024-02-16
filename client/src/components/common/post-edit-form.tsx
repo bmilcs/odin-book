@@ -37,7 +37,7 @@ const PostEditForm: FC<PostEditFormProps> = ({
     handleSubmit,
     register,
     formState: { isSubmitting, errors },
-    reset,
+    reset: resetForm,
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { content: postContent },
@@ -50,9 +50,9 @@ const PostEditForm: FC<PostEditFormProps> = ({
   useEffect(() => {
     if (status === 'success') {
       onSuccessfulEditPost(postData!);
-      reset();
+      resetForm();
     }
-  }, [status, onSuccessfulEditPost, postData, reset]);
+  }, [status, onSuccessfulEditPost, postData, resetForm]);
 
   return (
     <>

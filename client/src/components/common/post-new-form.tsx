@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Form } from '@/components/ui/form';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
 import useCreatePost from '@/hooks/useCreatePost';
@@ -28,14 +29,14 @@ const PostNewForm: FC<PostNewFormProps> = ({ ...props }) => {
     createPost,
     postData,
     status,
-    reset: resetPostHook,
+    reset: resetCreatePostHook,
   } = useCreatePost();
 
   const {
     handleSubmit,
     register,
     formState: { isSubmitting },
-    reset,
+    reset: resetForm,
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues:
@@ -55,32 +56,34 @@ const PostNewForm: FC<PostNewFormProps> = ({ ...props }) => {
   useEffect(() => {
     if (status === 'success') {
       addPostToFeed(postData!);
-      resetPostHook();
-      reset();
+      resetCreatePostHook();
+      resetForm();
     }
-  }, [status, reset, resetPostHook, postData, addPostToFeed]);
+  }, [status, resetForm, resetCreatePostHook, postData, addPostToFeed]);
 
   return (
     <div {...props}>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className={`flex w-full items-center gap-2`}
-      >
-        <Input
-          type="post"
-          placeholder="I love this app!"
-          {...register('content')}
-        />
-        <Button
-          type="submit"
-          variant="ghost"
-          disabled={isSubmitting}
-          className="h-full"
+      <Form>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className={`flex w-full items-center gap-2`}
         >
-          <Icons.submit />
-          <span className="sr-only">Submit Post</span>
-        </Button>
-      </form>
+          <Input
+            type="post"
+            placeholder="I love this app!"
+            {...register('content')}
+          />
+          <Button
+            type="submit"
+            variant="ghost"
+            disabled={isSubmitting}
+            className="h-full"
+          >
+            <Icons.submit />
+            <span className="sr-only">Submit Post</span>
+          </Button>
+        </form>
+      </Form>
     </div>
   );
 };

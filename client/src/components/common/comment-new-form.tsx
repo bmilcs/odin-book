@@ -32,7 +32,7 @@ const CommentNewForm: FC<CommentNewFormProps> = ({
   const {
     createComment,
     commentData,
-    reset: resetUseCreateCommentState,
+    reset: resetCreateCommentHook,
     status,
     error,
   } = useCreateComment();
@@ -41,7 +41,7 @@ const CommentNewForm: FC<CommentNewFormProps> = ({
     handleSubmit,
     register,
     formState: { isSubmitting },
-    reset,
+    reset: resetForm,
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -55,16 +55,16 @@ const CommentNewForm: FC<CommentNewFormProps> = ({
 
   useEffect(() => {
     if (status === 'success') {
-      reset();
       onSuccessfulNewComment(commentData!);
-      resetUseCreateCommentState();
+      resetCreateCommentHook();
+      resetForm();
     }
   }, [
     onSuccessfulNewComment,
-    resetUseCreateCommentState,
+    resetCreateCommentHook,
     commentData,
     status,
-    reset,
+    resetForm,
   ]);
 
   if (error) {

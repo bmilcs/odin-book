@@ -39,7 +39,7 @@ const CommentEditForm: FC<CommentEditFormProps> = ({
     handleSubmit,
     register,
     formState: { isSubmitting, errors },
-    reset,
+    reset: resetForm,
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { content: commentContent },
@@ -52,8 +52,9 @@ const CommentEditForm: FC<CommentEditFormProps> = ({
   useEffect(() => {
     if (status === 'success') {
       onSuccessfulEditComment(commentData!);
+      resetForm();
     }
-  }, [status, reset, onSuccessfulEditComment, commentData]);
+  }, [status, resetForm, onSuccessfulEditComment, commentData]);
 
   return (
     <div>
