@@ -74,14 +74,19 @@ const Post: FC<PostProps> = ({ data, ...props }) => {
         <div className="flex items-center gap-2 rounded-lg">
           <UserProfileImage
             user={data.author}
-            className="h-14 w-14 rounded-full"
+            className="aspect-square h-12 rounded-full sm:h-14"
           />
+
           <div>
             <CardTitle>
-              <Link to={`/users/${post.author.username}`}>
+              <Link
+                to={`/users/${post.author.username}`}
+                className="break-words break-all"
+              >
                 {post.author.username}
               </Link>
             </CardTitle>
+
             <CardDescription className="ml-auto font-normal">
               {post.updatedAt !== post.createdAt
                 ? `edited ${formatDate(post.updatedAt)}`
@@ -100,7 +105,7 @@ const Post: FC<PostProps> = ({ data, ...props }) => {
             onSuccessfulEditPost={handleSuccessfulEditPost}
           />
         ) : (
-          <p>{post.content}</p>
+          <p className="break-words break-all">{post.content}</p>
         )}
       </CardContent>
 
