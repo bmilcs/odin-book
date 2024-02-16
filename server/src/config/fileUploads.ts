@@ -1,11 +1,11 @@
+import { STORAGE_VOLUME_PATH } from '@/config/env';
 import { Request } from 'express';
 import multer, { Options } from 'multer';
-import path from 'path';
 
 const store = (destination: string) =>
   multer.diskStorage({
     destination: (req: Request, file, cb) => {
-      cb(null, path.join(__dirname, destination));
+      cb(null, destination);
     },
     filename: (req: Request, file, cb) => {
       const fileExt = file.originalname.split('.').pop();
@@ -15,7 +15,7 @@ const store = (destination: string) =>
   });
 
 const profileImageUploadOptions: Options = {
-  storage: store('../uploads/profile-images'),
+  storage: store(`${STORAGE_VOLUME_PATH}/profile-images`),
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
@@ -26,7 +26,7 @@ const profileImageUploadOptions: Options = {
 };
 
 const postImageUploadOptions: Options = {
-  storage: store(path.join(__dirname, '../uploads/post-images')),
+  storage: store(`${STORAGE_VOLUME_PATH}/post-images`),
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
