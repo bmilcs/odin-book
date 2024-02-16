@@ -11,7 +11,7 @@ const CenterScreenContainer: FC<CenterScreenContainerProps> = ({
 }) => {
   return (
     <div
-      className={`flex h-full w-full flex-col items-center justify-center ${className}`}
+      className={`flex min-h-full min-w-full flex-col items-center justify-center ${className}`}
       {...props}
     >
       {children}
