@@ -44,44 +44,44 @@ const Comment: FC<CommentProps> = ({ data, ...props }) => {
   }
 
   return (
-    <div className="flex gap-2" {...props}>
+    <div className="grid grid-cols-[max-content_1fr] gap-2" {...props}>
       <UserProfileImage
         user={data.author}
-        className="row-span-1 mt-2 h-12 w-12 rounded-full"
+        className="row-span-1 mt-3 aspect-square w-10 rounded-full sm:mt-2 sm:w-12"
       />
+
       <div>
         <div
           className={`${
-            editCommentMode ? 'w-full' : 'w-max'
+            editCommentMode ? 'w-full' : 'max-w-max'
           } rounded-xl bg-accent p-3`}
         >
           {/* Comment Author & Date Posted */}
-          <div className="w-full">
-            <div className="text-xs text-foreground">
-              <Link
-                to={`/users/${comment.author.username}`}
-                className="font-bold"
-              >
-                {comment.author.username}
-              </Link>{' '}
-              {comment.updatedAt !== comment.createdAt
-                ? `edited ${formatDate(comment.updatedAt)}`
-                : `posted ${formatDate(comment.createdAt)}`}
-            </div>
+          <p className="text-xs text-foreground">
+            <Link
+              to={`/users/${comment.author.username}`}
+              className="break-words break-all font-bold"
+            >
+              {comment.author.username}
+            </Link>{' '}
+            {comment.updatedAt !== comment.createdAt
+              ? `edited ${formatDate(comment.updatedAt)}`
+              : `posted ${formatDate(comment.createdAt)}`}
+          </p>
 
-            {/* Comment Content */}
-            {editCommentMode ? (
-              <CommentEditForm
-                commentId={comment._id}
-                postId={comment.post}
-                commentContent={comment.content}
-                onSuccessfulEditComment={handleSuccessfulEditComment}
-              />
-            ) : (
-              <span>{comment.content}</span>
-            )}
-          </div>
+          {/* Comment Content */}
+          {editCommentMode ? (
+            <CommentEditForm
+              commentId={comment._id}
+              postId={comment.post}
+              commentContent={comment.content}
+              onSuccessfulEditComment={handleSuccessfulEditComment}
+            />
+          ) : (
+            <p className="min-w-0 break-words break-all">{comment.content}</p>
+          )}
         </div>
+
         {/* Buttons */}
         <div className="flex">
           {/* Like Button */}
@@ -92,6 +92,7 @@ const Comment: FC<CommentProps> = ({ data, ...props }) => {
             commentId={comment._id}
             contentType="comment"
           />
+
           {/* OP Actions: Edit/Delete */}
           {isCreatedByUser && (
             <div className="ml-2 flex gap-2">
