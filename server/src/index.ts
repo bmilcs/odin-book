@@ -1,5 +1,5 @@
 import { connectDatabase, corsOptions } from '@/config';
-import { SERVER_PORT } from '@/config/env';
+import { SERVER_PORT, STORAGE_VOLUME_PATH } from '@/config/env';
 import {
   errorLogger,
   errorResponder,
@@ -23,7 +23,6 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import http from 'http';
-import path from 'path';
 
 //
 // setup server
@@ -51,7 +50,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // allow access to uploaded files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(STORAGE_VOLUME_PATH!));
 
 // helmet: set security headers & protect well-known web vulnerabilities
 app.use(helmet());
