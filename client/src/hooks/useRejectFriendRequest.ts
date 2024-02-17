@@ -1,7 +1,8 @@
 import useUpdateUserData from '@/hooks/useUpdateUserData';
-import api, { ApiResponse } from '@/utils/api';
+import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
+import { TApiResponse } from '@/utils/types';
 import { useState } from 'react';
 
 const useRejectFriendRequest = () => {
@@ -21,7 +22,7 @@ const useRejectFriendRequest = () => {
     }
 
     try {
-      const { success, error } = await api.patch<ApiResponse>(
+      const { success, error } = await api.patch<TApiResponse>(
         `/friends/reject-request/${userId}`,
         {},
       );

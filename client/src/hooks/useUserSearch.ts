@@ -1,17 +1,17 @@
-import { TFriend, TFriendRequest } from '@/context/auth-provider';
 import { useAuthContext } from '@/hooks/useAuthContext';
-import api, { ApiResponse } from '@/utils/api';
+import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
+import {
+  TApiResponse,
+  TFriend,
+  TFriendRequest,
+  TUserSearchResult,
+} from '@/utils/types';
 import { useEffect, useState } from 'react';
 
-type FoundUser = {
-  _id: string;
-  username: string;
-};
-
-type UserSearchApiResponse = ApiResponse & {
-  data: FoundUser[];
+type UserSearchApiResponse = TApiResponse & {
+  data: TUserSearchResult[];
 };
 
 const useUserSearch = () => {
@@ -19,7 +19,7 @@ const useUserSearch = () => {
 
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
-  const [results, setResults] = useState<FoundUser[]>([]);
+  const [results, setResults] = useState<TUserSearchResult[]>([]);
   const [friends, setFriends] = useState<TFriend[]>([]);
   const [incomingFriendRequests, setIncomingFriendRequests] = useState<
     TFriendRequest[]

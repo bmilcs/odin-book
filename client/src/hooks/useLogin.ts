@@ -1,12 +1,12 @@
-import { TUser } from '@/context/auth-provider';
 import { useAuthContext } from '@/hooks/useAuthContext';
-import api, { ApiResponse } from '@/utils/api';
+import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
+import { TApiResponse, TUser } from '@/utils/types';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type LoginApiResponse = ApiResponse & {
+type LoginApiResponse = TApiResponse & {
   data: TUser;
 };
 

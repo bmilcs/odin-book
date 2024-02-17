@@ -1,10 +1,10 @@
-import { TComment } from '@/context/feed-provider';
-import api, { ApiResponse } from '@/utils/api';
+import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
+import { TApiResponse, TComment } from '@/utils/types';
 import { useState } from 'react';
 
-type UpdateCommentApiResponse = ApiResponse & {
+type UpdateCommentApiResponse = TApiResponse & {
   data: TComment;
 };
 

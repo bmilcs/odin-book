@@ -10,9 +10,7 @@ import { useAuthContext } from '@/hooks/useAuthContext';
 import { ComponentPropsWithoutRef, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type UserSummaryProps = ComponentPropsWithoutRef<'div'> & {
-  // ...
-};
+type UserSummaryProps = ComponentPropsWithoutRef<'div'>;
 
 const UserSummary: FC<UserSummaryProps> = ({ ...props }) => {
   const { user } = useAuthContext();
@@ -28,7 +26,9 @@ const UserSummary: FC<UserSummaryProps> = ({ ...props }) => {
         <div className="items-center justify-between gap-4 space-y-2 sm:flex md:gap-10 lg:block">
           <UserProfileImage className="w-full object-cover sm:max-w-xs" />
           <div className="flex-grow">
-            <CardTitle className="text-2xl">{user?.username}</CardTitle>
+            <CardTitle className="break-words break-all text-2xl">
+              {user?.username}
+            </CardTitle>
             <CardDescription>{user?.email}</CardDescription>
 
             <div className="py-5">

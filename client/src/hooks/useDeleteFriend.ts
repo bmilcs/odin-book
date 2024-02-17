@@ -1,8 +1,9 @@
 import { useFeedContext } from '@/hooks/useFeedContext';
 import useUpdateUserData from '@/hooks/useUpdateUserData';
-import api, { ApiResponse } from '@/utils/api';
+import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
+import { TApiResponse } from '@/utils/types';
 import { useState } from 'react';
 
 const useDeleteFriend = () => {
@@ -23,7 +24,7 @@ const useDeleteFriend = () => {
     }
 
     try {
-      const { success, error } = await api.del<ApiResponse>(
+      const { success, error } = await api.del<TApiResponse>(
         `/friends/${userId}`,
       );
       if (success) {

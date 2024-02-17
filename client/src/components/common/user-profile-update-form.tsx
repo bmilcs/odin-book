@@ -24,12 +24,15 @@ import { ComponentPropsWithoutRef, FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-type UserProfileUpdateFormProps = ComponentPropsWithoutRef<'div'>;
-
 const formSchema = z.object({
-  username: z.string().min(3, {
-    message: 'Username must be at least 3 characters.',
-  }),
+  username: z
+    .string()
+    .min(3, {
+      message: 'Username must be at least 3 characters.',
+    })
+    .max(20, {
+      message: 'Username must be under 20 characters.',
+    }),
   email: z.string().email({
     message: 'Please enter a valid email.',
   }),
@@ -40,6 +43,8 @@ const formSchema = z.object({
     message: 'Location must be under 150 characters.',
   }),
 });
+
+type UserProfileUpdateFormProps = ComponentPropsWithoutRef<'div'>;
 
 const UserProfileUpdateForm: FC<UserProfileUpdateFormProps> = ({
   ...props

@@ -1,15 +1,10 @@
-export type ExpressValidatorError = {
-  msg: string;
-  path: string;
-  type: string;
-  value: string;
-};
+import { TExpressValidatorError } from '@/utils/types';
 
 export const getFieldErrorMsg = (
-  errors: ExpressValidatorError[],
+  errors: TExpressValidatorError[],
   field: string,
 ) => {
-  return errors.reduce((acc: string, cur: ExpressValidatorError) => {
+  return errors.reduce((acc: string, cur: TExpressValidatorError) => {
     return cur.path === field ? cur.msg : acc;
   }, '');
 };

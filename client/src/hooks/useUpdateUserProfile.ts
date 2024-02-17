@@ -1,18 +1,19 @@
-import { TUser } from '@/context/auth-provider';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import useUpdateUserData from '@/hooks/useUpdateUserData';
-import api, { ApiResponse } from '@/utils/api';
+import api from '@/utils/api';
 import STATUS from '@/utils/constants';
-import { ExpressValidatorError, getErrorMsg } from '@/utils/errors';
+import { getErrorMsg } from '@/utils/errors';
+import { TExpressValidatorError } from '@/utils/types';
+import { TApiResponse, TUser } from '@/utils/types.ts';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type FetchUserProfileApiResponse = ApiResponse & {
+type FetchUserProfileApiResponse = TApiResponse & {
   data: TUser;
 };
 
 type UpdateProfileApiResponse = FetchUserProfileApiResponse & {
-  error: ExpressValidatorError[];
+  error: TExpressValidatorError[];
 };
 
 const useUpdateUserProfile = () => {
@@ -23,7 +24,7 @@ const useUpdateUserProfile = () => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const [validationErrors, setValidationErrors] = useState<
-    ExpressValidatorError[]
+    TExpressValidatorError[]
   >([]);
 
   type UpdateUserProfileProps = {

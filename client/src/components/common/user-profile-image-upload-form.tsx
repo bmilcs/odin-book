@@ -22,16 +22,16 @@ import { ComponentPropsWithoutRef, FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-type UserProfileImageUploadFormProps = ComponentPropsWithoutRef<'div'> & {
-  className?: string;
-  onClose: () => void;
-};
-
 const formSchema = z.object({
   file: z.custom<File>((v) => v instanceof File, {
     message: 'Image is required',
   }),
 });
+
+type UserProfileImageUploadFormProps = ComponentPropsWithoutRef<'div'> & {
+  className?: string;
+  onClose: () => void;
+};
 
 const UserProfileImageUploadForm: FC<UserProfileImageUploadFormProps> = ({
   className = '',

@@ -6,10 +6,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Icons } from '@/components/ui/icons';
-import { TNotification } from '@/context/notification-provider';
 import useAcceptFriendRequest from '@/hooks/useAcceptFriendRequest';
 import { useNotificationContext } from '@/hooks/useNotificationContext';
 import useRejectFriendRequest from '@/hooks/useRejectFriendRequest';
+import { TNotification } from '@/utils/types';
 import { useNavigate } from 'react-router-dom';
 
 const NUMBER_OF_NOTIFICATIONS_TO_SHOW = 5;

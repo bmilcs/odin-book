@@ -1,8 +1,8 @@
-import { TUser } from '@/context/auth-provider';
 import { useAuthContext } from '@/hooks/useAuthContext';
-import api, { ApiResponse } from '@/utils/api';
+import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
+import { TApiResponse, TPost } from '@/utils/types';
 import {
   FC,
   ReactNode,
@@ -12,36 +12,8 @@ import {
   useState,
 } from 'react';
 
-type UpdateFeedApiResponse = ApiResponse & {
+type UpdateFeedApiResponse = TApiResponse & {
   data: TPost[];
-};
-
-export type TComment = {
-  _id: string;
-  content: string;
-  author: TUser;
-  post: TPost['_id'];
-  likes: TLike[];
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type TPost = {
-  _id: string;
-  content: string;
-  author: TUser;
-  comments: TComment[];
-  likes: TLike[];
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type TLike = {
-  _id: string;
-  user: TUser;
-  post?: TPost;
-  comment?: TComment;
-  createdAt: string;
 };
 
 type FeedContextProps = {

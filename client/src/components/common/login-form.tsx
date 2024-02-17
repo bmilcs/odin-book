@@ -23,8 +23,6 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
-type LoginFormProps = ComponentPropsWithoutRef<'div'>;
-
 const formSchema = z.object({
   email: z.string().email({
     message: 'Please enter a valid email.',
@@ -33,6 +31,8 @@ const formSchema = z.object({
     message: 'Password must be at least 8 characters.',
   }),
 });
+
+type LoginFormProps = ComponentPropsWithoutRef<'div'>;
 
 const LoginForm: FC<LoginFormProps> = ({ ...props }) => {
   const { error, login, status } = useLogin();

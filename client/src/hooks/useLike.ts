@@ -1,9 +1,10 @@
-import api, { ApiResponse } from '@/utils/api';
+import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
+import { TApiResponse } from '@/utils/types';
 import { useState } from 'react';
 
-type ToggleLikeApiResponse = ApiResponse & {
+type ToggleLikeApiResponse = TApiResponse & {
   data: {
     likeCount: number;
     isLikedByUser: boolean;

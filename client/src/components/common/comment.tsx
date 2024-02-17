@@ -2,10 +2,10 @@ import CommentEditForm from '@/components/common/comment-edit-form';
 import LikeButton from '@/components/common/like-button';
 import UserProfileImage from '@/components/common/user-profile-image';
 import { Button } from '@/components/ui/button';
-import { TComment } from '@/context/feed-provider';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import useDeleteComment from '@/hooks/useDeleteComment';
 import { formatDate } from '@/utils/formatters';
+import { TComment } from '@/utils/types';
 import { ComponentPropsWithoutRef, FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 

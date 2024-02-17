@@ -1,11 +1,11 @@
-import { TUser } from '@/context/auth-provider';
 import useUserRelationships from '@/hooks/useUserRelationships';
-import api, { ApiResponse } from '@/utils/api';
+import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
+import { TApiResponse, TUser } from '@/utils/types';
 import { useCallback, useState } from 'react';
 
-type FetchUserProfileApiResponse = ApiResponse & {
+type FetchUserProfileApiResponse = TApiResponse & {
   data: TUser;
 };
 

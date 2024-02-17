@@ -7,13 +7,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
-import { TFriend, TFriendRequest } from '@/context/auth-provider';
 import useAcceptFriendRequest from '@/hooks/useAcceptFriendRequest';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import useDeleteFriend from '@/hooks/useDeleteFriend';
 import useRejectFriendRequest from '@/hooks/useRejectFriendRequest';
 import useSendFriendRequest from '@/hooks/useSendFriendRequest';
 import useUserSearch from '@/hooks/useUserSearch';
+import { TFriend, TFriendRequest, TUserSearchResult } from '@/utils/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ComponentPropsWithoutRef, FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -128,7 +128,7 @@ const UserSearchResult = ({
   currentFriendRequests,
   closeMenu,
 }: {
-  result: TFriend;
+  result: TUserSearchResult;
   currentFriends: TFriend[];
   currentFriendRequests: TFriendRequest[];
   closeMenu: () => void;

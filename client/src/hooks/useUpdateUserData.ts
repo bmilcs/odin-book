@@ -1,15 +1,15 @@
-import { TUser } from '@/context/auth-provider';
-import { useAuthContext } from '@/hooks/useAuthContext';
-import api, { ApiResponse } from '@/utils/api';
+import { AuthContext } from '@/context/auth-provider';
+import api from '@/utils/api';
 import { getErrorMsg } from '@/utils/errors';
-import { useCallback, useState } from 'react';
+import { TApiResponse, TUser } from '@/utils/types';
+import { useCallback, useContext, useState } from 'react';
 
-type UpdateUserDataApiResponse = ApiResponse & {
+type UpdateUserDataApiResponse = TApiResponse & {
   data: TUser;
 };
 
 const useUpdateUserData = () => {
-  const { setUser } = useAuthContext();
+  const { setUser } = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(true);
 
   const updateUserData = useCallback(async () => {
@@ -22,8 +22,8 @@ const useUpdateUserData = () => {
         return;
       }
       setUser(null);
-      console.log('Unable to update user data at this time');
     } catch (error) {
+      setUser(null);
       const errorMsg = getErrorMsg(error);
       console.log(errorMsg);
     } finally {

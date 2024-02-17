@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
-import { TComment } from '@/context/feed-provider';
 import useUpdateComment from '@/hooks/useUpdateComment';
+import { TComment } from '@/utils/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ComponentPropsWithoutRef, FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';

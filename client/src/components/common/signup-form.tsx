@@ -24,8 +24,6 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import { z } from 'zod';
 
-type SignupFormProps = ComponentPropsWithoutRef<'div'>;
-
 const formSchema = z.object({
   username: z.string().min(3, {
     message: 'Username must be at least 3 characters.',
@@ -40,6 +38,8 @@ const formSchema = z.object({
     message: 'Password must be at least 8 characters.',
   }),
 });
+
+type SignupFormProps = ComponentPropsWithoutRef<'div'>;
 
 const SignupForm: FC<SignupFormProps> = ({ ...props }) => {
   const { error, validationErrors, signup, status } = useSignup();

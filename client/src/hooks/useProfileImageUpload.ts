@@ -1,10 +1,11 @@
 import { useAuthContext } from '@/hooks/useAuthContext';
-import api, { ApiResponse } from '@/utils/api';
+import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
+import { TApiResponse } from '@/utils/types';
 import { useState } from 'react';
 
-type UpdateProfileImageApiResponse = ApiResponse & {
+type UpdateProfileImageApiResponse = TApiResponse & {
   data: string;
 };
 

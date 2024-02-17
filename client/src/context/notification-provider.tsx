@@ -1,21 +1,12 @@
-import { TUser } from '@/context/auth-provider';
 import { useAuthContext } from '@/hooks/useAuthContext';
-import api, { ApiResponse } from '@/utils/api';
+import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
+import { TApiResponse, TNotification } from '@/utils/types';
 import { FC, createContext, useCallback, useEffect, useState } from 'react';
 
-type NotificationApiResponses = ApiResponse & {
+type NotificationApiResponses = TApiResponse & {
   data: TNotification[];
-};
-
-export type TNotification = {
-  type: string;
-  fromUser: TUser;
-  toUser: string;
-  post: string;
-  read: boolean;
-  _id: string;
 };
 
 type NotificationContextProps = {

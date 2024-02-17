@@ -1,6 +1,7 @@
-import api, { ApiResponse } from '@/utils/api';
+import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
+import { TApiResponse } from '@/utils/types';
 import { useState } from 'react';
 
 const useDeletePost = () => {
@@ -18,7 +19,9 @@ const useDeletePost = () => {
     }
 
     try {
-      const { success, error } = await api.del<ApiResponse>(`/posts/${postId}`);
+      const { success, error } = await api.del<TApiResponse>(
+        `/posts/${postId}`,
+      );
       if (success) {
         setStatus(STATUS.SUCCESS);
         return;

@@ -12,18 +12,18 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Icons } from '@/components/ui/icons';
-import { TComment, TPost } from '@/context/feed-provider';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import useDeletePost from '@/hooks/useDeletePost';
 import { formatDate } from '@/utils/formatters';
+import { TComment, TPost } from '@/utils/types';
 import { ComponentPropsWithoutRef, FC, useState } from 'react';
 import { Link } from 'react-router-dom';
+
+const NUMBER_OF_COMMENTS_TO_SHOW = 3;
 
 type PostProps = ComponentPropsWithoutRef<'div'> & {
   data: TPost;
 };
-
-const NUMBER_OF_COMMENTS_TO_SHOW = 3;
 
 const Post: FC<PostProps> = ({ data, ...props }) => {
   const { user } = useAuthContext();

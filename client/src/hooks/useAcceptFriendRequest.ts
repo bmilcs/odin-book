@@ -1,8 +1,9 @@
 import { useFeedContext } from '@/hooks/useFeedContext';
 import useUpdateUserData from '@/hooks/useUpdateUserData';
-import api, { ApiResponse } from '@/utils/api';
+import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
+import { TApiResponse } from '@/utils/types';
 import { useState } from 'react';
 
 const useAcceptFriendRequest = () => {
@@ -23,7 +24,7 @@ const useAcceptFriendRequest = () => {
     }
 
     try {
-      const { success, error } = await api.patch<ApiResponse>(
+      const { success, error } = await api.patch<TApiResponse>(
         `/friends/accept-request/${userId}`,
         {},
       );

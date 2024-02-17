@@ -1,7 +1,8 @@
 import { useAuthContext } from '@/hooks/useAuthContext';
-import api, { ApiResponse } from '@/utils/api';
+import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
+import { TApiResponse } from '@/utils/types';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,7 +18,7 @@ const useLogout = () => {
     setError('');
 
     try {
-      const { success } = await api.post<ApiResponse>('/auth/logout', {});
+      const { success } = await api.post<TApiResponse>('/auth/logout', {});
       if (success) {
         setStatus(STATUS.SUCCESS);
         setUser(null);

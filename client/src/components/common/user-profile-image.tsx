@@ -1,7 +1,7 @@
 import { Icons } from '@/components/ui/icons';
-import { TUser } from '@/context/auth-provider';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import { API_BASE_URL } from '@/utils/env';
+import { TUser } from '@/utils/types';
 import { Link } from 'react-router-dom';
 
 type UserProfileProps = {
