@@ -1,11 +1,11 @@
 import { Icons } from '@/components/ui/icons';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import { API_BASE_URL } from '@/utils/env';
-import { TUser } from '@/utils/types';
+import { TFriend, TUser } from '@/utils/types';
 import { Link } from 'react-router-dom';
 
 type UserProfileProps = {
-  user?: TUser | null;
+  user?: TUser | TFriend | null;
   className?: string;
 };
 
