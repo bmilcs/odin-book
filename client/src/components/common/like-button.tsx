@@ -1,22 +1,22 @@
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
-import useLikeToggle from '@/hooks/useLike';
+import useLikeToggle from '@/hooks/useToggleLike';
 import { ComponentPropsWithoutRef, FC } from 'react';
 
 type LikeButtonProps = ComponentPropsWithoutRef<'div'> & {
+  contentType: 'post' | 'comment';
   isLiked: boolean;
   postId: string;
   commentId?: string;
-  contentType: 'post' | 'comment';
   likeCount: number;
 };
 
 const LikeButton: FC<LikeButtonProps> = ({
-  isLiked,
-  postId,
   contentType,
-  likeCount,
+  postId,
   commentId,
+  isLiked,
+  likeCount,
   ...props
 }) => {
   const { status, error, likeStatus, toggleLike, totalLikes } = useLikeToggle({
@@ -27,12 +27,16 @@ const LikeButton: FC<LikeButtonProps> = ({
     likeCount,
   });
 
+  const handleToggleLike = () => {
+    toggleLike();
+  };
+
   return (
     <div className="flex items-center text-sm" {...props}>
       <Button
         variant={'ghost'}
         size={'icon'}
-        onClick={toggleLike}
+        onClick={handleToggleLike}
         disabled={status === 'loading' || !!error}
       >
         {likeStatus ? (
