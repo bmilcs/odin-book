@@ -105,6 +105,78 @@ describe('AUTH ROUTER', () => {
       expect(errorMsgs).to.deep.equal(expectedErrorMsgs);
     });
 
+    it('should validate password requirements: 8-50 characters', async () => {
+      const { body, statusCode } = await request(app)
+        .post('/auth/signup')
+        .send({
+          ...AUTH_USER,
+          password: 'short',
+          confirmPassword: 'short',
+        })
+        .expect('Content-Type', /json/);
+      expect(statusCode).equal(400);
+      expect(body.success).to.be.false;
+      const errorMsgs = body.error.map((error: any) => error.msg);
+      const expectedErrorMsgs = [
+        'Password must be between 8 and 50 characters',
+      ];
+      expect(errorMsgs).to.deep.equal(expectedErrorMsgs);
+    });
+
+    it('should validate password requirements: 1 uppercase letter', async () => {
+      const { body, statusCode } = await request(app)
+        .post('/auth/signup')
+        .send({
+          ...AUTH_USER,
+          password: '!asdfasdf1',
+          confirmPassword: '!asdfasdf1',
+        })
+        .expect('Content-Type', /json/);
+      expect(statusCode).equal(400);
+      expect(body.success).to.be.false;
+      const errorMsgs = body.error.map((error: any) => error.msg);
+      const expectedErrorMsgs = [
+        'Password must contain 1 uppercase letter, number & special character',
+      ];
+      expect(errorMsgs).to.deep.equal(expectedErrorMsgs);
+    });
+
+    it('should validate password requirements: 1 number', async () => {
+      const { body, statusCode } = await request(app)
+        .post('/auth/signup')
+        .send({
+          ...AUTH_USER,
+          password: '!asdfasdF',
+          confirmPassword: '!asdfasdF',
+        })
+        .expect('Content-Type', /json/);
+      expect(statusCode).equal(400);
+      expect(body.success).to.be.false;
+      const errorMsgs = body.error.map((error: any) => error.msg);
+      const expectedErrorMsgs = [
+        'Password must contain 1 uppercase letter, number & special character',
+      ];
+      expect(errorMsgs).to.deep.equal(expectedErrorMsgs);
+    });
+
+    it('should validate password requirements: 1 special character', async () => {
+      const { body, statusCode } = await request(app)
+        .post('/auth/signup')
+        .send({
+          ...AUTH_USER,
+          password: '1asdfasdF',
+          confirmPassword: '1asdfasdF',
+        })
+        .expect('Content-Type', /json/);
+      expect(statusCode).equal(400);
+      expect(body.success).to.be.false;
+      const errorMsgs = body.error.map((error: any) => error.msg);
+      const expectedErrorMsgs = [
+        'Password must contain 1 uppercase letter, number & special character',
+      ];
+      expect(errorMsgs).to.deep.equal(expectedErrorMsgs);
+    });
+
     it('should create a new user & set jwt cookies', async () => {
       const { body, statusCode, headers } = await request(app)
         .post('/auth/signup')

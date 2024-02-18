@@ -136,11 +136,19 @@ export const newPassword = () =>
     .isLength({ min: 8, max: 50 })
     .withMessage('Password must be between 8 and 50 characters')
     .bail()
-    .matches(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-    )
+    .matches(/[A-Z]/)
     .withMessage(
-      'Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number and 1 special character',
+      'Password must contain 1 uppercase letter, number & special character',
+    )
+    .bail()
+    .matches(/[0-9]/)
+    .withMessage(
+      'Password must contain 1 uppercase letter, number & special character',
+    )
+    .bail()
+    .matches(/[@$!%*?&]/)
+    .withMessage(
+      'Password must contain 1 uppercase letter, number & special character',
     );
 
 export const confirmNewPassword = () =>
