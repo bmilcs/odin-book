@@ -1,3 +1,4 @@
+import FriendsList from '@/components/common/friends-list';
 import NewLineText from '@/components/common/new-line-text';
 import UserProfileImageUploadForm from '@/components/common/user-profile-image-upload-form';
 import { Button } from '@/components/ui/button';
@@ -17,7 +18,7 @@ import useRejectFriendRequest from '@/hooks/useRejectFriendRequest';
 import useSendFriendRequest from '@/hooks/useSendFriendRequest';
 import { formatDate } from '@/utils/formatters';
 import { ComponentPropsWithoutRef, FC, useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 type UserProfileProps = ComponentPropsWithoutRef<'div'>;
 
@@ -98,7 +99,9 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
               </CardTitle>
 
               <CardDescription>
-                Joined {formatDate(userProfile.createdAt)}
+                {userProfile.createdAt
+                  ? `Joined ${formatDate(userProfile.createdAt)}`
+                  : ''}
               </CardDescription>
             </div>
           </CardHeader>
@@ -106,46 +109,37 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
           <CardContent className="space-y-3">
             <div className="sm:grid sm:grid-cols-[max-content_1fr] sm:gap-4">
               {/* Bio */}
-              <h2 className="mb-1 text-sm font-bold">Biography:</h2>
-              {userProfile.profile?.bio ? (
-                <NewLineText text={userProfile.profile.bio} />
-              ) : (
-                <p>N/A</p>
+              {userProfile.profile?.bio && (
+                <>
+                  <h2 className="mb-1 text-sm font-bold">Biography:</h2>
+                  <NewLineText text={userProfile.profile.bio} />
+                </>
               )}
 
               {/* Location */}
-              <h2 className="mt-3 text-sm font-bold sm:mt-0">Location:</h2>
-              {userProfile.profile?.location ? (
-                <p>{userProfile.profile.location}</p>
-              ) : (
-                <p>N/A</p>
+              {userProfile.profile?.location && (
+                <>
+                  <h2 className="mt-3 text-sm font-bold sm:mt-0">Location:</h2>
+                  <p>{userProfile.profile.location}</p>
+                </>
               )}
 
               {/* Email */}
-              <h2 className="mt-3 text-sm font-bold sm:mt-0">Email:</h2>
-              {userProfile.email ? (
-                <a href={`mailto:${userProfile.email}`}>{userProfile.email}</a>
-              ) : (
-                <p>N/A</p>
+              {userProfile.email && (
+                <>
+                  <h2 className="mt-3 text-sm font-bold sm:mt-0">Email:</h2>
+                  <a href={`mailto:${userProfile.email}`}>
+                    {userProfile.email}
+                  </a>
+                </>
               )}
 
               {/* friends */}
               <h2 className="mb-1 text-sm font-bold">Friends:</h2>
+
               {userProfile.friends ? (
                 <>
-                  {userProfile.friends.length === 0 ? (
-                    <p>No friends yet</p>
-                  ) : (
-                    <ul>
-                      {userProfile.friends.map((friend) => (
-                        <li key={friend._id}>
-                          <Link to={`/users/${friend.username}`}>
-                            {friend.username}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
+                  <FriendsList propUser={userProfile} className="grid" />
                 </>
               ) : (
                 <p>N/A</p>
