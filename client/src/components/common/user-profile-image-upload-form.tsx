@@ -60,12 +60,23 @@ const UserProfileImageUploadForm: FC<UserProfileImageUploadFormProps> = ({
     }
   }, [status, form, onClose]);
 
+  useEffect(() => {
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      onClose();
+    };
+    document.addEventListener('keydown', handleEscapeKey);
+    return () => {
+      document.removeEventListener('keydown', handleEscapeKey);
+    };
+  }, [onClose]);
+
   const handleClose = () => {
     onClose();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white bg-opacity-10 dark:bg-black dark:bg-opacity-20">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-20 dark:bg-black dark:bg-opacity-30">
       <Card className={`relative max-w-4xl ${className}`} {...props}>
         <CardHeader>
           <Button
@@ -92,11 +103,11 @@ const UserProfileImageUploadForm: FC<UserProfileImageUploadFormProps> = ({
                       {/* File Upload */}
                       <FormControl>
                         <Input
+                          {...field}
                           type="file"
                           accept="image/*"
                           multiple={false}
                           disabled={form.formState.isSubmitting}
-                          {...field}
                           onChange={(event) => {
                             // Check if a file is selected
                             if (event.target.files && event.target.files[0]) {
