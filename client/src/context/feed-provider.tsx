@@ -22,8 +22,10 @@ type FeedContextProps = {
   feed: TPost[];
   updateFeed: () => Promise<void>;
   addPostToFeed: (post: TPost) => void;
+  updatePostInFeed: (post: TPost) => void;
   removePostFromFeed: (postId: string) => void;
   addCommentToFeed: (postId: string, comment: TComment) => void;
+  updateCommentInFeed: (postId: string, comment: TComment) => void;
   removeCommentFromFeed: (postId: string, commentId: string) => void;
   togglePostLikeInFeed: (postId: string, likeDetails: TLike | null) => void;
   toggleCommentLikeInFeed: (
@@ -39,8 +41,10 @@ export const FeedContext = createContext<FeedContextProps>({
   feed: [],
   updateFeed: async () => {},
   addPostToFeed: () => {},
+  updatePostInFeed: () => {},
   removePostFromFeed: () => {},
   addCommentToFeed: () => {},
+  updateCommentInFeed: () => {},
   removeCommentFromFeed: () => {},
   togglePostLikeInFeed: () => {},
   toggleCommentLikeInFeed: () => {},
@@ -57,14 +61,24 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
   const [error, setError] = useState('');
   const [feed, setFeed] = useState<TPost[]>([]);
 
+  // Add a post to the feed
   const addPostToFeed = (post: TPost) => {
     setFeed((prev) => [post, ...prev]);
   };
 
+  // Update a post in the feed
+  const updatePostInFeed = (post: TPost) => {
+    setFeed((prev) =>
+      prev.map((curPost) => (curPost._id === post._id ? post : curPost)),
+    );
+  };
+
+  // Remove a post from the feed
   const removePostFromFeed = (postId: string) => {
     setFeed((prev) => prev.filter((post) => post._id !== postId));
   };
 
+  // Add a comment to the feed
   const addCommentToFeed = (postId: string, comment: TComment) => {
     setFeed((prev) =>
       prev.map((post) => {
@@ -79,6 +93,24 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
     );
   };
 
+  // Update a comment in the feed
+  const updateCommentInFeed = (postId: string, comment: TComment) => {
+    setFeed((prev) =>
+      prev.map((post) => {
+        if (post._id === postId) {
+          return {
+            ...post,
+            comments: post.comments.map((curComment) =>
+              curComment._id === comment._id ? comment : curComment,
+            ),
+          };
+        }
+        return post;
+      }),
+    );
+  };
+
+  // Remove a comment from the feed
   const removeCommentFromFeed = (postId: string, commentId: string) => {
     setFeed((prev) =>
       prev.map((post) => {
@@ -95,6 +127,7 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
     );
   };
 
+  // Toggle like on a post in the feed
   const togglePostLikeInFeed = (postId: string, likeDetails: TLike | null) => {
     const isDeleted = likeDetails === null;
     // Remove like from the post
@@ -127,6 +160,7 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
     );
   };
 
+  // Toggle like on a comment in the feed
   const toggleCommentLikeInFeed = (
     postId: string,
     commentId: string,
@@ -216,8 +250,10 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
         feed,
         updateFeed,
         addPostToFeed,
+        updatePostInFeed,
         removePostFromFeed,
         addCommentToFeed,
+        updateCommentInFeed,
         removeCommentFromFeed,
         togglePostLikeInFeed,
         toggleCommentLikeInFeed,
