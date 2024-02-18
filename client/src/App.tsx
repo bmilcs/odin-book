@@ -7,7 +7,7 @@ import NotificationProvider from '@/context/notification-provider';
 import ThemeProvider from '@/context/theme-provider';
 import EditProfilePage from '@/pages/edit-profile-page';
 import FeedPage from '@/pages/feed-page';
-import FriendsPage from '@/pages/friends-page';
+import FindFriendsPage from '@/pages/find-friends-page';
 import HomePage from '@/pages/home-page';
 import LoginPage from '@/pages/login-page';
 import PostPage from '@/pages/post-page';
@@ -61,10 +61,10 @@ function App() {
                     }
                   />
                   <Route
-                    path="/friends"
+                    path="/find-friends"
                     element={
                       <ProtectedRoute>
-                        <FriendsPage />
+                        <FindFriendsPage />
                       </ProtectedRoute>
                     }
                   />
