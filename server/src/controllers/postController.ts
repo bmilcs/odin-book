@@ -200,9 +200,11 @@ const likePost = tryCatch(
     post.likes.push(newLike._id);
     await post.save();
     // return updated like info
+    await newLike.populate('user', '_id username email photo');
     const data = {
       isLikedByUser: true,
       likeCount: post.likes.length,
+      likeDetails: newLike,
     };
     res.success('Post liked', data, 201);
   },
@@ -236,6 +238,7 @@ const unlikePost = tryCatch(
     const data = {
       isLikedByUser: false,
       likeCount: post.likes.length,
+      likeDetails: null,
     };
     res.success('Post unliked', data, 201);
   },
@@ -369,9 +372,11 @@ const likeComment = tryCatch(
     comment.likes.push(newLike._id);
     await comment.save();
     // return updated like info
+    await newLike.populate('user', '_id username email photo');
     const data = {
       isLikedByUser: true,
       likeCount: comment.likes.length,
+      likeDetails: newLike,
     };
     res.success('Comment liked', data, 201);
   },
@@ -416,6 +421,7 @@ const unlikeComment = tryCatch(
     const data = {
       isLikedByUser: false,
       likeCount: comment.likes.length,
+      likeDetails: null,
     };
     res.success('Comment unliked', data, 201);
   },
