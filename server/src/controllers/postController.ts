@@ -330,6 +330,8 @@ const editComment = tryCatch(
     // update comment
     comment.content = content;
     comment.save();
+    // add author details to comment
+    await comment.populate('author', '_id username email photo');
     res.success('Comment updated', comment, 201);
   },
 );
