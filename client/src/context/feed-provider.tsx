@@ -2,7 +2,7 @@ import { useAuthContext } from '@/hooks/useAuthContext';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import { TApiResponse, TPost } from '@/utils/types';
+import { TApiResponse, TComment, TPost } from '@/utils/types';
 import {
   FC,
   ReactNode,
@@ -23,6 +23,8 @@ type FeedContextProps = {
   updateFeed: () => Promise<void>;
   addPostToFeed: (post: TPost) => void;
   removePostFromFeed: (postId: string) => void;
+  addCommentToFeed: (postId: string, comment: TComment) => void;
+  removeCommentFromFeed: (postId: string, commentId: string) => void;
 };
 
 export const FeedContext = createContext<FeedContextProps>({
@@ -32,6 +34,8 @@ export const FeedContext = createContext<FeedContextProps>({
   updateFeed: async () => {},
   addPostToFeed: () => {},
   removePostFromFeed: () => {},
+  addCommentToFeed: () => {},
+  removeCommentFromFeed: () => {},
 });
 
 type FeedProviderProps = {
@@ -51,6 +55,36 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
 
   const removePostFromFeed = (postId: string) => {
     setFeed((prev) => prev.filter((post) => post._id !== postId));
+  };
+
+  const addCommentToFeed = (postId: string, comment: TComment) => {
+    setFeed((prev) =>
+      prev.map((post) => {
+        if (post._id === postId) {
+          return {
+            ...post,
+            comments: [comment, ...post.comments],
+          };
+        }
+        return post;
+      }),
+    );
+  };
+
+  const removeCommentFromFeed = (postId: string, commentId: string) => {
+    setFeed((prev) =>
+      prev.map((post) => {
+        if (post._id === postId) {
+          return {
+            ...post,
+            comments: post.comments.filter(
+              (comment) => comment._id !== commentId,
+            ),
+          };
+        }
+        return post;
+      }),
+    );
   };
 
   const updateFeed = useCallback(async () => {
@@ -90,6 +124,8 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
         updateFeed,
         addPostToFeed,
         removePostFromFeed,
+        addCommentToFeed,
+        removeCommentFromFeed,
       }}
     >
       {children}
