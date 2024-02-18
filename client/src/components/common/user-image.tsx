@@ -1,24 +1,14 @@
 import { Icons } from '@/components/ui/icons';
-import { useAuthContext } from '@/hooks/useAuthContext';
 import { API_BASE_URL } from '@/utils/env';
 import { TFriend, TUser } from '@/utils/types';
 import { Link } from 'react-router-dom';
 
-type UserProfileProps = {
+type UserImageProps = {
   user?: TUser | TFriend | null;
   className?: string;
 };
 
-const UserProfileImage = ({
-  user: propUser,
-  className = '',
-  ...props
-}: UserProfileProps) => {
-  const { user: activeUser } = useAuthContext();
-
-  // if propUser is not provided, use the active user from auth context
-  const user = propUser || activeUser;
-
+const UserImage = ({ user, className = '', ...props }: UserImageProps) => {
   if (user?.photo) {
     const imgUrl = `${API_BASE_URL}${user.photo}`;
     return (
@@ -43,4 +33,4 @@ const UserProfileImage = ({
   );
 };
 
-export default UserProfileImage;
+export default UserImage;

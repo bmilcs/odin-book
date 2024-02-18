@@ -1,6 +1,6 @@
 import CommentEditForm from '@/components/common/comment-edit-form';
 import LikeButton from '@/components/common/like-button';
-import UserProfileImage from '@/components/common/user-profile-image';
+import UserImage from '@/components/common/user-image';
 import { Button } from '@/components/ui/button';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import useDeleteComment from '@/hooks/useDeleteComment';
@@ -45,7 +45,7 @@ const Comment: FC<CommentProps> = ({ data, ...props }) => {
 
   return (
     <div className="grid grid-cols-[max-content_1fr] gap-2" {...props}>
-      <UserProfileImage
+      <UserImage
         user={data.author}
         className="row-span-1 mt-3 aspect-square w-10 rounded-full sm:mt-2 sm:w-12"
       />

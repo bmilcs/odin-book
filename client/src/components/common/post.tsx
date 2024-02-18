@@ -2,7 +2,7 @@ import Comment from '@/components/common/comment';
 import CommentNewForm from '@/components/common/comment-new-form';
 import LikeButton from '@/components/common/like-button';
 import PostEditForm from '@/components/common/post-edit-form';
-import UserProfileImage from '@/components/common/user-profile-image';
+import UserImage from '@/components/common/user-image';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -73,7 +73,7 @@ const Post: FC<PostProps> = ({ data, className = '', ...props }) => {
       {/* Post Author & Date Posted */}
       <CardHeader>
         <div className="flex items-center gap-2 rounded-lg">
-          <UserProfileImage
+          <UserImage
             user={data.author}
             className="aspect-square h-12 rounded-full sm:h-14"
           />

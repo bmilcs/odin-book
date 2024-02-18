@@ -1,4 +1,4 @@
-import UserProfileImage from '@/components/common/user-profile-image';
+import UserImage from '@/components/common/user-image';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -24,7 +24,10 @@ const FeedUserSummary: FC<FeedUserSummaryProps> = ({ ...props }) => {
     <Card {...props}>
       <CardContent>
         <div className="space-y-4 sm:flex sm:items-center sm:justify-normal sm:gap-4 sm:space-y-0 md:gap-10 lg:block lg:space-y-4">
-          <UserProfileImage className="w-full object-cover sm:max-h-44 sm:max-w-xs lg:max-h-max" />
+          <UserImage
+            user={user}
+            className="w-full object-cover sm:max-h-44 sm:max-w-xs lg:max-h-max"
+          />
 
           <div className="space-y-4">
             <div>

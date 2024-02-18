@@ -1,4 +1,4 @@
-import UserProfileImage from '@/components/common/user-profile-image';
+import UserImage from '@/components/common/user-image';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import { TFriend, TUser } from '@/utils/types';
 import { ComponentPropsWithoutRef, FC } from 'react';
@@ -23,7 +23,7 @@ const FriendsList: FC<FriendsListProps> = ({
       {friends.map((friend: TFriend) => (
         <div key={friend._id} className="p-1 hover:rounded-md hover:bg-accent">
           <div key={friend._id} className="flex items-center gap-4">
-            <UserProfileImage user={friend} className="h-8 rounded-full" />
+            <UserImage user={friend} className="h-8 rounded-full" />
             <Link to={`/users/${friend.username}`} className="text-sm">
               {friend.username}
             </Link>
