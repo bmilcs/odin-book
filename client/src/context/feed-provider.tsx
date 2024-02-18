@@ -22,6 +22,7 @@ type FeedContextProps = {
   feed: TPost[];
   updateFeed: () => Promise<void>;
   addPostToFeed: (post: TPost) => void;
+  removePostFromFeed: (postId: string) => void;
 };
 
 export const FeedContext = createContext<FeedContextProps>({
@@ -30,6 +31,7 @@ export const FeedContext = createContext<FeedContextProps>({
   feed: [],
   updateFeed: async () => {},
   addPostToFeed: () => {},
+  removePostFromFeed: () => {},
 });
 
 type FeedProviderProps = {
@@ -45,6 +47,10 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
 
   const addPostToFeed = (post: TPost) => {
     setFeed((prev) => [post, ...prev]);
+  };
+
+  const removePostFromFeed = (postId: string) => {
+    setFeed((prev) => prev.filter((post) => post._id !== postId));
   };
 
   const updateFeed = useCallback(async () => {
@@ -77,7 +83,14 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
 
   return (
     <FeedContext.Provider
-      value={{ status, error, feed, updateFeed, addPostToFeed }}
+      value={{
+        status,
+        error,
+        feed,
+        updateFeed,
+        addPostToFeed,
+        removePostFromFeed,
+      }}
     >
       {children}
     </FeedContext.Provider>

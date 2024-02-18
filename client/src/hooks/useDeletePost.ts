@@ -1,3 +1,4 @@
+import { useFeedContext } from '@/hooks/useFeedContext';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
@@ -5,6 +6,8 @@ import { TApiResponse } from '@/utils/types';
 import { useState } from 'react';
 
 const useDeletePost = () => {
+  const { removePostFromFeed } = useFeedContext();
+
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
 
@@ -24,6 +27,7 @@ const useDeletePost = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
+        removePostFromFeed(postId);
         return;
       }
       setStatus(STATUS.ERROR);
