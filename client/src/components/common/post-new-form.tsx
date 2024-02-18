@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import useCreatePost from '@/hooks/useCreatePost';
 import { useFeedContext } from '@/hooks/useFeedContext';
 import { CLIENT_MODE } from '@/utils/env';
@@ -24,6 +25,7 @@ type PostNewFormProps = ComponentPropsWithoutRef<'div'>;
 
 const PostNewForm: FC<PostNewFormProps> = ({ ...props }) => {
   const { addPostToFeed } = useFeedContext();
+  const { user } = useAuthContext();
   const {
     createPost,
     postData,
@@ -68,7 +70,8 @@ const PostNewForm: FC<PostNewFormProps> = ({ ...props }) => {
       >
         <Input
           type="post"
-          placeholder="I love this app!"
+          placeholder={`${user?.username}, what's on your mind?`}
+          autoComplete="off"
           {...register('content')}
         />
         <Button
