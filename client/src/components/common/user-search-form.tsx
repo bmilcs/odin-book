@@ -31,9 +31,14 @@ const formSchema = z.object({
     }),
 });
 
-type UserSearchFormProps = ComponentPropsWithoutRef<'form'>;
+type UserSearchFormProps = ComponentPropsWithoutRef<'form'> & {
+  className?: string;
+};
 
-const UserSearchForm: FC<UserSearchFormProps> = ({ ...props }) => {
+const UserSearchForm: FC<UserSearchFormProps> = ({
+  className = '',
+  ...props
+}) => {
   const {
     search,
     results,
@@ -66,7 +71,7 @@ const UserSearchForm: FC<UserSearchFormProps> = ({ ...props }) => {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className={`relative flex w-full items-center`}
+      className={`relative flex w-full items-center ${className}`}
       {...props}
     >
       <DropdownMenu open={open} onOpenChange={setOpen}>
