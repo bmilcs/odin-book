@@ -23,9 +23,10 @@ const NUMBER_OF_COMMENTS_TO_SHOW = 3;
 
 type PostProps = ComponentPropsWithoutRef<'div'> & {
   data: TPost;
+  className?: string;
 };
 
-const Post: FC<PostProps> = ({ data, ...props }) => {
+const Post: FC<PostProps> = ({ data, className = '', ...props }) => {
   const { user } = useAuthContext();
   const { deletePost, status: deletePostStatus } = useDeletePost();
 
@@ -68,7 +69,7 @@ const Post: FC<PostProps> = ({ data, ...props }) => {
   }
 
   return (
-    <Card {...props}>
+    <Card className={`h-max ${className}`} {...props}>
       {/* Post Author & Date Posted */}
       <CardHeader>
         <div className="flex items-center gap-2 rounded-lg">
