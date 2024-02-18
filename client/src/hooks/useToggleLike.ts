@@ -1,18 +1,20 @@
+import { useFeedContext } from '@/hooks/useFeedContext';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import { TApiResponse } from '@/utils/types';
+import { TApiResponse, TLike } from '@/utils/types';
 import { useState } from 'react';
 
 type ToggleLikeApiResponse = TApiResponse & {
   data: {
     likeCount: number;
     isLikedByUser: boolean;
+    likeDetails: TLike | null;
   };
 };
 
 type useToggleLikeProps = {
-  contentType: 'post' | 'comment';
+  contentType: 'comment' | 'post';
   postId: string;
   commentId?: string;
   isLiked: boolean;
@@ -26,6 +28,8 @@ const useLikeToggle = ({
   isLiked,
   likeCount,
 }: useToggleLikeProps) => {
+  const { togglePostLikeInFeed, toggleCommentLikeInFeed } = useFeedContext();
+
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const [likeStatus, setLikeStatus] = useState(isLiked);
@@ -46,12 +50,21 @@ const useLikeToggle = ({
         action === 'post'
           ? await api.post<ToggleLikeApiResponse>(apiUrl, {})
           : await api.del<ToggleLikeApiResponse>(apiUrl);
+
       if (success) {
         setStatus(STATUS.SUCCESS);
         setTotalLikes(data.likeCount);
         setLikeStatus(data.isLikedByUser);
+
+        if (contentType === 'post') {
+          togglePostLikeInFeed(postId, data.likeDetails);
+          return;
+        }
+
+        toggleCommentLikeInFeed(postId, commentId!, data.likeDetails);
         return;
       }
+
       setStatus(STATUS.ERROR);
       setError(error);
     } catch (error) {

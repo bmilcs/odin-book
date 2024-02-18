@@ -2,7 +2,7 @@ import { useAuthContext } from '@/hooks/useAuthContext';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import { TApiResponse, TComment, TPost } from '@/utils/types';
+import { TApiResponse, TComment, TLike, TPost } from '@/utils/types';
 import {
   FC,
   ReactNode,
@@ -25,6 +25,12 @@ type FeedContextProps = {
   removePostFromFeed: (postId: string) => void;
   addCommentToFeed: (postId: string, comment: TComment) => void;
   removeCommentFromFeed: (postId: string, commentId: string) => void;
+  togglePostLikeInFeed: (postId: string, likeDetails: TLike | null) => void;
+  toggleCommentLikeInFeed: (
+    postId: string,
+    commentId: string,
+    likeDetails: TLike | null,
+  ) => void;
 };
 
 export const FeedContext = createContext<FeedContextProps>({
@@ -36,6 +42,8 @@ export const FeedContext = createContext<FeedContextProps>({
   removePostFromFeed: () => {},
   addCommentToFeed: () => {},
   removeCommentFromFeed: () => {},
+  togglePostLikeInFeed: () => {},
+  toggleCommentLikeInFeed: () => {},
 });
 
 type FeedProviderProps = {
@@ -87,6 +95,91 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
     );
   };
 
+  const togglePostLikeInFeed = (postId: string, likeDetails: TLike | null) => {
+    const isDeleted = likeDetails === null;
+    // Remove like from the post
+    if (isDeleted) {
+      setFeed((prev) =>
+        prev.map((post) => {
+          if (post._id === postId) {
+            return {
+              ...post,
+              likes: post.likes.filter((like) => like.user._id !== user!._id),
+            };
+          }
+          return post;
+        }),
+      );
+      return;
+    }
+    // Add like to the post
+    setFeed((prev) =>
+      prev.map((post) => {
+        if (post._id === postId) {
+          console.log('found post, adding like', post.likes, { likeDetails });
+          return {
+            ...post,
+            likes: [likeDetails, ...post.likes],
+          };
+        }
+        return post;
+      }),
+    );
+  };
+
+  const toggleCommentLikeInFeed = (
+    postId: string,
+    commentId: string,
+    likeDetails: TLike | null,
+  ) => {
+    const isDeleted = likeDetails === null;
+    // Remove like from the comment
+    if (isDeleted) {
+      setFeed((prev) =>
+        prev.map((post) => {
+          if (post._id === postId) {
+            return {
+              ...post,
+              comments: post.comments.map((comment) => {
+                if (comment._id === commentId) {
+                  return {
+                    ...comment,
+                    likes: comment.likes.filter(
+                      (like) => like.user._id !== user!._id,
+                    ),
+                  };
+                }
+                return comment;
+              }),
+            };
+          }
+          return post;
+        }),
+      );
+      return;
+    }
+    // Add like to the comment
+    setFeed((prev) =>
+      prev.map((post) => {
+        if (post._id === postId) {
+          return {
+            ...post,
+            comments: post.comments.map((comment) => {
+              if (comment._id === commentId) {
+                return {
+                  ...comment,
+                  likes: [likeDetails, ...comment.likes],
+                };
+              }
+              return comment;
+            }),
+          };
+        }
+        return post;
+      }),
+    );
+  };
+
   const updateFeed = useCallback(async () => {
     setStatus(STATUS.LOADING);
     setFeed([]);
@@ -126,6 +219,8 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
         removePostFromFeed,
         addCommentToFeed,
         removeCommentFromFeed,
+        togglePostLikeInFeed,
+        toggleCommentLikeInFeed,
       }}
     >
       {children}
