@@ -108,14 +108,6 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
 
           <CardContent className="space-y-3">
             <div className="sm:grid sm:grid-cols-[max-content_1fr] sm:gap-4">
-              {/* Bio */}
-              {userProfile.profile?.bio && (
-                <>
-                  <h2 className="mb-1 text-sm font-bold">Biography:</h2>
-                  <NewLineText text={userProfile.profile.bio} />
-                </>
-              )}
-
               {/* Location */}
               {userProfile.profile?.location && (
                 <>
@@ -131,6 +123,14 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
                   <a href={`mailto:${userProfile.email}`}>
                     {userProfile.email}
                   </a>
+                </>
+              )}
+
+              {/* Bio */}
+              {userProfile.profile?.bio && (
+                <>
+                  <h2 className="mb-1 text-sm font-bold">Biography:</h2>
+                  <NewLineText text={userProfile.profile.bio} />
                 </>
               )}
 

@@ -1,3 +1,4 @@
+import { useFeedContext } from '@/hooks/useFeedContext';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
@@ -9,6 +10,8 @@ type UpdatePostApiResponse = TApiResponse & {
 };
 
 const useUpdatePost = () => {
+  const { updatePostInFeed } = useFeedContext();
+
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const [postData, setPostData] = useState<TPost | null>(null);
@@ -39,6 +42,7 @@ const useUpdatePost = () => {
       if (success) {
         setStatus(STATUS.SUCCESS);
         setPostData(data);
+        updatePostInFeed(data);
         return;
       }
       setStatus(STATUS.ERROR);
