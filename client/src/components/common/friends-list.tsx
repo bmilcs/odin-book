@@ -21,16 +21,14 @@ const FriendsList: FC<FriendsListProps> = ({
   return (
     <div className={`${className} grid`} {...props}>
       {friends.map((friend: TFriend) => (
-        <Link
-          key={friend._id}
-          to={`/users/${friend.username}`}
-          className="p-1 hover:rounded-md hover:bg-accent"
-        >
+        <div key={friend._id} className="p-1 hover:rounded-md hover:bg-accent">
           <div key={friend._id} className="flex items-center gap-4">
             <UserProfileImage user={friend} className="h-8 rounded-full" />
-            <p className="text-sm">{friend.username}</p>
+            <Link to={`/users/${friend.username}`} className="text-sm">
+              {friend.username}
+            </Link>
           </div>
-        </Link>
+        </div>
       ))}
     </div>
   );
