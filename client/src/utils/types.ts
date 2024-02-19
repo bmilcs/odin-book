@@ -47,13 +47,22 @@ export type TFriend = {
 export type TFriendRequest = {
   _id: string;
   username: string;
-  email: string;
+  photo: string;
 };
 
 export type TUserSearchResult = {
   _id: string;
   username: string;
   photo: string;
+};
+
+export type TUserProfileDetails = {
+  username: string;
+  email: string;
+  profile: {
+    location: string;
+    bio: string;
+  };
 };
 
 //
