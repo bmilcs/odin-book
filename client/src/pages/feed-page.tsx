@@ -2,8 +2,11 @@ import Feed from '@/components/common/feed';
 import FeedUserSummary from '@/components/common/feed-user-summary';
 import FriendsList from '@/components/common/friends-list';
 import PostNewForm from '@/components/common/post-new-form';
+import { useAuthContext } from '@/hooks/useAuthContext';
 
 const FeedPage = () => {
+  const { friends } = useAuthContext();
+
   return (
     <>
       <div className="grid gap-4 lg:grid-cols-[350px_1fr]">
@@ -12,7 +15,7 @@ const FeedPage = () => {
 
           <div className="hidden pl-4 lg:block">
             <h2 className="mb-2 text-xl font-bold">Friends</h2>
-            <FriendsList />
+            <FriendsList friendsList={friends} />
           </div>
         </div>
 
