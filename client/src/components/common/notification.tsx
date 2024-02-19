@@ -1,3 +1,4 @@
+import UserImage from '@/components/common/user-image';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -6,9 +7,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Icons } from '@/components/ui/icons';
-import useAcceptFriendRequest from '@/hooks/useAcceptFriendRequest';
 import { useNotificationContext } from '@/hooks/useNotificationContext';
-import useRejectFriendRequest from '@/hooks/useRejectFriendRequest';
 import { TNotification } from '@/utils/types';
 import { useNavigate } from 'react-router-dom';
 
@@ -52,9 +51,7 @@ const NotificationIcon = ({ ...props }) => {
         {notifications.length > 0 ? (
           <>
             {notifications
-              .filter(
-                (_, index) => index <= NUMBER_OF_NOTIFICATIONS_TO_SHOW - 1,
-              )
+              .filter((_, index) => index < NUMBER_OF_NOTIFICATIONS_TO_SHOW)
               .map((notification) => (
                 <DropdownMenuItem key={notification._id}>
                   <NotificationItem data={notification} />
@@ -101,81 +98,37 @@ const NotificationIcon = ({ ...props }) => {
 };
 
 const NotificationItem = ({ data }: { data: TNotification }) => {
-  const { markNotificationAsRead, deleteNotification } =
-    useNotificationContext();
-  const { rejectFriendRequest } = useRejectFriendRequest();
-  const { acceptFriendRequest } = useAcceptFriendRequest();
+  const { markNotificationAsRead } = useNotificationContext();
   const navigate = useNavigate();
 
+  const handleNewCommentClick = async () => {
+    await markNotificationAsRead(data._id);
+    navigate(`/posts/${data.post}`);
+  };
+
+  const handleNewPostClick = async () => {
+    await markNotificationAsRead(data._id);
+    navigate(`/posts/${data.post}`);
+  };
+
+  const handleOtherNotificationClick = async () => {
+    markNotificationAsRead(data._id);
+    navigate(`/users/${data.fromUser.username}`);
+  };
+
   const notificationType = data.type;
-
-  const handleAcceptFriendRequest = async (fromUserId: string) => {
-    await acceptFriendRequest(fromUserId);
-  };
-
-  const handleRejectFriendRequest = async (fromUserId: string) => {
-    await rejectFriendRequest(fromUserId);
-  };
-
-  const handleMarkNotificationAsRead = async (notificationId: string) => {
-    await markNotificationAsRead(notificationId);
-  };
-
-  const handleDeleteNotification = async (notificationId: string) => {
-    await deleteNotification(notificationId);
-  };
-
-  const handleNewCommentClick = async ({
-    notificationId,
-    postId,
-  }: {
-    notificationId: string;
-    postId: string;
-  }) => {
-    await markNotificationAsRead(notificationId);
-    navigate(`/posts/${postId}`);
-  };
-
-  const handleNewPostClick = async ({
-    notificationId,
-    postId,
-  }: {
-    notificationId: string;
-    postId: string;
-  }) => {
-    await markNotificationAsRead(notificationId);
-    navigate(`/posts/${postId}`);
-  };
 
   if (notificationType === 'incoming_friend_request') {
     return (
       <div
-        className="flex items-center "
-        onClick={() => handleMarkNotificationAsRead(data._id)}
+        className="flex items-center gap-2"
+        onClick={handleOtherNotificationClick}
       >
+        <UserImage user={data.fromUser} className="h-8 w-8 rounded-full" />
         <p>
-          <strong>{data.fromUser.username}</strong> wants to be friends!
+          <span className="font-bold">{data.fromUser.username}</span> wants to
+          be friends!
         </p>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => handleAcceptFriendRequest(data.fromUser._id)}
-        >
-          <Icons.add />
-          <span className="sr-only">
-            Accept friend request from {data.fromUser.username}
-          </span>
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => handleRejectFriendRequest(data.fromUser._id)}
-        >
-          <Icons.remove />
-          <span className="sr-only">
-            Reject friend request from {data.fromUser.username}
-          </span>
-        </Button>
       </div>
     );
   }
@@ -183,79 +136,38 @@ const NotificationItem = ({ data }: { data: TNotification }) => {
   if (notificationType === 'accepted_friend_request') {
     return (
       <div
-        className="flex items-center"
-        onClick={() => handleMarkNotificationAsRead(data._id)}
+        className="flex items-center gap-2"
+        onClick={handleOtherNotificationClick}
       >
+        <UserImage user={data.fromUser} className="h-8 w-8 rounded-full" />
         <p>
-          <strong>{data.fromUser.username}</strong> accepted your friend
-          request!
+          <span className="font-bold">{data.fromUser.username}</span> accepted
+          your friend request!
         </p>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => handleDeleteNotification(data._id)}
-        >
-          <Icons.delete />
-          <span className="sr-only">
-            Delete notification from {data.fromUser.username}
-          </span>
-        </Button>
       </div>
     );
   }
 
   if (notificationType === 'new_comment') {
     return (
-      <div
-        className="flex items-center"
-        onClick={() =>
-          handleNewCommentClick({
-            notificationId: data._id,
-            postId: data.post,
-          })
-        }
-      >
+      <div className="flex items-center gap-2" onClick={handleNewCommentClick}>
+        <UserImage user={data.fromUser} className="h-8 w-8 rounded-full" />
         <p>
-          <strong>{data.fromUser.username}</strong> commented on your post!
+          <span className="font-bold">{data.fromUser.username}</span> commented
+          on your post!
         </p>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => handleDeleteNotification(data._id)}
-        >
-          <Icons.delete />
-          <span className="sr-only">
-            Delete notification from {data.fromUser.username}
-          </span>
-        </Button>
       </div>
     );
   }
 
   if (notificationType === 'new_post') {
     return (
-      <div
-        className="flex items-center"
-        onClick={() =>
-          handleNewPostClick({
-            notificationId: data._id,
-            postId: data.post,
-          })
-        }
-      >
+      <div className="flex items-center gap-2" onClick={handleNewPostClick}>
+        <UserImage user={data.fromUser} className="h-8 w-8 rounded-full" />
         <p>
-          <strong>{data.fromUser.username}</strong> created a new post!
+          <span className="font-bold">{data.fromUser.username}</span> created a
+          new post!
         </p>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => handleDeleteNotification(data._id)}
-        >
-          <Icons.delete />
-          <span className="sr-only">
-            Delete notification from {data.fromUser.username}
-          </span>
-        </Button>
       </div>
     );
   }
