@@ -112,7 +112,7 @@ const NotificationItem = ({ data }: { data: TNotification }) => {
   };
 
   const handleOtherNotificationClick = async () => {
-    markNotificationAsRead(data._id);
+    await markNotificationAsRead(data._id);
     navigate(`/users/${data.fromUser.username}`);
   };
 
