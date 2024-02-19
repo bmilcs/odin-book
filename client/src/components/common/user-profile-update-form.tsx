@@ -64,12 +64,7 @@ const UserProfileUpdateForm: FC<UserProfileUpdateFormProps> = ({
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    updateUserProfile({
-      username: values.username,
-      email: values.email,
-      bio: values.bio,
-      location: values.location,
-    });
+    updateUserProfile(values);
   };
 
   useEffect(() => {
