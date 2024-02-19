@@ -1,10 +1,10 @@
 import { Icons } from '@/components/ui/icons';
 import { API_BASE_URL } from '@/utils/env';
-import { TFriend, TUser } from '@/utils/types';
+import { TFriend, TUser, TUserSearchResult } from '@/utils/types';
 import { Link } from 'react-router-dom';
 
 type UserImageProps = {
-  user?: TUser | TFriend | null;
+  user: TUser | TFriend | TUserSearchResult | null;
   className?: string;
 };
 
