@@ -63,7 +63,14 @@ const sendRequest = tryCatch(
     });
     notification.save();
 
-    res.success('Friend request sent', null, 200);
+    // add receiving user details to response to update client state
+    const receivingUserDetails = {
+      _id: receivingUser._id,
+      username: receivingUser.username,
+      photo: receivingUser.photo,
+    };
+
+    res.success('Friend request sent', receivingUserDetails, 200);
   },
 );
 
@@ -175,7 +182,15 @@ const acceptRequest = tryCatch(
       toUser: sendingUser._id,
     });
 
-    res.success('Friend request accepted', null, 200);
+    // add accepting user details to response to update client state
+    const sendingUserDetails = {
+      _id: sendingUser._id,
+      username: sendingUser.username,
+      email: sendingUser.email,
+      photo: sendingUser.photo,
+    };
+
+    res.success('Friend request accepted', sendingUserDetails, 201);
   },
 );
 
