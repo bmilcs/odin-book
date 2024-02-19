@@ -27,8 +27,11 @@ type AuthContextProps = {
   friends: TFriend[];
   friendRequestsSent: TFriendRequest[];
   friendRequestsReceived: TFriendRequest[];
-  setUser: (user: TUser | null) => void;
+  setUserData: (data: TUser) => void;
+  clearUserData: () => void;
   fetchUserData: () => void;
+  setUserProfileDetails: (profile: TUserProfileDetails) => void;
+  setUserProfileImage: (image: string) => void;
   isAuthenticated: () => boolean;
   redirectUnauthenticatedUser: (path: string) => void;
   redirectAuthenticatedUser: (path: string) => void;
@@ -37,14 +40,15 @@ type AuthContextProps = {
   removeFromSentFriendRequests: (userId: string) => void;
   removeFromReceivedFriendRequests: (userId: string) => void;
   removeFromFriends: (userId: string) => void;
-  updateUserProfileDetails: (profile: TUserProfileDetails) => void;
 };
 
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
-  setUser: () => {},
+  setUserData: () => {},
+  clearUserData: () => {},
   fetchUserData: () => {},
-  updateUserProfileDetails: () => {},
+  setUserProfileDetails: () => {},
+  setUserProfileImage: () => {},
   friends: [],
   friendRequestsSent: [],
   friendRequestsReceived: [],
@@ -104,6 +108,22 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     [isLoading, isAuthenticated, navigate],
   );
 
+  // Initialize user data
+  const setUserData = (data: TUser) => {
+    setUser(data);
+    setFriends(data.friends);
+    setFriendRequestsSent(data.friendRequestsSent);
+    setFriendRequestsReceived(data.friendRequestsReceived);
+  };
+
+  // Clear user data
+  const clearUserData = () => {
+    setUser(null);
+    setFriends([]);
+    setFriendRequestsSent([]);
+    setFriendRequestsReceived([]);
+  };
+
   // Add a user to the friends list
   const addToFriends = (newUser: TFriend) => {
     setFriendRequestsReceived((prev) => {
@@ -142,11 +162,19 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     });
   };
 
-  // update user profile changes
-  const updateUserProfileDetails = (profile: TUserProfileDetails) => {
+  // Update user profile changes
+  const setUserProfileDetails = (profile: TUserProfileDetails) => {
     setUser((prev) => {
       if (!prev) return prev;
       return { ...prev, ...profile };
+    });
+  };
+
+  // Update user profile image
+  const setUserProfileImage = (image: string) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      return { ...prev, photo: image };
     });
   };
 
@@ -157,10 +185,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       const { success, data } =
         await api.get<FetchUserDataApiResponse>('/auth/status');
       if (success) {
-        setUser(data);
-        setFriends(data.friends);
-        setFriendRequestsSent(data.friendRequestsSent);
-        setFriendRequestsReceived(data.friendRequestsReceived);
+        setUserData(data);
         return;
       }
       setUser(null);
@@ -201,9 +226,11 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     <AuthContext.Provider
       value={{
         user,
-        setUser,
+        setUserData,
+        clearUserData,
         fetchUserData,
-        updateUserProfileDetails,
+        setUserProfileImage,
+        setUserProfileDetails,
         friends,
         friendRequestsSent,
         friendRequestsReceived,
