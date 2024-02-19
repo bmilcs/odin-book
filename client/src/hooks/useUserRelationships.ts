@@ -2,36 +2,33 @@ import { useAuthContext } from '@/hooks/useAuthContext';
 import { useCallback } from 'react';
 
 const useUserRelationships = () => {
-  const { user } = useAuthContext();
+  const { user, friends, friendRequestsReceived, friendRequestsSent } =
+    useAuthContext();
 
   const isUserAFriend = useCallback(
-    (username: string) => {
-      return user!.friends.some((friend) => friend.username === username);
+    (id: string) => {
+      return friends.some((friend) => friend._id === id);
     },
-    [user],
+    [friends],
   );
 
   const isUserInIncomingFriendRequests = useCallback(
-    (username: string) => {
-      return user!.friendRequestsReceived.some(
-        (request) => request.username === username,
-      );
+    (id: string) => {
+      return friendRequestsReceived.some((request) => request._id === id);
     },
-    [user],
+    [friendRequestsReceived],
   );
 
   const isUserInOutgoingFriendRequests = useCallback(
-    (username: string) => {
-      return user!.friendRequestsSent.some(
-        (request) => request.username === username,
-      );
+    (id: string) => {
+      return friendRequestsSent.some((request) => request._id === id);
     },
-    [user],
+    [friendRequestsSent],
   );
 
   const isUserTheActiveUser = useCallback(
-    (username: string) => {
-      return user!.username === username;
+    (id: string) => {
+      return user!._id === id;
     },
     [user],
   );
