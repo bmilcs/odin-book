@@ -1,39 +1,17 @@
-import { useAuthContext } from '@/hooks/useAuthContext';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import {
-  TApiResponse,
-  TFriend,
-  TFriendRequest,
-  TUserSearchResult,
-} from '@/utils/types';
-import { useEffect, useState } from 'react';
+import { TApiResponse, TUserSearchResult } from '@/utils/types';
+import { useState } from 'react';
 
 type UserSearchApiResponse = TApiResponse & {
   data: TUserSearchResult[];
 };
 
 const useUserSearch = () => {
-  const { user } = useAuthContext();
-
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
   const [results, setResults] = useState<TUserSearchResult[]>([]);
-  const [friends, setFriends] = useState<TFriend[]>([]);
-  const [incomingFriendRequests, setIncomingFriendRequests] = useState<
-    TFriendRequest[]
-  >([]);
-
-  useEffect(
-    function getFriendsAndRequests() {
-      if (user) {
-        setFriends(user.friends);
-        setIncomingFriendRequests(user.friendRequestsReceived);
-      }
-    },
-    [user],
-  );
 
   const search = async ({ searchTerm }: { searchTerm: string }) => {
     setStatus(STATUS.LOADING);
@@ -64,7 +42,7 @@ const useUserSearch = () => {
     }
   };
 
-  return { status, error, search, results, friends, incomingFriendRequests };
+  return { status, error, search, results };
 };
 
 export default useUserSearch;
