@@ -1,24 +1,22 @@
 import { useAuthContext } from '@/hooks/useAuthContext';
-import useUpdateUserData from '@/hooks/useUpdateUserData';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import { TExpressValidatorError } from '@/utils/types';
-import { TApiResponse, TUser } from '@/utils/types.ts';
+import {
+  TApiResponse,
+  TExpressValidatorError,
+  TUserProfileDetails,
+} from '@/utils/types';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type FetchUserProfileApiResponse = TApiResponse & {
-  data: TUser;
-};
-
-type UpdateProfileApiResponse = FetchUserProfileApiResponse & {
+type UpdateProfileApiResponse = TApiResponse & {
   error: TExpressValidatorError[];
+  data: TUserProfileDetails;
 };
 
 const useUpdateUserProfile = () => {
-  const { updateUserData } = useUpdateUserData();
-  const { user } = useAuthContext();
+  const { user, updateUserProfileDetails } = useAuthContext();
   const navigate = useNavigate();
 
   const [status, setStatus] = useState(STATUS.IDLE);
@@ -35,33 +33,23 @@ const useUpdateUserProfile = () => {
   };
 
   const updateUserProfile = useCallback(
-    async ({ username, email, location, bio }: UpdateUserProfileProps) => {
+    async (userProfile: UpdateUserProfileProps) => {
       setStatus(STATUS.LOADING);
       setError('');
       setValidationErrors([]);
 
-      if (!username) {
-        setStatus(STATUS.ERROR);
-        setError('Username is required');
-        return;
-      }
-
       const currentUsername = user?.username;
 
       try {
-        const { success, error } = await api.patch<UpdateProfileApiResponse>(
-          `/users/${currentUsername}`,
-          {
-            username,
-            email,
-            location,
-            bio,
-          },
-        );
+        const { success, error, data } =
+          await api.patch<UpdateProfileApiResponse>(
+            `/users/${currentUsername}`,
+            userProfile,
+          );
         if (success) {
           setStatus(STATUS.SUCCESS);
-          await updateUserData();
-          navigate(`/users/${username}`);
+          updateUserProfileDetails(data);
+          navigate(`/users/${data.username}`);
           return;
         }
         setStatus(STATUS.ERROR);
@@ -73,7 +61,7 @@ const useUpdateUserProfile = () => {
         console.log(error);
       }
     },
-    [updateUserData, user?.username, navigate],
+    [user?.username, navigate, updateUserProfileDetails],
   );
 
   return {
