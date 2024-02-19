@@ -1,12 +1,16 @@
-import useUpdateUserData from '@/hooks/useUpdateUserData';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import { TApiResponse } from '@/utils/types';
+import { TApiResponse, TFriendRequest } from '@/utils/types';
 import { useState } from 'react';
 
+type SendFriendRequestApiResponse = TApiResponse & {
+  data: TFriendRequest;
+};
+
 const useSendFriendRequest = () => {
-  const { updateUserData } = useUpdateUserData();
+  const { addToSentFriendRequests } = useAuthContext();
 
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
@@ -22,13 +26,15 @@ const useSendFriendRequest = () => {
     }
 
     try {
-      const { success, error } = await api.post<TApiResponse>(
-        `/friends/send-request/${userId}`,
-        {},
-      );
+      const { success, error, data } =
+        await api.post<SendFriendRequestApiResponse>(
+          `/friends/send-request/${userId}`,
+          {},
+        );
+
       if (success) {
         setStatus(STATUS.SUCCESS);
-        await updateUserData();
+        addToSentFriendRequests(data);
         return;
       }
       setStatus(STATUS.ERROR);

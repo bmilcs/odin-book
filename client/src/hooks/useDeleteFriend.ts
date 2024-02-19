@@ -1,5 +1,5 @@
+import { useAuthContext } from '@/hooks/useAuthContext';
 import { useFeedContext } from '@/hooks/useFeedContext';
-import useUpdateUserData from '@/hooks/useUpdateUserData';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 const useDeleteFriend = () => {
   const { updateFeed } = useFeedContext();
-  const { updateUserData } = useUpdateUserData();
+  const { removeFromFriends } = useAuthContext();
 
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
@@ -29,8 +29,8 @@ const useDeleteFriend = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
+        removeFromFriends(userId);
         await updateFeed();
-        await updateUserData();
         return;
       }
       setStatus(STATUS.ERROR);

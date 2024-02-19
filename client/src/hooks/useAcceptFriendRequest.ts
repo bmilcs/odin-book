@@ -1,14 +1,18 @@
+import { useAuthContext } from '@/hooks/useAuthContext';
 import { useFeedContext } from '@/hooks/useFeedContext';
-import useUpdateUserData from '@/hooks/useUpdateUserData';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import { TApiResponse } from '@/utils/types';
+import { TApiResponse, TFriend } from '@/utils/types';
 import { useState } from 'react';
 
+type AcceptFriendRequestApiResponse = TApiResponse & {
+  data: TFriend;
+};
+
 const useAcceptFriendRequest = () => {
-  const { updateUserData } = useUpdateUserData();
   const { updateFeed } = useFeedContext();
+  const { addToFriends } = useAuthContext();
 
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
@@ -24,15 +28,16 @@ const useAcceptFriendRequest = () => {
     }
 
     try {
-      const { success, error } = await api.patch<TApiResponse>(
-        `/friends/accept-request/${userId}`,
-        {},
-      );
+      const { success, error, data } =
+        await api.patch<AcceptFriendRequestApiResponse>(
+          `/friends/accept-request/${userId}`,
+          {},
+        );
 
       if (success) {
         setStatus(STATUS.SUCCESS);
+        addToFriends(data);
         await updateFeed();
-        await updateUserData();
         return;
       }
 

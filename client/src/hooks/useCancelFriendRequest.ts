@@ -1,4 +1,4 @@
-import useUpdateUserData from '@/hooks/useUpdateUserData';
+import { useAuthContext } from '@/hooks/useAuthContext';
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
@@ -6,7 +6,7 @@ import { TApiResponse } from '@/utils/types';
 import { useState } from 'react';
 
 const useCancelFriendRequest = () => {
-  const { updateUserData } = useUpdateUserData();
+  const { removeFromSentFriendRequests } = useAuthContext();
 
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
@@ -27,7 +27,7 @@ const useCancelFriendRequest = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
-        await updateUserData();
+        removeFromSentFriendRequests(userId);
         return;
       }
       setStatus(STATUS.ERROR);
