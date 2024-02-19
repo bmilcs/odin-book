@@ -70,7 +70,15 @@ const updateProfile = tryCatch(
     // requestingUser.username = username;
     requestingUser.markModified('profile');
     await requestingUser.save();
-    res.success('User profile updated successfully', requestingUser, 201);
+    const data = {
+      username: requestingUser.username,
+      email: requestingUser.email,
+      profile: {
+        location: requestingUser.profile.location,
+        bio: requestingUser.profile.bio,
+      },
+    };
+    res.success('User profile updated successfully', data, 201);
   },
 );
 

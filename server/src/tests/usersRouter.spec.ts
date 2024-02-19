@@ -121,7 +121,7 @@ describe('USERS ROUTER', () => {
       const { statusCode: s, body: b } = await request(app)
         .patch(`/friends/accept-request/${USER_ONE._id}`)
         .set('Cookie', USER_TWO.jwtCookie);
-      expect(s).to.equal(200);
+      expect(s).to.equal(201);
       expect(b.success).to.be.true;
       expect(b.message).to.equal('Friend request accepted');
 
