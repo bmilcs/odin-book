@@ -1,3 +1,4 @@
+import FriendActionsButton from '@/components/common/friend-actions-button';
 import FriendsList from '@/components/common/friends-list';
 import NewLineText from '@/components/common/new-line-text';
 import UserProfileImageUploadForm from '@/components/common/user-profile-image-upload-form';
@@ -9,13 +10,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import useAcceptFriendRequest from '@/hooks/useAcceptFriendRequest';
 import { useAuthContext } from '@/hooks/useAuthContext';
-import useCancelFriendRequest from '@/hooks/useCancelFriendRequest';
-import useDeleteFriend from '@/hooks/useDeleteFriend';
 import useFetchUserProfile from '@/hooks/useFetchUserProfile';
-import useRejectFriendRequest from '@/hooks/useRejectFriendRequest';
-import useSendFriendRequest from '@/hooks/useSendFriendRequest';
 import { formatDate } from '@/utils/formatters';
 import { ComponentPropsWithoutRef, FC, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -26,51 +22,10 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
   const navigate = useNavigate();
   const { username: targetUsername } = useParams();
   const { user: activeUser } = useAuthContext();
-  const { sendFriendRequest } = useSendFriendRequest();
-  const { acceptFriendRequest } = useAcceptFriendRequest();
-  const { rejectFriendRequest } = useRejectFriendRequest();
-  const { cancelFriendRequest } = useCancelFriendRequest();
-  const { deleteFriend } = useDeleteFriend();
-  const {
-    fetchUserProfile,
-    userProfile,
-    status,
-    error,
-    isFriend,
-    isInIncomingFriendRequests,
-    isInOutgoingFriendRequests,
-    isProfileOwner,
-  } = useFetchUserProfile();
+  const { fetchUserProfile, userProfile, status, error } =
+    useFetchUserProfile();
 
   const [uploadProfileImageMode, setUploadProfileImageMode] = useState(false);
-
-  useEffect(
-    function fetchUserProfileOnParamChange() {
-      if (!targetUsername || !activeUser) return;
-      fetchUserProfile(targetUsername);
-    },
-    [targetUsername, fetchUserProfile, activeUser],
-  );
-
-  const handleFriendStatusToggle = () => {
-    if (isFriend) {
-      deleteFriend(userProfile!._id);
-      return;
-    }
-    sendFriendRequest(userProfile!._id);
-  };
-
-  const handleCancelFriendRequest = () => {
-    cancelFriendRequest(userProfile!._id);
-  };
-
-  const handleAcceptFriendRequest = () => {
-    acceptFriendRequest(userProfile!._id);
-  };
-
-  const handleRejectFriendRequest = () => {
-    rejectFriendRequest(userProfile!._id);
-  };
 
   const handleUpdateProfileImage = () => {
     setUploadProfileImageMode((prev) => !prev);
@@ -79,6 +34,14 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
   const handleEditProfile = () => {
     navigate('/edit-profile');
   };
+
+  useEffect(
+    function fetchUserProfileOnParamChange() {
+      if (!targetUsername || !activeUser) return;
+      fetchUserProfile(targetUsername);
+    },
+    [targetUsername, fetchUserProfile, activeUser],
+  );
 
   if (status === 'loading') {
     return <div>Loading...</div>;
@@ -139,7 +102,10 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
 
               {userProfile.friends ? (
                 <>
-                  <FriendsList propUser={userProfile} className="grid" />
+                  <FriendsList
+                    friendsList={userProfile.friends}
+                    className="grid"
+                  />
                 </>
               ) : (
                 <p>N/A</p>
@@ -150,32 +116,22 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
 
         {/* Actions: Friend request handling */}
         <div className="flex items-center justify-center gap-4 p-2">
-          {isProfileOwner ? (
+          {activeUser?.username === userProfile.username ? (
             <>
-              <Button onClick={handleUpdateProfileImage}>
+              <Button
+                className="btn-secondary"
+                onClick={handleEditProfile}
+                type="button"
+              >
+                Edit Profile
+              </Button>
+
+              <Button onClick={handleUpdateProfileImage} type="button">
                 Update Profile Image
-              </Button>
-              <Button onClick={handleEditProfile}>Edit Profile</Button>
-            </>
-          ) : isFriend ? (
-            <Button onClick={handleFriendStatusToggle}>
-              {isFriend ? 'Remove Friend' : 'Add Friend'}
-            </Button>
-          ) : isInOutgoingFriendRequests ? (
-            <Button onClick={handleCancelFriendRequest}>
-              Cancel Request Sent
-            </Button>
-          ) : isInIncomingFriendRequests ? (
-            <>
-              <Button onClick={handleAcceptFriendRequest}>
-                Accept Friend Request
-              </Button>
-              <Button onClick={handleRejectFriendRequest}>
-                Reject Friend Request
               </Button>
             </>
           ) : (
-            <Button onClick={handleFriendStatusToggle}>Add Friend</Button>
+            <FriendActionsButton userId={userProfile._id} />
           )}
         </div>
 
