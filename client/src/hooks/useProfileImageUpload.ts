@@ -10,7 +10,7 @@ type UpdateProfileImageApiResponse = TApiResponse & {
 };
 
 const useProfileImageUpload = () => {
-  const { user, setUser } = useAuthContext();
+  const { user, setUserProfileImage } = useAuthContext();
 
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
@@ -27,7 +27,7 @@ const useProfileImageUpload = () => {
         );
       if (success) {
         setStatus(STATUS.SUCCESS);
-        setUser({ ...user!, photo: data });
+        setUserProfileImage(data);
         return;
       }
       setStatus(STATUS.ERROR);

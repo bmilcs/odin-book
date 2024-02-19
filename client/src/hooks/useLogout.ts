@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const useLogout = () => {
-  const { setUser } = useAuthContext();
+  const { clearUserData } = useAuthContext();
   const navigate = useNavigate();
 
   const [status, setStatus] = useState(STATUS.IDLE);
@@ -21,7 +21,7 @@ const useLogout = () => {
       const { success } = await api.post<TApiResponse>('/auth/logout', {});
       if (success) {
         setStatus(STATUS.SUCCESS);
-        setUser(null);
+        clearUserData();
         navigate('/login');
         return;
       }

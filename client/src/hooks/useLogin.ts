@@ -11,19 +11,18 @@ type LoginApiResponse = TApiResponse & {
 };
 
 const useLogin = () => {
-  const { setUser } = useAuthContext();
+  const { setUserData } = useAuthContext();
   const navigate = useNavigate();
 
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
 
-  const login = async ({
-    email,
-    password,
-  }: {
+  type LoginArgs = {
     email: string;
     password: string;
-  }) => {
+  };
+
+  const login = async ({ email, password }: LoginArgs) => {
     setStatus(STATUS.LOADING);
     setError('');
 
@@ -43,7 +42,7 @@ const useLogin = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
-        setUser(data);
+        setUserData(data);
         navigate('/feed');
         return;
       }

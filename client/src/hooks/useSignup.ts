@@ -12,7 +12,7 @@ type SignupApiResponse = TApiResponse & {
 };
 
 const useSignup = () => {
-  const { setUser } = useAuthContext();
+  const { setUserData } = useAuthContext();
   const navigate = useNavigate();
 
   const [status, setStatus] = useState(STATUS.IDLE);
@@ -21,17 +21,19 @@ const useSignup = () => {
     TExpressValidatorError[]
   >([]);
 
+  type SignupArgs = {
+    email: string;
+    username: string;
+    password: string;
+    confirmPassword: string;
+  };
+
   const signup = async ({
     email,
     username,
     password,
     confirmPassword,
-  }: {
-    email: string;
-    username: string;
-    password: string;
-    confirmPassword: string;
-  }) => {
+  }: SignupArgs) => {
     setStatus(STATUS.LOADING);
     setError('');
     setValidationErrors([]);
@@ -54,7 +56,7 @@ const useSignup = () => {
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
-        setUser(data);
+        setUserData(data);
         navigate('/feed');
         return;
       }
