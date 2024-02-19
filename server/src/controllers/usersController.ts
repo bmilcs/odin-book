@@ -100,7 +100,7 @@ const search = tryCatch(
           { email: { $regex: searchTerm, $options: 'i' } },
         ],
       },
-      { _id: 1, username: 1 },
+      { _id: 1, username: 1, photo: 1 },
     );
     const usersFound = users.length > 0;
     res.success('Search complete', users, usersFound ? 201 : 200);
