@@ -6,6 +6,7 @@ import useRejectFriendRequest from '@/hooks/useRejectFriendRequest';
 import useSendFriendRequest from '@/hooks/useSendFriendRequest';
 import useUserRelationships from '@/hooks/useUserRelationships';
 import { ComponentPropsWithoutRef, FC } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 type FriendActionsButtonProps = ComponentPropsWithoutRef<'button'> & {
   userId: string;
@@ -15,6 +16,7 @@ const FriendActionsButton: FC<FriendActionsButtonProps> = ({
   userId,
   ...props
 }) => {
+  const navigate = useNavigate();
   const { sendFriendRequest } = useSendFriendRequest();
   const { acceptFriendRequest } = useAcceptFriendRequest();
   const { rejectFriendRequest } = useRejectFriendRequest();
@@ -26,24 +28,26 @@ const FriendActionsButton: FC<FriendActionsButtonProps> = ({
     isUserInOutgoingFriendRequests,
   } = useUserRelationships();
 
-  const handleDeleteFriend = () => {
-    deleteFriend(userId);
+  const handleDeleteFriend = async () => {
+    await deleteFriend(userId);
+    navigate(`/feed`);
   };
 
-  const handleSendFriendRequest = () => {
-    sendFriendRequest(userId);
+  const handleSendFriendRequest = async () => {
+    await sendFriendRequest(userId);
   };
 
-  const handleCancelFriendRequest = () => {
-    cancelFriendRequest(userId);
+  const handleCancelFriendRequest = async () => {
+    await cancelFriendRequest(userId);
   };
 
-  const handleAcceptFriendRequest = () => {
-    acceptFriendRequest(userId);
+  const handleAcceptFriendRequest = async () => {
+    await acceptFriendRequest(userId);
+    navigate(`/feed`);
   };
 
-  const handleRejectFriendRequest = () => {
-    rejectFriendRequest(userId);
+  const handleRejectFriendRequest = async () => {
+    await rejectFriendRequest(userId);
   };
 
   const isFriend = isUserAFriend(userId);
