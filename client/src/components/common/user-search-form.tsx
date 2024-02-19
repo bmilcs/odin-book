@@ -1,3 +1,4 @@
+import UserImage from '@/components/common/user-image';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -7,17 +8,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
-import useAcceptFriendRequest from '@/hooks/useAcceptFriendRequest';
-import { useAuthContext } from '@/hooks/useAuthContext';
-import useDeleteFriend from '@/hooks/useDeleteFriend';
-import useRejectFriendRequest from '@/hooks/useRejectFriendRequest';
-import useSendFriendRequest from '@/hooks/useSendFriendRequest';
+import useUserRelationships from '@/hooks/useUserRelationships';
 import useUserSearch from '@/hooks/useUserSearch';
-import { TFriend, TFriendRequest, TUserSearchResult } from '@/utils/types';
+import { TUserSearchResult } from '@/utils/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ComponentPropsWithoutRef, FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 
 const formSchema = z.object({
@@ -39,14 +36,7 @@ const UserSearchForm: FC<UserSearchFormProps> = ({
   className = '',
   ...props
 }) => {
-  const {
-    search,
-    results,
-    error: apiError,
-    status,
-    friends,
-    incomingFriendRequests,
-  } = useUserSearch();
+  const { search, results, error: apiError, status } = useUserSearch();
   const [open, setOpen] = useState(false);
 
   const {
@@ -110,8 +100,6 @@ const UserSearchForm: FC<UserSearchFormProps> = ({
                 <UserSearchResult
                   key={result._id}
                   result={result}
-                  currentFriends={friends}
-                  currentFriendRequests={incomingFriendRequests}
                   closeMenu={() => setOpen(false)}
                 />
               ))}
@@ -129,171 +117,50 @@ const UserSearchForm: FC<UserSearchFormProps> = ({
 
 const UserSearchResult = ({
   result,
-  currentFriends,
-  currentFriendRequests,
   closeMenu,
 }: {
   result: TUserSearchResult;
-  currentFriends: TFriend[];
-  currentFriendRequests: TFriendRequest[];
   closeMenu: () => void;
 }) => {
-  const { acceptFriendRequest } = useAcceptFriendRequest();
-  const { sendFriendRequest } = useSendFriendRequest();
-  const { rejectFriendRequest } = useRejectFriendRequest();
-  const { deleteFriend } = useDeleteFriend();
-  const { user } = useAuthContext();
   const navigate = useNavigate();
+  const {
+    isUserAFriend,
+    isUserInIncomingFriendRequests,
+    isUserInOutgoingFriendRequests,
+    isUserTheActiveUser,
+  } = useUserRelationships();
 
-  const handleAddFriend = (id: string) => {
-    sendFriendRequest(id);
+  const handleResultClick = () => {
+    navigate(`/users/${result.username}`);
     closeMenu();
   };
 
-  const handleAcceptFriendRequest = (id: string) => {
-    acceptFriendRequest(id);
-    closeMenu();
-  };
+  const isActiveUser = isUserTheActiveUser(result._id);
+  const isFriend = isUserAFriend(result._id);
+  const isIncomingFriendRequest = isUserInIncomingFriendRequests(result._id);
+  const isOutgoingFriendRequest = isUserInOutgoingFriendRequests(result._id);
 
-  const handleRejectFriendRequest = (id: string) => {
-    rejectFriendRequest(id);
-    closeMenu();
-  };
-
-  const handleDeleteFriend = (id: string) => {
-    deleteFriend(id);
-    closeMenu();
-  };
-
-  const handleGenericClick = (username: string) => {
-    navigate(`/users/${username}`);
-    closeMenu();
-  };
-
-  const isFriend = currentFriends.some((friend) => friend._id === result._id);
-  const isActiveUser = result._id === user?._id;
-  const isIncomingFriendRequest = currentFriendRequests.some(
-    (friendRequest) => friendRequest._id === result._id,
+  return (
+    <DropdownMenuItem
+      className="flex w-full items-center gap-4"
+      key={result._id}
+      onClick={handleResultClick}
+    >
+      <UserImage user={result} className="h-8 w-8 rounded-full" />
+      <p className="font-bold">{result.username}</p>
+      <p className="ml-auto text-muted-foreground">
+        {isActiveUser
+          ? 'You'
+          : isFriend
+          ? 'Friend'
+          : isIncomingFriendRequest
+          ? 'Request Received *'
+          : isOutgoingFriendRequest
+          ? 'Request Sent'
+          : ''}
+      </p>
+    </DropdownMenuItem>
   );
-  const isOutgoingFriendRequest = user?.friendRequestsSent.some(
-    (friendRequest) => friendRequest._id === result._id,
-  );
-
-  if (isActiveUser) {
-    return (
-      <DropdownMenuItem
-        onClick={() => handleGenericClick(result.username)}
-        className="flex w-full items-center justify-between gap-4"
-      >
-        <p>
-          <strong>
-            <Link to={`/users/${result.username}`}>{result.username}</Link>
-          </strong>{' '}
-        </p>
-        <p>(You)</p>
-      </DropdownMenuItem>
-    );
-  }
-
-  if (isFriend) {
-    return (
-      <DropdownMenuItem
-        className="flex w-full items-center justify-between gap-4"
-        key={result._id}
-        onClick={() => handleGenericClick(result.username)}
-      >
-        <p>
-          <strong>
-            <Link to={`/users/${result.username}`}>{result.username}</Link>
-          </strong>{' '}
-          (Friend)
-        </p>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => handleDeleteFriend(result._id)}
-        >
-          <Icons.delete />
-          <span className="sr-only">Delete Friend</span>
-        </Button>
-      </DropdownMenuItem>
-    );
-  }
-
-  if (isOutgoingFriendRequest) {
-    return (
-      <DropdownMenuItem
-        className="flex w-full items-center justify-between gap-4"
-        key={result._id}
-        onClick={() => handleGenericClick(result.username)}
-      >
-        <p>
-          <strong>
-            <Link to={`/users/${result.username}`}>{result.username}</Link>
-          </strong>{' '}
-        </p>
-        <p>(Friend Request Sent)</p>
-      </DropdownMenuItem>
-    );
-  }
-
-  if (isIncomingFriendRequest) {
-    return (
-      <DropdownMenuItem
-        className="flex w-full items-center justify-between gap-4"
-        key={result._id}
-        onClick={() => handleGenericClick(result.username)}
-      >
-        <p>
-          <strong>
-            <Link to={`/users/${result.username}`}>{result.username}</Link>
-          </strong>
-        </p>
-        <div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => handleAcceptFriendRequest(result._id)}
-          >
-            <Icons.check />
-            <span className="sr-only">Accept Friend Request</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => handleRejectFriendRequest(result._id)}
-          >
-            <Icons.close />
-            <span className="sr-only">Reject Friend Request</span>
-          </Button>
-        </div>
-      </DropdownMenuItem>
-    );
-  }
-
-  if (!isFriend && !isActiveUser) {
-    return (
-      <DropdownMenuItem
-        className="flex w-full items-center justify-between gap-4"
-        key={result._id}
-        onClick={() => handleGenericClick(result.username)}
-      >
-        <p>
-          <strong>
-            <Link to={`/users/${result.username}`}>{result.username}</Link>
-          </strong>
-        </p>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => handleAddFriend(result._id)}
-        >
-          <Icons.add />
-          <span className="sr-only">Add Friend</span>
-        </Button>
-      </DropdownMenuItem>
-    );
-  }
 };
 
 export default UserSearchForm;
