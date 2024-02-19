@@ -1,7 +1,13 @@
 import LoadingPage from '@/pages/loading-page';
 import api from '@/utils/api';
 import { getErrorMsg } from '@/utils/errors';
-import { TApiResponse, TUser } from '@/utils/types';
+import {
+  TApiResponse,
+  TFriend,
+  TFriendRequest,
+  TUser,
+  TUserProfileDetails,
+} from '@/utils/types';
 import {
   FC,
   ReactNode,
@@ -18,18 +24,38 @@ type FetchUserDataApiResponse = TApiResponse & {
 
 type AuthContextProps = {
   user: TUser | null;
+  friends: TFriend[];
+  friendRequestsSent: TFriendRequest[];
+  friendRequestsReceived: TFriendRequest[];
   setUser: (user: TUser | null) => void;
+  fetchUserData: () => void;
   isAuthenticated: () => boolean;
   redirectUnauthenticatedUser: (path: string) => void;
   redirectAuthenticatedUser: (path: string) => void;
+  addToFriends: (newUser: TFriend) => void;
+  addToSentFriendRequests: (newUser: TFriendRequest) => void;
+  removeFromSentFriendRequests: (userId: string) => void;
+  removeFromReceivedFriendRequests: (userId: string) => void;
+  removeFromFriends: (userId: string) => void;
+  updateUserProfileDetails: (profile: TUserProfileDetails) => void;
 };
 
 export const AuthContext = createContext<AuthContextProps>({
   user: null,
   setUser: () => {},
+  fetchUserData: () => {},
+  updateUserProfileDetails: () => {},
+  friends: [],
+  friendRequestsSent: [],
+  friendRequestsReceived: [],
   isAuthenticated: () => false,
   redirectUnauthenticatedUser: () => {},
   redirectAuthenticatedUser: () => {},
+  addToSentFriendRequests: () => {},
+  addToFriends: () => {},
+  removeFromSentFriendRequests: () => {},
+  removeFromReceivedFriendRequests: () => {},
+  removeFromFriends: () => {},
 });
 
 type AuthProviderProps = {
@@ -40,8 +66,15 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   const navigate = useNavigate();
 
   const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<TUser | null>(null);
   const [showSpinner, setShowSpinner] = useState(true);
+  const [user, setUser] = useState<TUser | null>(null);
+  const [friends, setFriends] = useState<TFriend[]>([]);
+  const [friendRequestsSent, setFriendRequestsSent] = useState<
+    TFriendRequest[]
+  >([]);
+  const [friendRequestsReceived, setFriendRequestsReceived] = useState<
+    TFriendRequest[]
+  >([]);
 
   // Check if user is authenticated
   const isAuthenticated = useCallback(() => {
@@ -71,6 +104,52 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
     [isLoading, isAuthenticated, navigate],
   );
 
+  // Add a user to the friends list
+  const addToFriends = (newUser: TFriend) => {
+    setFriendRequestsReceived((prev) => {
+      return prev.filter((user) => user._id !== newUser._id);
+    });
+    setFriends((prev) => {
+      return [...prev, newUser];
+    });
+  };
+
+  // Add a user to the sent friend requests list
+  const addToSentFriendRequests = (newUser: TFriendRequest) => {
+    setFriendRequestsSent((prev) => {
+      return [...prev, newUser];
+    });
+  };
+
+  // Remove a user from the sent friend requests list
+  const removeFromSentFriendRequests = (userId: string) => {
+    setFriendRequestsSent((prev) => {
+      return prev.filter((user) => user._id !== userId);
+    });
+  };
+
+  // Remove a user from the received friend requests list
+  const removeFromReceivedFriendRequests = (userId: string) => {
+    setFriendRequestsReceived((prev) => {
+      return prev.filter((user) => user._id !== userId);
+    });
+  };
+
+  // Remove a user from the friends list
+  const removeFromFriends = (userId: string) => {
+    setFriends((prev) => {
+      return prev.filter((user) => user._id !== userId);
+    });
+  };
+
+  // update user profile changes
+  const updateUserProfileDetails = (profile: TUserProfileDetails) => {
+    setUser((prev) => {
+      if (!prev) return prev;
+      return { ...prev, ...profile };
+    });
+  };
+
   // Fetch user data using httpOnly cookies
   const fetchUserData = useCallback(async () => {
     setIsLoading(true);
@@ -79,6 +158,9 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
         await api.get<FetchUserDataApiResponse>('/auth/status');
       if (success) {
         setUser(data);
+        setFriends(data.friends);
+        setFriendRequestsSent(data.friendRequestsSent);
+        setFriendRequestsReceived(data.friendRequestsReceived);
         return;
       }
       setUser(null);
@@ -120,9 +202,19 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
       value={{
         user,
         setUser,
+        fetchUserData,
+        updateUserProfileDetails,
+        friends,
+        friendRequestsSent,
+        friendRequestsReceived,
         isAuthenticated,
         redirectUnauthenticatedUser,
         redirectAuthenticatedUser,
+        addToFriends,
+        addToSentFriendRequests,
+        removeFromSentFriendRequests,
+        removeFromReceivedFriendRequests,
+        removeFromFriends,
       }}
     >
       {children}
