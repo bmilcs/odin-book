@@ -1,34 +1,41 @@
 import UserImage from '@/components/common/user-image';
-import { useAuthContext } from '@/hooks/useAuthContext';
-import { TFriend, TUser } from '@/utils/types';
+import { Button } from '@/components/ui/button';
+import { TFriend } from '@/utils/types';
 import { ComponentPropsWithoutRef, FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 type FriendsListProps = ComponentPropsWithoutRef<'div'> & {
+  friendsList: TFriend[];
   className?: string;
-  propUser?: TUser;
 };
 
 const FriendsList: FC<FriendsListProps> = ({
-  propUser,
+  friendsList,
   className = '',
   ...props
 }) => {
-  const { user: activeUser } = useAuthContext();
-  const user = propUser || activeUser;
-  const friends = user?.friends || [];
+  const navigate = useNavigate();
+
+  const handleFriendClick = (username: string) => {
+    navigate(`/users/${username}`);
+  };
 
   return (
     <div className={`${className} grid`} {...props}>
-      {friends.map((friend: TFriend) => (
-        <div key={friend._id} className="p-1 hover:rounded-md hover:bg-accent">
-          <div key={friend._id} className="flex items-center gap-4">
+      {friendsList.map((friend: TFriend) => (
+        <Button
+          variant={'ghost'}
+          onClick={() => handleFriendClick(friend.username)}
+          key={friend._id}
+          className="pl-1 hover:rounded-md hover:bg-accent"
+        >
+          <div className="flex w-full items-center gap-4">
             <UserImage user={friend} className="h-8 rounded-full" />
             <Link to={`/users/${friend.username}`} className="text-sm">
               {friend.username}
             </Link>
           </div>
-        </div>
+        </Button>
       ))}
     </div>
   );
