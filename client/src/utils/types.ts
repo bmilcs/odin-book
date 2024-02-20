@@ -20,11 +20,14 @@ export type TExpressValidatorError = {
 // user & friend types
 //
 
-export type TUser = {
+export type TUniversalUserDetails = {
   _id: string;
   username: string;
-  email: string;
   photo: string;
+};
+
+export type TUser = TUniversalUserDetails & {
+  email: string;
   profile: {
     bio: string;
     location: string;
@@ -37,24 +40,15 @@ export type TUser = {
   updatedAt: string;
 };
 
-export type TFriend = {
-  _id: string;
-  username: string;
+export type TFriend = TUniversalUserDetails & {
   email: string;
-  photo: string;
 };
 
-export type TFriendRequest = {
-  _id: string;
-  username: string;
-  photo: string;
-};
+export type TFriendRequest = TUniversalUserDetails;
 
-export type TUserSearchResult = {
-  _id: string;
-  username: string;
-  photo: string;
-};
+export type TUserSearchResult = TUniversalUserDetails;
+
+export type TFindFriendsUser = TUniversalUserDetails;
 
 export type TUserProfileDetails = {
   username: string;
