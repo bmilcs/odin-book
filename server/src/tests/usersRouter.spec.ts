@@ -1,5 +1,6 @@
 import {
   USER_ONE,
+  USER_THREE,
   USER_TWO,
   app,
   deleteFriendsAndRequestsFromAllTestUsers,
@@ -10,6 +11,31 @@ import { describe } from 'mocha';
 import request from 'supertest';
 
 describe('USERS ROUTER', () => {
+  //
+  // GET ALL USERS
+  //
+
+  describe('GET /', () => {
+    it('should return 401 if user is not logged in', async () => {
+      const { statusCode, body } = await request(app).get('/users');
+      expect(statusCode).to.equal(401);
+      expect(body.success).to.be.false;
+      expect(body.error).to.equal('Unauthorized');
+    });
+
+    it('should return 201 w/ all users', async () => {
+      const { statusCode, body } = await request(app)
+        .get('/users')
+        .set('Cookie', USER_ONE.jwtCookie);
+      expect(statusCode).to.equal(201);
+      expect(body.success).to.be.true;
+      expect(body.data).to.have.lengthOf(3);
+      expect(body.data[0].username).to.equal(USER_ONE.username);
+      expect(body.data[1].username).to.equal(USER_TWO.username);
+      expect(body.data[2].username).to.equal(USER_THREE.username);
+    });
+  });
+
   //
   // USER SEARCH
   //

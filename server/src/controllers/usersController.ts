@@ -128,8 +128,16 @@ const uploadProfileImage = tryCatch(
   },
 );
 
+const getAllUsers = tryCatch(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const users = await userModel.find({}, { _id: 1, username: 1, photo: 1 });
+    res.success('All users fetched successfully', users, 201);
+  },
+);
+
 export default {
   getProfile,
+  getAllUsers,
   updateProfile,
   uploadProfileImage,
   search,
