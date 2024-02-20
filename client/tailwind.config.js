@@ -17,6 +17,15 @@ module.exports = {
       },
     },
     extend: {
+      gridTemplateColumns: {
+        'auto-fill-100': 'repeat(auto-fill, minmax(100px, 1fr))',
+        'auto-fill-125': 'repeat(auto-fill, minmax(125px, 1fr))',
+        'auto-fill-150': 'repeat(auto-fill, minmax(150px, 1fr))',
+        'auto-fill-175': 'repeat(auto-fill, minmax(175px, 1fr))',
+        'auto-fill-200': 'repeat(auto-fill, minmax(200px, 1fr))',
+        'auto-fill-250': 'repeat(auto-fill, minmax(250px, 1fr))',
+        'auto-fill-300': 'repeat(auto-fill, minmax(300px, 1fr))',
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
