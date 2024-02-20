@@ -16,7 +16,7 @@ type UpdateProfileApiResponse = TApiResponse & {
 };
 
 const useUpdateUserProfile = () => {
-  const { user, updateUserProfileDetails } = useAuthContext();
+  const { user, setUserProfileDetails } = useAuthContext();
   const navigate = useNavigate();
 
   const [status, setStatus] = useState(STATUS.IDLE);
@@ -48,7 +48,7 @@ const useUpdateUserProfile = () => {
           );
         if (success) {
           setStatus(STATUS.SUCCESS);
-          updateUserProfileDetails(data);
+          setUserProfileDetails(data);
           navigate(`/users/${data.username}`);
           return;
         }
@@ -61,7 +61,7 @@ const useUpdateUserProfile = () => {
         console.log(error);
       }
     },
-    [user?.username, navigate, updateUserProfileDetails],
+    [user?.username, navigate, setUserProfileDetails],
   );
 
   return {
