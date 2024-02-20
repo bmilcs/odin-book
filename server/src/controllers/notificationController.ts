@@ -1,4 +1,4 @@
-import { notificationModel } from '@/models';
+import { notificationModel, userModel } from '@/models';
 import { AppError, tryCatch } from '@/utils';
 import { NextFunction, Request, Response } from 'express';
 import { isValidObjectId } from 'mongoose';
@@ -120,6 +120,7 @@ const deleteAllNotifications = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { userId } = req;
     await notificationModel.deleteMany({ toUser: userId });
+    await userModel.updateOne({ _id: userId }, { $set: { notifications: [] } });
     res.success('Deleted all notifications successfully', null, 200);
   },
 );
