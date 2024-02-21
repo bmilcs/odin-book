@@ -27,14 +27,6 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
 
   const [uploadProfileImageMode, setUploadProfileImageMode] = useState(false);
 
-  const handleUpdateProfileImage = () => {
-    setUploadProfileImageMode((prev) => !prev);
-  };
-
-  const handleEditProfile = () => {
-    navigate('/edit-profile');
-  };
-
   useEffect(
     function fetchUserProfileOnParamChange() {
       if (!targetUsername || !activeUser) return;
@@ -42,6 +34,14 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
     },
     [targetUsername, fetchUserProfile, activeUser],
   );
+
+  const handleUpdateProfileImage = () => {
+    setUploadProfileImageMode((prev) => !prev);
+  };
+
+  const handleEditProfile = () => {
+    navigate('/edit-profile');
+  };
 
   if (status === 'loading') {
     return <div>Loading...</div>;
@@ -70,7 +70,7 @@ const UserProfile: FC<UserProfileProps> = ({ ...props }) => {
           </CardHeader>
 
           <CardContent className="space-y-3">
-            <div className="sm:grid sm:grid-cols-[max-content_1fr] sm:gap-4">
+            <div className="space-y-4 sm:grid sm:grid-cols-[max-content_1fr] sm:gap-4 sm:space-y-0">
               {/* Location */}
               {userProfile.profile?.location && (
                 <>
