@@ -33,11 +33,28 @@ const useUserRelationships = () => {
     [user],
   );
 
+  const getFriendStatus = useCallback(
+    (id: string) => {
+      if (isUserTheActiveUser(id)) return 'Active User';
+      if (isUserAFriend(id)) return 'Friend';
+      if (isUserInIncomingFriendRequests(id)) return 'Request Sent';
+      if (isUserInOutgoingFriendRequests(id)) return 'Request Received';
+      return 'none';
+    },
+    [
+      isUserTheActiveUser,
+      isUserAFriend,
+      isUserInIncomingFriendRequests,
+      isUserInOutgoingFriendRequests,
+    ],
+  );
+
   return {
     isUserTheActiveUser,
     isUserAFriend,
     isUserInIncomingFriendRequests,
     isUserInOutgoingFriendRequests,
+    getFriendStatus,
   };
 };
 
