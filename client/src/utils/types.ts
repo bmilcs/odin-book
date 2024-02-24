@@ -26,6 +26,18 @@ export type TUniversalUserDetails = {
   photo: string;
 };
 
+export type TUserProfile = TUniversalUserDetails & {
+  createdAt?: string;
+  updatedAt?: string;
+  email?: string;
+  profile?: {
+    bio: string;
+    location: string;
+  };
+  friends?: TFriend[];
+  recentPosts?: TPost[];
+};
+
 export type TUser = TUniversalUserDetails & {
   email: string;
   profile: {
@@ -50,7 +62,7 @@ export type TUserSearchResult = TUniversalUserDetails;
 
 export type TFindFriendsUser = TUniversalUserDetails;
 
-export type TUserProfileDetails = {
+export type TActiveUserProfileDetails = {
   username: string;
   email: string;
   profile: {
