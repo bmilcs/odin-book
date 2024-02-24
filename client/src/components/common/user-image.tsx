@@ -15,7 +15,7 @@ const UserImage = ({ user, className = '', ...props }: UserImageProps) => {
       <Link to={`/users/${user.username}`}>
         <img
           src={imgUrl}
-          alt={`${user.username}'s profile image`}
+          alt={`${user.username}'s photo`}
           className={`aspect-square object-cover shadow ${className}`}
           {...props}
         />
