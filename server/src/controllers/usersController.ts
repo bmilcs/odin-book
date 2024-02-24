@@ -1,4 +1,4 @@
-import { userModel } from '@/models';
+import { postModel, userModel } from '@/models';
 import { IUser } from '@/models/userModel';
 import { AppError, tryCatch } from '@/utils';
 import { NextFunction, Request, Response } from 'express';
@@ -31,11 +31,20 @@ const getProfile = tryCatch(
             friendRequestsReceived: 0,
           },
         )
-        .populate('friends');
+        .populate('friends', { username: 1, photo: 1, _id: 1 });
+
       if (!user) {
         return next(new AppError('User not found', 400));
       }
-      res.success('Full user profile fetched successfully', user, 201);
+
+      const recentPosts = await postModel.find({ author: user?._id }).limit(5);
+
+      const responseData = {
+        ...user.toObject(),
+        recentPosts: recentPosts,
+      };
+
+      res.success('Full user profile fetched successfully', responseData, 201);
     } else {
       // get partial user profile
       const user = await userModel
