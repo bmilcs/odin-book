@@ -8,14 +8,14 @@ import useUserRelationships from '@/hooks/useUserRelationships';
 import { ComponentPropsWithoutRef, FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type FriendActionsButtonProps = ComponentPropsWithoutRef<'button'> & {
-  userId: string;
-};
+type UserProfileFriendActionsButtonProps =
+  ComponentPropsWithoutRef<'button'> & {
+    userId: string;
+  };
 
-const FriendActionsButton: FC<FriendActionsButtonProps> = ({
-  userId,
-  ...props
-}) => {
+const UserProfileFriendActionsButton: FC<
+  UserProfileFriendActionsButtonProps
+> = ({ userId, ...props }) => {
   const navigate = useNavigate();
   const { sendFriendRequest } = useSendFriendRequest();
   const { acceptFriendRequest } = useAcceptFriendRequest();
@@ -82,4 +82,4 @@ const FriendActionsButton: FC<FriendActionsButtonProps> = ({
   );
 };
 
-export default FriendActionsButton;
+export default UserProfileFriendActionsButton;
