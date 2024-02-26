@@ -1,17 +1,17 @@
 import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
-import { TApiResponse, TUser } from '@/utils/types';
+import { TApiResponse, TUserProfile } from '@/utils/types';
 import { useCallback, useState } from 'react';
 
 type FetchUserProfileApiResponse = TApiResponse & {
-  data: TUser;
+  data: TUserProfile;
 };
 
 const useFetchUserProfile = () => {
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
-  const [userProfile, setUserProfile] = useState<TUser | null>(null);
+  const [userProfile, setUserProfile] = useState<TUserProfile | null>(null);
 
   const fetchUserProfile = useCallback(async (username: string) => {
     setStatus(STATUS.LOADING);
