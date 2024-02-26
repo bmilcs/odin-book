@@ -36,7 +36,9 @@ const Header = () => {
             {isAuthenticated() ? (
               // User is Logged In
               <>
-                <UserSearchForm className="hidden sm:flex" />
+                <li>
+                  <UserSearchForm className="hidden sm:flex" />
+                </li>
                 <li className="px-2">
                   <Link to={'/feed'}>Feed</Link>
                 </li>
