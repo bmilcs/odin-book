@@ -13,11 +13,6 @@ const getFeed = tryCatch(
       .find({
         $or: [{ author: { $in: user.friends } }, { author: user._id }],
       })
-      .populate('author', {
-        password: 0,
-        friendRequestsSent: 0,
-        friendRequestsReceived: 0,
-      })
       .populate({
         path: 'author',
         select: '_id username email photo',
