@@ -2,7 +2,7 @@ import UserImage from '@/components/common/user-image';
 import { Button } from '@/components/ui/button';
 import { TFriend } from '@/utils/types';
 import { ComponentPropsWithoutRef, FC } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 type FriendsListProps = ComponentPropsWithoutRef<'div'> & {
   friendsList: TFriend[];
@@ -30,10 +30,12 @@ const FriendsList: FC<FriendsListProps> = ({
           className="pl-1 hover:rounded-md hover:bg-accent"
         >
           <div className="flex w-full items-center gap-4">
-            <UserImage user={friend} className="h-8 rounded-full" />
-            <Link to={`/users/${friend.username}`} className="text-sm">
-              {friend.username}
-            </Link>
+            <UserImage
+              user={friend}
+              linkToProfile={false}
+              className="h-8 rounded-full"
+            />
+            <p className="text-sm">{friend.username}</p>
           </div>
         </Button>
       ))}
