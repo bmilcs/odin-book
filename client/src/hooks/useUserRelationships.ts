@@ -37,9 +37,9 @@ const useUserRelationships = () => {
     (id: string) => {
       if (isUserTheActiveUser(id)) return 'Active User';
       if (isUserAFriend(id)) return 'Friend';
-      if (isUserInIncomingFriendRequests(id)) return 'Request Sent';
-      if (isUserInOutgoingFriendRequests(id)) return 'Request Received';
-      return 'none';
+      if (isUserInIncomingFriendRequests(id)) return 'Friend Request Received';
+      if (isUserInOutgoingFriendRequests(id)) return 'Friend Request Sent';
+      return 'Not Friends';
     },
     [
       isUserTheActiveUser,
