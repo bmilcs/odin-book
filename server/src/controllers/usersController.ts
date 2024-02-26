@@ -37,7 +37,38 @@ const getProfile = tryCatch(
         return next(new AppError('User not found', 400));
       }
 
-      const recentPosts = await postModel.find({ author: user?._id }).limit(5);
+      const recentPosts = await postModel
+        .find({ author: user?._id })
+        .populate({
+          path: 'author',
+          select: '_id username email photo',
+        })
+        .populate({
+          path: 'comments',
+          populate: {
+            path: 'likes',
+            populate: {
+              path: 'user',
+              select: '_id username email photo',
+            },
+          },
+        })
+        .populate({
+          path: 'comments',
+          populate: {
+            path: 'author',
+            select: '_id username email photo',
+          },
+        })
+        .populate({
+          path: 'likes',
+          populate: {
+            path: 'user',
+            select: '_id username email photo',
+          },
+        })
+        .sort({ createdAt: -1 })
+        .limit(5);
 
       const responseData = {
         ...user.toObject(),
