@@ -3,16 +3,16 @@ import api from '@/utils/api';
 import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
 import {
+  TActiveUserProfileDetails,
   TApiResponse,
   TExpressValidatorError,
-  TUserProfileDetails,
 } from '@/utils/types';
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 type UpdateProfileApiResponse = TApiResponse & {
   error: TExpressValidatorError[];
-  data: TUserProfileDetails;
+  data: TActiveUserProfileDetails;
 };
 
 const useUpdateUserProfile = () => {
