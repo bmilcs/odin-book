@@ -149,7 +149,6 @@ const FeedProvider: FC<FeedProviderProps> = ({ children }) => {
     setFeed((prev) =>
       prev.map((post) => {
         if (post._id === postId) {
-          console.log('found post, adding like', post.likes, { likeDetails });
           return {
             ...post,
             likes: [likeDetails, ...post.likes],
