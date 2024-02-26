@@ -34,31 +34,36 @@ const FindFriendsPage: FC<FindFriendsPageProps> = ({
 
   return (
     <>
-      <div {...props} className={`space-y-4 ${className}`}>
-        <p>Find New Friends</p>
+      <div {...props} className={`space-y-8 ${className}`}>
+        <div className="space-y-4">
+          <h1 className="sr-only">Find Friends</h1>
+          <h2 className="text-2xl font-extrabold">Find New Friends</h2>
 
-        <div className="grid-cols-auto-fill-125 grid gap-4">
-          {allUsers
-            ?.filter(
-              (user: TFindFriendsUser) =>
-                !isUserAFriend(user._id) && !isUserTheActiveUser(user._id),
-            )
-            .map((user: TFindFriendsUser) => (
-              <FindFriendsUserCard user={user} key={user._id} />
-            ))}
+          <div className="grid grid-cols-auto-fill-125 gap-4">
+            {allUsers
+              ?.filter(
+                (user: TFindFriendsUser) =>
+                  !isUserAFriend(user._id) && !isUserTheActiveUser(user._id),
+              )
+              .map((user: TFindFriendsUser) => (
+                <FindFriendsUserCard user={user} key={user._id} />
+              ))}
+          </div>
         </div>
 
-        <p>Current Friends</p>
+        <div className="space-y-4">
+          <h2 className="text-2xl font-extrabold">Current Friends</h2>
 
-        <div className="grid-cols-auto-fill-125 grid gap-4">
-          {allUsers
-            ?.filter(
-              (user: TFindFriendsUser) =>
-                isUserAFriend(user._id) && !isUserTheActiveUser(user._id),
-            )
-            .map((user: TFindFriendsUser) => (
-              <FindFriendsUserCard user={user} key={user._id} />
-            ))}
+          <div className="grid grid-cols-auto-fill-125 gap-4">
+            {allUsers
+              ?.filter(
+                (user: TFindFriendsUser) =>
+                  isUserAFriend(user._id) && !isUserTheActiveUser(user._id),
+              )
+              .map((user: TFindFriendsUser) => (
+                <FindFriendsUserCard user={user} key={user._id} />
+              ))}
+          </div>
         </div>
       </div>
     </>
