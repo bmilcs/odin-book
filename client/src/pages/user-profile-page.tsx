@@ -47,6 +47,7 @@ const UserProfilePage = () => {
 
   return (
     <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr,30%] md:gap-10 md:space-y-0">
+      <h1 className="sr-only">User Profile</h1>
       <div className="order-2 space-y-5 md:order-1">
         <UserProfileDetails userProfile={userProfile} />
 
