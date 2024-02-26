@@ -9,6 +9,8 @@ const FeedPage = () => {
 
   return (
     <>
+      <h1 className="sr-only">Your Feed</h1>
+
       <div className="grid gap-4 lg:grid-cols-[350px_1fr]">
         {/* left column */}
         <div className="space-y-4">
