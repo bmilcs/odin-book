@@ -80,7 +80,10 @@ const UserSearchForm: FC<UserSearchFormProps> = ({
           <Icons.search />
           <span className="sr-only">Search for user</span>
         </Button>
-        <DropdownMenuTrigger className="absolute bottom-0 left-0">
+        <DropdownMenuTrigger
+          className="absolute bottom-0 left-0"
+          aria-label="Search for user"
+        >
           {/* Dropdown menu is triggered manually using open & setOpen state variables
               so we don't need to render anything here. This is a workaround
               for the fact that the DropdownMenuTrigger component doesn't support
