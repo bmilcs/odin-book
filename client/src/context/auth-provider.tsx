@@ -2,11 +2,11 @@ import LoadingPage from '@/pages/loading-page';
 import api from '@/utils/api';
 import { getErrorMsg } from '@/utils/errors';
 import {
+  TActiveUserProfileDetails,
   TApiResponse,
   TFriend,
   TFriendRequest,
   TUser,
-  TUserProfileDetails,
 } from '@/utils/types';
 import {
   FC,
@@ -30,7 +30,7 @@ type AuthContextProps = {
   setUserData: (data: TUser) => void;
   clearUserData: () => void;
   fetchUserData: () => void;
-  setUserProfileDetails: (profile: TUserProfileDetails) => void;
+  setUserProfileDetails: (profile: TActiveUserProfileDetails) => void;
   setUserProfileImage: (image: string) => void;
   isAuthenticated: () => boolean;
   redirectUnauthenticatedUser: (path: string) => void;
@@ -163,7 +163,7 @@ const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
   };
 
   // Update user profile changes
-  const setUserProfileDetails = (profile: TUserProfileDetails) => {
+  const setUserProfileDetails = (profile: TActiveUserProfileDetails) => {
     setUser((prev) => {
       if (!prev) return prev;
       return { ...prev, ...profile };
