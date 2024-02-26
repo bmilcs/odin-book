@@ -10,6 +10,7 @@ const FeedPage = () => {
   return (
     <>
       <div className="grid gap-4 lg:grid-cols-[350px_1fr]">
+        {/* left column */}
         <div className="space-y-4">
           <FeedUserSummary className="h-min" />
 
@@ -19,6 +20,7 @@ const FeedPage = () => {
           </div>
         </div>
 
+        {/* right column */}
         <div className="space-y-4">
           <PostNewForm className="order-0 h-min lg:order-none lg:col-span-2" />
           <Feed className="grid gap-4" />
