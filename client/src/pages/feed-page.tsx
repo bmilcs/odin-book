@@ -10,8 +10,7 @@ const FeedPage = () => {
   return (
     <>
       <h1 className="sr-only">Your Feed</h1>
-
-      <div className="grid gap-4 lg:grid-cols-[350px_1fr]">
+      <div className="grid gap-5 lg:grid-cols-[350px_1fr] lg:gap-10">
         {/* left column */}
         <div className="space-y-4">
           <FeedUserSummary className="h-min" />
@@ -25,7 +24,7 @@ const FeedPage = () => {
         {/* right column */}
         <div className="space-y-4">
           <PostNewForm className="order-0 h-min lg:order-none lg:col-span-2" />
-          <Feed className="grid gap-4" />
+          <Feed className="grid gap-5" />
         </div>
       </div>
     </>
