@@ -46,28 +46,29 @@ const FriendsList: FC<FriendsListProps> = ({
     );
   }
 
-  return (
-    <div
-      className={`grid-cols-auto-fill-75 grid gap-2 ${className}`}
-      {...props}
-    >
-      {friendsList.map((friend: TFriend) => (
-        <Button
-          variant={'ghost'}
-          onClick={() => handleFriendClick(friend.username)}
-          key={friend._id}
-          className="grid aspect-square h-auto gap-1 p-0"
-        >
-          <UserImage
-            user={friend}
-            linkToProfile={false}
-            className="rounded-full"
-          />
-          <p className="break-words">{friend.username}</p>
-        </Button>
-      ))}
-    </div>
-  );
+  if (variant === 'grid')
+    return (
+      <div
+        className={`grid-cols-auto-fill-75 grid gap-2 ${className}`}
+        {...props}
+      >
+        {friendsList.map((friend: TFriend) => (
+          <Button
+            variant={'ghost'}
+            onClick={() => handleFriendClick(friend.username)}
+            key={friend._id}
+            className="grid aspect-square h-auto gap-1 p-0 transition-transform hover:scale-110 hover:bg-background"
+          >
+            <UserImage
+              user={friend}
+              linkToProfile={false}
+              className="rounded-full"
+            />
+            <p className="break-words">{friend.username}</p>
+          </Button>
+        ))}
+      </div>
+    );
 };
 
 export default FriendsList;
