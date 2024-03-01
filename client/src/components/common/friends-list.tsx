@@ -7,10 +7,12 @@ import { useNavigate } from 'react-router-dom';
 type FriendsListProps = ComponentPropsWithoutRef<'div'> & {
   friendsList: TFriend[];
   className?: string;
+  variant?: 'list' | 'grid';
 };
 
 const FriendsList: FC<FriendsListProps> = ({
   friendsList,
+  variant = 'list',
   className = '',
   ...props
 }) => {
@@ -20,23 +22,48 @@ const FriendsList: FC<FriendsListProps> = ({
     navigate(`/users/${username}`);
   };
 
+  if (variant === 'list') {
+    return (
+      <div className={`grid ${className}`} {...props}>
+        {friendsList.map((friend: TFriend) => (
+          <Button
+            variant={'ghost'}
+            onClick={() => handleFriendClick(friend.username)}
+            key={friend._id}
+            className="pl-1 hover:rounded-md hover:bg-accent"
+          >
+            <div className="flex w-full items-center gap-4">
+              <UserImage
+                user={friend}
+                linkToProfile={false}
+                className="h-8 rounded-full"
+              />
+              <p className="text-sm">{friend.username}</p>
+            </div>
+          </Button>
+        ))}
+      </div>
+    );
+  }
+
   return (
-    <div className={`${className} grid`} {...props}>
+    <div
+      className={`grid-cols-auto-fill-75 grid gap-2 ${className}`}
+      {...props}
+    >
       {friendsList.map((friend: TFriend) => (
         <Button
           variant={'ghost'}
           onClick={() => handleFriendClick(friend.username)}
           key={friend._id}
-          className="pl-1 hover:rounded-md hover:bg-accent"
+          className="grid aspect-square h-auto gap-1 p-0"
         >
-          <div className="flex w-full items-center gap-4">
-            <UserImage
-              user={friend}
-              linkToProfile={false}
-              className="h-8 rounded-full"
-            />
-            <p className="text-sm">{friend.username}</p>
-          </div>
+          <UserImage
+            user={friend}
+            linkToProfile={false}
+            className="rounded-full"
+          />
+          <p className="break-words">{friend.username}</p>
         </Button>
       ))}
     </div>
