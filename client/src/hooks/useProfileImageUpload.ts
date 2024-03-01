@@ -4,6 +4,7 @@ import STATUS from '@/utils/constants';
 import { getErrorMsg } from '@/utils/errors';
 import { TApiResponse } from '@/utils/types';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 type UpdateProfileImageApiResponse = TApiResponse & {
   data: string;
@@ -11,6 +12,7 @@ type UpdateProfileImageApiResponse = TApiResponse & {
 
 const useProfileImageUpload = () => {
   const { user, setUserProfileImage } = useAuthContext();
+  const navigate = useNavigate();
 
   const [status, setStatus] = useState(STATUS.IDLE);
   const [error, setError] = useState('');
@@ -28,6 +30,7 @@ const useProfileImageUpload = () => {
       if (success) {
         setStatus(STATUS.SUCCESS);
         setUserProfileImage(data);
+        navigate('/feed');
         return;
       }
       setStatus(STATUS.ERROR);
