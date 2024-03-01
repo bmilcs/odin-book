@@ -1,3 +1,4 @@
+import FriendsList from '@/components/common/friends-list';
 import LoadingSpinner from '@/components/common/loading-spinner';
 import Post from '@/components/common/post';
 import UserImage from '@/components/common/user-image';
@@ -46,23 +47,42 @@ const UserProfilePage = () => {
   const isActiveUser = isUserTheActiveUser(userProfile._id);
 
   return (
-    <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr,30%] md:gap-10 md:space-y-0">
+    <div className="grid grid-cols-1 gap-10 md:grid-cols-[1fr,30%] md:gap-14 md:space-y-0 lg:gap-20">
       <h1 className="sr-only">User Profile</h1>
-      <div className="order-2 space-y-5 md:order-1">
+      <div className="order-2 space-y-10 md:order-1 md:space-y-6 lg:space-y-12">
         <UserProfileDetails userProfile={userProfile} />
 
-        <h2 className="text-2xl font-bold">Recent Posts</h2>
-
-        <div className="space-y-5">
-          {userProfile.recentPosts ? (
-            userProfile.recentPosts.map((post: TPost) => (
-              <Post key={post._id} data={post} />
-            ))
+        {/* friends */}
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold">Friends</h2>
+          {userProfile.friends && userProfile.friends.length > 0 ? (
+            <FriendsList
+              variant="grid"
+              friendsList={userProfile.friends}
+              className="grid"
+            />
           ) : (
-            <p>
-              Add {userProfile.username} to your friends to access their posts.
-            </p>
+            <p>None</p>
           )}
+        </div>
+
+        {/* recent posts */}
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold">Recent Posts</h2>
+          <div className="space-y-5">
+            {userProfile.recentPosts && userProfile.recentPosts.length > 0 ? (
+              userProfile.recentPosts.map((post: TPost) => (
+                <Post key={post._id} data={post} />
+              ))
+            ) : userProfile.recentPosts ? (
+              <p>No posts found</p>
+            ) : (
+              <p>
+                Add {userProfile.username} to your friends to access their
+                posts.
+              </p>
+            )}
+          </div>
         </div>
       </div>
 
