@@ -1,4 +1,3 @@
-import FriendsList from '@/components/common/friends-list';
 import NewLineText from '@/components/common/new-line-text';
 import {
   Card,
@@ -30,12 +29,10 @@ const UserProfileDetails: FC<UserProfileDetailsProps> = ({
         <CardHeader className="flex items-start">
           <div>
             <CardTitle className="text-2xl font-extrabold">
-              User Profile
+              {userProfile.username}
             </CardTitle>
 
-            <CardDescription>
-              Learn about {userProfile.username}
-            </CardDescription>
+            <CardDescription>Profile Details</CardDescription>
           </div>
         </CardHeader>
 
@@ -73,14 +70,6 @@ const UserProfileDetails: FC<UserProfileDetailsProps> = ({
               <p className="text-muted">N/A</p>
             )}
           </div>
-
-          {/* friends */}
-          <h2 className="text-sm font-bold">Friends:</h2>
-          {userProfile.friends && userProfile.friends.length > 0 ? (
-            <FriendsList friendsList={userProfile.friends} className="grid" />
-          ) : (
-            <p>None</p>
-          )}
         </CardContent>
       </Card>
     </div>
