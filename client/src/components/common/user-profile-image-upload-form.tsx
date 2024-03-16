@@ -103,7 +103,6 @@ const UserProfileImageUploadForm: FC<UserProfileImageUploadFormProps> = ({
                       {/* File Upload */}
                       <FormControl>
                         <Input
-                          {...field}
                           type="file"
                           accept="image/*"
                           multiple={false}
@@ -118,6 +117,7 @@ const UserProfileImageUploadForm: FC<UserProfileImageUploadFormProps> = ({
                               onChange(undefined);
                             }
                           }}
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage>{error}</FormMessage>
