@@ -101,6 +101,7 @@ export type TComment = {
 export type TPost = {
   _id: string;
   content: string;
+  image: string | null;
   author: TUser;
   comments: TComment[];
   likes: TLike[];
