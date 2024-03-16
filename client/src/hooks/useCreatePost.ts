@@ -13,11 +13,11 @@ const useCreatePost = () => {
   const [error, setError] = useState('');
   const [postData, setPostData] = useState<TPost | null>(null);
 
-  const createPost = async ({ content }: { content: string }) => {
+  const createPost = async (formData: FormData) => {
     setStatus(STATUS.LOADING);
     setError('');
 
-    if (!content) {
+    if (!formData.get('content')) {
       setStatus(STATUS.ERROR);
       setError('Post content is required');
       return;
@@ -26,9 +26,7 @@ const useCreatePost = () => {
     try {
       const { success, error, data } = await api.post<CreatePostApiResponse>(
         '/posts',
-        {
-          content,
-        },
+        formData,
       );
       if (success) {
         setStatus(STATUS.SUCCESS);
