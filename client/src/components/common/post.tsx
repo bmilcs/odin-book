@@ -14,6 +14,7 @@ import {
 import { Icons } from '@/components/ui/icons';
 import { useAuthContext } from '@/hooks/useAuthContext';
 import useDeletePost from '@/hooks/useDeletePost';
+import { API_BASE_URL } from '@/utils/env';
 import { formatDate } from '@/utils/formatters';
 import { TComment, TPost } from '@/utils/types';
 import { ComponentPropsWithoutRef, FC, useState } from 'react';
@@ -107,6 +108,13 @@ const Post: FC<PostProps> = ({ data, className = '', ...props }) => {
           />
         ) : (
           <p className="break-words break-all">{post.content}</p>
+        )}
+        {post.image && (
+          <img
+            src={`${API_BASE_URL}${post.image}`}
+            className="mt-8 w-full rounded-lg object-cover"
+            alt="Post Image"
+          />
         )}
       </CardContent>
 
