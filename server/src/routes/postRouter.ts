@@ -1,10 +1,16 @@
+import { postImageUpload } from '@/config/fileUploads';
 import { postController } from '@/controllers';
 import ensureAuthenticated from '@/middleware/ensureAuthenticated';
 import { Router } from 'express';
 
 const postRouter = Router();
 
-postRouter.post('/', ensureAuthenticated, postController.createPost);
+postRouter.post(
+  '/',
+  ensureAuthenticated,
+  postImageUpload.single('file'),
+  postController.createPost,
+);
 
 postRouter.get('/:postId', ensureAuthenticated, postController.getPost);
 

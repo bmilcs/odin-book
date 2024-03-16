@@ -14,6 +14,7 @@ export interface IPost extends Document {
 const postSchema: Schema = new Schema(
   {
     content: { type: String, required: true, maxlength: 1000 },
+    image: { type: String, required: false },
     author: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
     comments: [{ type: mongoose.Types.ObjectId, ref: 'Comment' }],
     likes: [{ type: mongoose.Types.ObjectId, ref: 'Like' }],

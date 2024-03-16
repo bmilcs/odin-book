@@ -13,6 +13,8 @@ import { isValidObjectId } from 'mongoose';
 const createPost = tryCatch(
   async (req: Request, res: Response, next: NextFunction) => {
     const { content } = req.body;
+    const file = req.file;
+
     const { userId } = req;
     // check if content was provided
     if (!content) {
@@ -24,7 +26,12 @@ const createPost = tryCatch(
       return next(new AppError('Your user information was not found', 500));
     }
     // create post
-    const post = await postModel.create({ author: req.userId, content });
+    const post = await postModel.create({
+      author: userId,
+      content,
+      image: file ? `/uploads/post-images/${file.filename}` : null,
+    });
+
     if (!post) {
       return next(
         new AppError('Unable to create a post at this time', 500, 'AppError'),
